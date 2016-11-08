@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/padding_bus_card"
+    >
+
+    <RelativeLayout
+        android:id="@+id/card_expansion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rating_dialog_bg">
+
+            <View
+            android:id="@+id/card_route_color_expansion"
+            android:layout_width="@dimen/width_card_color"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:orientation="vertical"
+                android:layout_margin="@dimen/margin_bus_card"
+                android:id="@+id/rating_complete"
+                android:gravity="center"
+                android:weightSum="3"
+                android:paddingLeft="@dimen/padding_bus_card">
+
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/text1"
+                        android:text="Não lotado"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <ProgressBar
+                        android:id="@+id/arc_lotacao"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/progress_bar_height"
+                        android:visibility="visible"
+                        android:progressDrawable="@drawable/progress_bar" />
+
+                </LinearLayout>
+
+               <LinearLayout
+                   android:layout_weight="1"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:orientation="vertical">
+
+                   <TextView
+                       android:id="@+id/text2"
+                       android:text="Motorista Responsa"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content" />
+
+                   <ProgressBar
+                       android:id="@+id/arc_motorista"
+                       style="?android:attr/progressBarStyleHorizontal"
+                       android:layout_width="match_parent"
+                       android:layout_height="@dimen/progress_bar_height"
+                       android:visibility="visible"
+                       android:progressDrawable="@drawable/progress_bar" />
+
+               </LinearLayout>
+
+               <LinearLayout
+                   android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/text3"
+                        android:text="Conservação"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <ProgressBar
+                        android:id="@+id/arc_condition"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/progress_bar_height"
+                        android:visibility="visible"
+                        android:progressDrawable="@drawable/progress_bar" />
+
+               </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_margin="5dp"
+                    android:weightSum="1">
+
+                    <Button
+                        android:id="@+id/map_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="15dp"
+                        android:textSize="15sp"
+                        android:text="@string/see_route_btn"
+                        android:layout_weight="0.50"
+                        android:gravity="center"
+                        android:layout_gravity="center"/>
+
+                    <Button
+                        android:id="@+id/route_card_expanded_take_bus_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/see_schedule_btn"
+                        android:textSize="15sp"
+                        android:layout_weight="0.50"
+                        android:gravity="center"
+                        android:layout_gravity="center"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+</LinearLayout>

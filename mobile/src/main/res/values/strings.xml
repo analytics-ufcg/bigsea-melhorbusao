@@ -1,0 +1,117 @@
+<resources>
+    <!-- Application Global Configurations-->
+    <string name="app_name">Melhor Busão</string>
+    <string name="app_email">meliorbusao@gmail.com</string>
+
+    <!-- Menu itens Labels-->
+    <string name="sign_in_message">Entre com sua conta Google&#8230;</string>
+    <string name="favorites_title">Favoritos</string>
+    <string name="top_busao_title">Top Busão</string>
+    <string name="near_stops_title">Paradas Próximas</string>
+    <string name="map_routes_title">Mapas das Rotas</string>
+    <string name="bus_schedule_title">Quadro de Horários</string>
+    <string name="more_title">Mais&#8230;</string>
+    <string name="about_title">Sobre</string>
+    <string name="login_title">Login com Google</string>
+    <string name="logout_title">Desvincular conta Google</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="saudation_message">Olá,&#160;</string>  <!-- &#160 é a referência para o espaço simples " "-->
+
+    <!-- Maps -->
+    <string name="lines">Linhas</string>
+
+    <string name="action_settings">Configurações</string>
+    <string name="action_sign_in">Entrar (usando conta Google)&#8230;</string>
+    <string name="action_sign_out">Sair&#8230;</string>
+    <string name="action_show_notification_single">Exibir notificação (1 rota)</string>
+    <string name="action_show_notification">Exibir notificação (3 rotas)</string>
+
+    <!-- Notification -->
+    <string name="notificationtitle">Dê uma nota pra sua viagem!</string>
+    <string name="notificationtext">Avalie também a lotação do busão e a condução do motô</string>
+    <string name="notificationticker">Tais no busão, é?</string>
+    <string name="direction">Sentido: </string>
+
+    <!-- RatingActivity -->
+    <string name="route_selection_title">Você entrou no&#8230;</string>
+    <string name="route_rating_title">Avalie a rota&#8230;</string>
+    <string name="lbltitle">O que achou do busão?!</string>
+    <string name="lblrota">Diga a rota:</string>
+    <string name="lbllotado">Tava lotado</string>
+    <string name="lblmotorista">Motorista responsa</string>
+    <string name="lblevaluation">Avalie a viagem&#8230;</string>
+    <string name="lblcondition">Busão em boa condição</string>
+    <string name="lbltext">Avaliar</string>
+
+    <!-- Activity detection -->
+    <string name="in_vehicle">In a vehicle</string>
+    <string name="on_bicycle">On a bicycle</string>
+    <string name="on_foot">On foot</string>
+    <string name="running">Running</string>
+    <string name="still">Still</string>
+    <string name="tilting">Tilting</string>
+    <string name="unknown">Unknown activity</string>
+    <string name="walking">Walking</string>
+    <string name="unidentifiable_activity">Unidentifiable activity: %1$d</string>
+    <string name="title_activity_rating_busao">RatingBusaoActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="reload_location">Atualizando localização&#8230;</string>
+
+    <string name="action_search">Buscar por endereço</string>
+    <string name="expand_routes">Buscar todas as rotas</string>
+    <string name="map_route_screen_base_title">"Mapa - Rota "</string>
+    <string name="top_bus_screen_base_title">"Rota - "</string>
+    <string name="stop_time_title">Próximos horários</string>
+
+    <!--Search Hints-->
+    <string name="search_hint_top_bus">Digite uma rota</string>
+    <string name="search_hint_near_stops">Digite um endereço</string>
+    <string name="search_hint_map_route">Digite uma rota</string>
+
+    <!-- Login -->
+    <string name="appVersion">Versão 2.1.2 Maio 2016</string>
+    <string name="description_app">Quer te ajudar a se\n <b>locomover melhor </b> \n pela cidade.</string>
+
+    <!--Card Expanded -->
+    <string name="see_route_btn">VER ROTA</string>
+    <string name="see_schedule_btn">VER HORÁRIOS</string>
+    <string name="information_string">Os dados utilizados para a previsão dos horários são referentes aos meses de Dezembro de 2015, Janeiro e Fevereiro de 2016.</string>
+
+    <!-- Toast notifications -->
+    <string name="address_not_found_toast">Não foi possível encontrar o endereço.</string>
+
+
+    <!--Labels-->
+    <string name="requesting_location">Buscando Localização</string>
+    <string name="wait_message">Por favor, aguarde.</string>
+    <string name="fail_retrieving_location">Não foi possível obter sua localização, tente reiniciar o aplicativo.</string>
+
+
+    <!--Mensagens-->
+    <string name="msg_yes">Sim</string>
+    <string name="msg_no">Não</string>
+    <string name="msg_wait">Aguarde!</string>
+    <string name="msg_loading_data">Carregando os melhores dados&#8230;</string>
+    <string name="msg_gps_disabled">Seu GPS está desabilitado, você deseja habilitá-lo?</string>
+    <string name="msg_ask_user_city">Você está em &#160;</string>
+    <string name="msg_unable_to_connect">Não foi possível estabelecer uma conexão!</string>
+    <string name="msg_unable_to_find_route">Não foi possível achar a rota</string>
+    <string name="msg_connection_with_server_unavailable">Não foi possível estabelecer uma conexão com o servidor! Exibindo apenas avaliações do usuário.</string>
+    <string name="msg_thanks_answer">Obrigado pela resposta!</string>
+    <string name="msg_error_rating">Ocorreu um erro! :(</string>
+    <string name="msg_route_not_found">Rota não encontrada</string>
+    <string name="msg_no_data_for_city">Não há dados disponíveis para a cidade em que você está!</string>
+    <string name="msg_failed_detect_city">Desculpe. Não foi possível detectar sua localização!</string>
+    <string name="msg_unable_identify_local">Não foi possível identificar o local. Revise a busca e tente novamente.</string>
+    <string name="msg_search_needs_internet">Pesquisa só pode ser realizada com conexão com internet</string>
+    <string name="msg_failed_detect_location">Não foi possível detectar a localização!</string>
+    <string name="msg_failed_locate_search">Não foi possível identificar o local. Revise a busca e tente novamente.</string>
+    <string name="msg_no_bus_next_hour">Não há horários para essa parada na próxima hora.</string>
+
+    <!--General-->
+    <string name="bus_stop">Parada </string>
+
+</resources>

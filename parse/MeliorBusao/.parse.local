@@ -1,0 +1,10 @@
+{
+  "applications": {
+    "MeliorBusao": {
+      "applicationId": "QBJDdWK3jOqWFW9W4W7x940DaeO2OUxgHSPwNCos"
+    },
+    "_default": {
+      "link": "MeliorBusao"
+    }
+  }
+}

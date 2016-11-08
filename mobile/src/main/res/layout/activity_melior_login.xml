@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_horizontal"
+    android:layout_gravity="center"
+    android:background="#f4f4fa"
+    tools:context="br.edu.ufcg.analytics.meliorbusao.activities.MeliorLoginActivity">
+
+    <ImageView android:id="@+id/meliorBusaoLogo"
+        android:layout_width="100dp"
+        android:layout_height="240dp"
+        android:src="@drawable/meliorlogo"
+        android:adjustViewBounds="true"
+        android:layout_marginTop="10dp"
+        android:scaleType="fitCenter"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:fontFamily="sans-serif-light"
+        android:lines="3"
+        android:text="@string/description_app"
+        android:textSize="16sp"
+        android:textColor="#252547"
+        />
+
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:fontFamily="sans-serif-medium"
+        android:background="#27ae60"
+        android:textColor="#fff"
+        android:textSize="16sp"
+        android:text="FAZER LOGIN"
+        style="?android:attr/borderlessButtonStyle"
+        />
+
+    <Button
+        android:id="@+id/logout_button"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:background="@android:color/holo_red_light"
+        android:textSize="16sp"
+        android:text="Deslogar"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginTop="18dp"
+        android:textColor="#9a9a9a"
+        android:textSize="10sp"
+        android:text="@string/appVersion"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginTop="5dp"
+        android:textColor="#252547"
+        android:text=". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginTop="10dp"
+        android:textColor="#252547"
+        android:textSize="14sp"
+        android:text="@string/app_email"
+        />
+
+
+</LinearLayout>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <group
+        android:id="@+id/fragments_menu_items"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_favorites"
+            android:enabled="false"
+            android:icon="@drawable/ic_favorites"
+            android:title="@string/favorites_title" />
+        <item
+            android:id="@+id/nav_top_bus"
+            android:icon="@drawable/ic_topbus"
+            android:title="@string/top_busao_title" />
+        <item
+            android:id="@+id/nav_near_stops"
+            android:icon="@drawable/ic_paradas"
+            android:title="@string/near_stops_title" />
+        <item
+            android:id="@+id/nav_routes_map"
+            android:icon="@drawable/ic_routes"
+            android:title="@string/map_routes_title" />
+        <item
+            android:id="@+id/nav_predicted_schedule"
+            android:icon="@drawable/ic_clock"
+            android:title="@string/bus_schedule_title" />
+    </group>
+
+    <group
+        android:id="@+id/settings_menu_items"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_sign_in"
+            android:icon="@drawable/google_plus"
+            android:title="@string/login_title"
+            android:visible="false" />
+        <item
+            android:id="@+id/nav_sign_out"
+            android:icon="@drawable/logout"
+            android:title="@string/logout_title"
+            android:visible="false" />
+        <item
+            android:title="Detecção automática"
+            android:id="@+id/nav_bus_monitoring"
+            android:icon="@drawable/ic_automatic_detection"
+            app:actionLayout="@layout/switch_layout"
+            app:showAsAction="always" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/information"
+            android:title="@string/about_title" />
+
+    </group>
+
+
+</menu>

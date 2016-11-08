@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/primary_background"
+    android:id="@+id/stop_time_fragment_container">
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/route_stop_time_frag"
+        android:clickable="false"
+        android:background="@color/primary_background"
+        android:paddingLeft="16dp"
+        />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/stop_time_stop_spinner"
+        android:background="@color/primary_background"
+        android:clickable="false"
+        android:paddingLeft="20dp"
+        />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:src="@drawable/dash"
+        android:paddingLeft="1dp"
+        android:paddingRight="1dp"
+        android:layerType="software"/>
+
+    <ListView
+        style="@style/SpinnerStopTime"
+        android:id="@+id/schedule_list"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:layerType="software"/>
+
+
+</LinearLayout>

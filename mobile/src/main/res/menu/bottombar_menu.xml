@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/bb_topbus"
+        android:icon="@drawable/ic_topbus"
+        android:title="Top Bus" />
+
+    <item
+        android:id="@+id/bb_near_stops"
+        android:icon="@drawable/ic_paradas"
+        android:title="Paradas" />
+
+    <item
+        android:id="@+id/bb_routes_map"
+        android:icon="@drawable/ic_routes"
+        android:title="Rotas" />
+
+    <item
+        android:id="@+id/bb_predicted_schedule"
+        android:icon="@drawable/ic_clock"
+        android:title="Horários" />
+
+    <item
+        android:id="@+id/bb_menu"
+        android:icon="@drawable/ic_hamburger_menu"
+        android:title="Menu" />
+
+</menu>

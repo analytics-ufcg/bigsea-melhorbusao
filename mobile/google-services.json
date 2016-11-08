@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_id": "melior-busao",
+    "project_number": "534184082183",
+    "name": "Melior Busao"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534184082183:android:83af99ceb008db04",
+        "client_id": "android:br.edu.ufcg.analytics.meliorbusao",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "br.edu.ufcg.analytics.meliorbusao"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "534184082183-doed4sptm2lvgphjn5npu7i4n4rdugf2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.edu.ufcg.analytics.meliorbusao",
+            "certificate_hash": "C910A9D829EC610CE05052E7005D906B786168CC"
+          }
+        },
+        {
+          "client_id": "534184082183-54buicd4qs09rd5maoirqj456ba6in8v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.edu.ufcg.analytics.meliorbusao",
+            "certificate_hash": "1D6F824EC9E8DCCC5F03EB3F1D63A451567F45B3"
+          }
+        },
+        {
+          "client_id": "534184082183-enaeq1fa792bqneq6hkfuo0ff3r6upmj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.edu.ufcg.analytics.meliorbusao",
+            "certificate_hash": "720000591C9305A907D6E3F97F846A798D851C61"
+          }
+        }
+      ],
+      "api_key": [{
+          "current_key": "AIzaSyDpol6iMrD9tGMQ3jAK_WJTC-sQiv_Z5m0"
+        }],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#211F35</color>
+    <color name="colorPrimaryDark">#15141F</color>
+    <color name="colorAccent">#5EC482</color>
+    
+    <!--Navigation Drawer Colors-->
+    <color name="background_drawer_color">#33334C</color>
+    <color name="drawer_text_color">#F5F3F1</color>
+
+    <color name="action_bar_background">#F4F4FA</color>
+
+    <color name="nearStopsAreaStroke">@color/colorPrimaryDark</color>
+    <color name="nearStopsAreaFill">#505EC482</color>
+
+    <color name="white_transparent">#99FFFFFF</color>
+
+    <!-- Predicted Schedule screen-->
+    <color name="primary_text_color">#33334C</color>
+    <color name="primary_background">#eeeef4</color>
+
+    <color name="white_gray">#DCDCDC</color>
+
+</resources>

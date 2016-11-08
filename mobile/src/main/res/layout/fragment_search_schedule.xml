@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<br.edu.ufcg.analytics.meliorbusao.CustomScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/take_bus_fragment_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_background"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:id="@+id/first_step"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TitleTagTakeBus"
+                android:elevation="0dp"
+                android:text="Ponto de partida"
+                android:textColor="@color/drawer_text_color" />
+
+            <TextView
+                android:id="@+id/address_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="14dp"
+                android:layout_marginRight="14dp"
+                android:layout_marginTop="13dp"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:textColor="@color/primary_text_color"
+                android:text="R. Endereço, numero - Bairro"/>
+
+            <FrameLayout
+                android:id="@+id/melior_map_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginBottom="14dp"
+                android:layout_marginRight="14dp"
+                android:layout_marginTop="2dp"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/second_step"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TitleTagTakeBus"
+                android:elevation="0dp"
+                android:text="Selecione a rota"
+                android:textColor="@color/drawer_text_color" />
+
+            <Spinner
+                android:id="@+id/take_bus_routes_spinner"
+                style="@style/SpinnerTakeBus"
+                android:dropDownSelector="@android:drawable/arrow_down_float"
+                android:spinnerMode="dropdown"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/third_step"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                style="@style/TitleTagTakeBus"
+                android:elevation="0dp"
+                android:text="Escolha a parada"
+                android:textColor="@color/drawer_text_color" />
+
+            <Spinner
+                android:id="@+id/take_bus_stops_spinner"
+                style="@style/SpinnerTakeBus"
+                android:spinnerMode="dropdown" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:src="@drawable/dash"
+            android:paddingLeft="1dp"
+            android:paddingRight="1dp"
+            android:layerType="software"/>
+
+        <Button
+            android:id="@+id/take_bus_take_bus_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/padding_take_bus"
+            android:paddingLeft="35dp"
+            android:paddingRight="35dp"
+            android:text="Ver horário" />
+
+    </LinearLayout>
+
+</br.edu.ufcg.analytics.meliorbusao.CustomScrollView>
