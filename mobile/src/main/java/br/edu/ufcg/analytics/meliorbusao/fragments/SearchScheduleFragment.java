@@ -175,7 +175,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
 
         stopsSpinner = (Spinner) mView.findViewById(R.id.take_bus_stops_spinner);
 
-
+        //not work very well
         /*stopsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

@@ -84,6 +84,7 @@
             <Spinner
                 android:id="@+id/take_bus_stops_spinner"
                 style="@style/SpinnerTakeBus"
+                android:dropDownSelector="@android:drawable/arrow_down_float"
                 android:spinnerMode="dropdown" />
 
         </LinearLayout>
