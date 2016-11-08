@@ -44,7 +44,7 @@ public class SimpleMapFragment extends MeliorMapFragment implements GoogleMap.On
                     getMap().animateCamera(getCameraUpdate());
                     updateMark(new LatLng(lat, lon));
                 } else {
-                    buildAlertMessageNoGps();
+                    ((MeliorBusaoActivity) getActivity()).buildAlertMessageNoGps();
                 }
                 return true;
             }

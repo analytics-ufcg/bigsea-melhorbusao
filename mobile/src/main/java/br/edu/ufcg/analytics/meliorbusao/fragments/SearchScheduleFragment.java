@@ -127,7 +127,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
             requestLocationUpdates();
             setRouteAdapter();
         } else {
-            buildAlertMessageNoGps();
+            ((MeliorBusaoActivity) getActivity()).buildAlertMessageNoGps();
         }
 
     }
@@ -366,29 +366,6 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
             return true;
         }
         return false;
-    }
-
-    /**
-     * Constroi o alert de ativação de gps
-     */
-    protected void buildAlertMessageNoGps() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
-        builder.setMessage("Para usar esta funcionalidade é preciso GPS, você deseja habilitá-lo?")
-                .setCancelable(false)
-                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                    }
-                })
-                .setNegativeButton("Não", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        dialog.cancel();
-                        getActivity().onBackPressed();
-                        Toast.makeText(getContext(), "O GPS precisa estar ligado!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-        final AlertDialog alert = builder.create();
-        alert.show();
     }
 
     /**

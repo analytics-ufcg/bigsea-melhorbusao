@@ -113,7 +113,7 @@ public class MapRouteFragment extends MeliorMapFragment implements GoogleMap.OnM
                     requestLocationUpdates();
                     Snackbar.make(getView(), R.string.reload_location, Snackbar.LENGTH_LONG).show();
                 } else {
-                    buildAlertMessageNoGps();
+                    ((MeliorBusaoActivity) getActivity()).buildAlertMessageNoGps();
                 }
                 return true;
             }

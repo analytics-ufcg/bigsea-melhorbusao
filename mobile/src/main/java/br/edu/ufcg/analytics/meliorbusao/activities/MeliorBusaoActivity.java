@@ -861,7 +861,7 @@ public class MeliorBusaoActivity extends AppCompatActivity
         return positiveButtomClicked[0];
     }
 
-    protected void buildAlertMessageNoGps() {
+    public void buildAlertMessageNoGps() {
         final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MeliorBusaoActivity.this);
         builder.setMessage(getString(R.string.msg_gps_disabled))
                 .setCancelable(false)

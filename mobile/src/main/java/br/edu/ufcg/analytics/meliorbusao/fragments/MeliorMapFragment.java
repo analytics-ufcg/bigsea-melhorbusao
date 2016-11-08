@@ -175,21 +175,4 @@ public abstract class MeliorMapFragment extends SupportMapFragment implements Go
         return BitmapDescriptorFactory.fromBitmap(bm);
     }
 
-    protected void buildAlertMessageNoGps() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
-        builder.setMessage(getString(R.string.msg_gps_disabled))
-                .setCancelable(false)
-                .setPositiveButton(getString(R.string.msg_yes), new DialogInterface.OnClickListener() {
-                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                    }
-                })
-                .setNegativeButton(getString(R.string.msg_no), new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        dialog.cancel();
-                    }
-                });
-        final AlertDialog alert = builder.create();
-        alert.show();
-    }
 }
