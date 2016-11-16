@@ -1,7 +1,8 @@
 package br.edu.ufcg.analytics.meliorbusao;
 
-import android.app.Application;
-
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
@@ -12,11 +13,12 @@ import com.parse.Parse;
 import com.testfairy.TestFairy;
 
 import android.support.multidex.MultiDexApplication;
+import android.support.v4.app.FragmentActivity;
 
-public class MeliorBusaoApplication extends MultiDexApplication   {
+public class MeliorBusaoApplication extends MultiDexApplication implements GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleApiClient mGoogleDetectionApiClient = null;
-    private GoogleApiClient mGooglePlusApiClient = null;
+    private GoogleApiClient mGoogleApiClient = null;
 
 
     /**
@@ -44,8 +46,36 @@ public class MeliorBusaoApplication extends MultiDexApplication   {
     /**
      * Adiciona as API's e escopos necessarios para o login com email google
      */
+    private synchronized void buildGoogleApiClient(FragmentActivity fragmentActivity) {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(fragmentActivity /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .addApi(ActivityRecognition.API)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    /**
+     *
+     * @return as APis para o login com email google
+     */
+    public GoogleApiClient getGoogleApiClientInstance(FragmentActivity fragmentActivity) {
+        if (mGoogleApiClient == null) {
+            buildGoogleApiClient(fragmentActivity);
+        }
+
+        return mGoogleApiClient;
+    }
+
+    /**
+     * Adiciona as API's e escopos necessarios para o login com email google
+     */
     private synchronized void buildGooglePlusApiClient() {
-        mGooglePlusApiClient = new GoogleApiClient.Builder(this)
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Plus.API)
                 .addApi(LocationServices.API)
                 .addScope(new Scope(Scopes.PROFILE))
@@ -58,11 +88,11 @@ public class MeliorBusaoApplication extends MultiDexApplication   {
      * @return as APis para o login com email google
      */
     public GoogleApiClient getGooglePlusApiClientInstance() {
-        if (mGooglePlusApiClient == null) {
+        if (mGoogleApiClient == null) {
             buildGooglePlusApiClient();
         }
 
-        return mGooglePlusApiClient;
+        return mGoogleApiClient;
     }
 
     @Override
@@ -73,5 +103,10 @@ public class MeliorBusaoApplication extends MultiDexApplication   {
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, getString(R.string.PARSE_APPLICATION_ID), getString(R.string.PARSE_CLIENT_KEY));
         TestFairy.begin(this, getString(R.string.TEST_FAIRY_API_KEY));
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 }

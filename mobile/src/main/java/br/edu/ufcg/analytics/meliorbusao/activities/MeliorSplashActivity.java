@@ -1,21 +1,24 @@
 package br.edu.ufcg.analytics.meliorbusao.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.plus.Plus;
 
 import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.R;
 
 
-public class MeliorSplashActivity extends Activity {
+public class MeliorSplashActivity extends AppCompatActivity {
 
     /**
      * The splash time out.
@@ -41,7 +44,7 @@ public class MeliorSplashActivity extends Activity {
         super.onStart();
         if (isLocationEnabled()) {
 
-            mGoogleApiClient = ((MeliorBusaoApplication) getApplication()).getGooglePlusApiClientInstance();
+            mGoogleApiClient = ((MeliorBusaoApplication) getApplication()).getGoogleApiClientInstance(this);
             mGoogleApiClient.connect();
 
             new Handler().postDelayed(new Runnable() {
@@ -58,13 +61,30 @@ public class MeliorSplashActivity extends Activity {
         }
     }
 
+    public Class getLaunchingActivity(){
+        Class activityToLauch = MeliorLoginActivity.class;
+
+        if (mGoogleApiClient.isConnected()){
+            OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+            if (opr.isDone()){
+                GoogleSignInResult result = opr.get();
+                if (result.getSignInAccount() != null){
+                    activityToLauch = MeliorBusaoActivity.class;
+                }
+
+            }
+        }
+
+        return activityToLauch;
+    }
+    /*
     public Class getLaunchingActivity() {
         Class activityToLaunch = MeliorLoginActivity.class;
         if (mGoogleApiClient.isConnected() && Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
             activityToLaunch = MeliorBusaoActivity.class;
         }
         return activityToLaunch;
-    }
+    } */
 
     public boolean isLocationEnabled() {
         LocationManager mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);

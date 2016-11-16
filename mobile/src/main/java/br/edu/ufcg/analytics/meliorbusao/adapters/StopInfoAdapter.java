@@ -82,10 +82,12 @@ public class StopInfoAdapter extends Fragment implements GoogleMap.InfoWindowAda
             }
         }
 
-        String stopName = getString(R.string.bus_stop)+ marker.getTitle().substring(marker.getTitle().indexOf (" - ") + 3);
         String street = "";
+        String stopName = "";
         try{
             street = marker.getTitle().substring(0, marker.getTitle().indexOf (" - "));
+            stopName = getString(R.string.bus_stop)+ marker.getTitle().substring(marker.getTitle().indexOf (" - ") + 3);
+
         }catch (Exception e){
             street = marker.getTitle();
         }

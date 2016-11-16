@@ -33,10 +33,15 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 
+import com.google.android.gms.common.api.OptionalPendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -124,7 +129,7 @@ public class MeliorBusaoActivity extends AppCompatActivity
         searchScheduleFragment = SearchScheduleFragment.getInstance();
         stopScheduleFragment = StopScheduleFragment.getInstance();
 
-        mGoogleApiClient = ((MeliorBusaoApplication) getApplication()).getGooglePlusApiClientInstance();
+        mGoogleApiClient = ((MeliorBusaoApplication) getApplication()).getGoogleApiClientInstance(this);
         mGoogleApiClient.registerConnectionCallbacks(this);
         mGoogleApiClient.registerConnectionFailedListener(this);
         if (!mGoogleApiClient.isConnected()) {
@@ -586,13 +591,39 @@ public class MeliorBusaoActivity extends AppCompatActivity
     /**
      * View quando está logado na conta do Google
      */
-    private void showSignedInUI() {
+    private void showSignedInUI(){
         mSignedIn = true;
 
         getNavigationView().findViewById(R.id.signed_in_header).setVisibility(View.VISIBLE);
         getNavigationView().findViewById(R.id.signed_out_header).setVisibility(View.GONE);
 
         updateSignInOutMenus();
+
+
+        if (mGoogleApiClient.isConnected()){
+            OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+            if (opr.isDone()){
+                GoogleSignInResult result = opr.get();
+                if (result.getSignInAccount() != null){
+                    TextView nameTextView = (TextView) getNavigationView().findViewById(R.id.nameTextView);
+                    nameTextView.setText(getResources().getString(R.string.saudation_message) + result.getSignInAccount().getDisplayName() + " :-)");
+
+                    String personPhoto = String.valueOf(result.getSignInAccount().getPhotoUrl());
+                    ImageView userImageView = (ImageView) getNavigationView().findViewById(R.id.userImageView);
+                    ProfileImageLoader loader = new ProfileImageLoader(userImageView);
+                    loader.execute(personPhoto);
+                }
+            }
+        }
+    }
+    /*private void showSignedInUI() {
+        mSignedIn = true;
+
+        getNavigationView().findViewById(R.id.signed_in_header).setVisibility(View.VISIBLE);
+        getNavigationView().findViewById(R.id.signed_out_header).setVisibility(View.GONE);
+
+        updateSignInOutMenus();
+
 
         if (mGoogleApiClient.isConnected()) {
             if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
@@ -607,7 +638,7 @@ public class MeliorBusaoActivity extends AppCompatActivity
                 loader.execute(personPhoto);
             }
         }
-    }
+    } */
 
     /**
      * Serviços de login / logout do Google
@@ -633,7 +664,24 @@ public class MeliorBusaoActivity extends AppCompatActivity
     /**
      * Logouts the user from de application
      */
-    private void onSignOutClicked() {
+    private void onSignOutClicked(){
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(Status status) {
+                Intent intent = new Intent(getApplicationContext(), MeliorLoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                showSignedOutUI();
+                onStop();
+                finish();
+            }
+        });
+    }
+
+
+
+
+    /*private void onSignOutClicked() {
         // Clear the default account so that GoogleApiClient will not automatically connect in the future.
         if (mGoogleApiClient.isConnected()) {
             Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
@@ -645,7 +693,7 @@ public class MeliorBusaoActivity extends AppCompatActivity
         showSignedOutUI();
         onStop();
         finish();
-    }
+    } */
 
     @Override
     public void finishedParse(int kind) {
