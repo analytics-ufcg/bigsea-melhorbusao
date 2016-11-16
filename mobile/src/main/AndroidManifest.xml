@@ -79,7 +79,7 @@
             android:launchMode="singleTop"></activity>
 
         <activity
-            android:name=".activities.MeliorLoginActivity"
+            android:name=".activities.MelhorLoginActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleTop">
 

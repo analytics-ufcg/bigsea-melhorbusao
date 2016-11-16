@@ -47,8 +47,6 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.model.people.Person;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
 
@@ -668,7 +666,7 @@ public class MeliorBusaoActivity extends AppCompatActivity
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(Status status) {
-                Intent intent = new Intent(getApplicationContext(), MeliorLoginActivity.class);
+                Intent intent = new Intent(getApplicationContext(), MelhorLoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 showSignedOutUI();
@@ -687,7 +685,7 @@ public class MeliorBusaoActivity extends AppCompatActivity
             Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
             mGoogleApiClient.disconnect();
         }
-        Intent intent = new Intent(getApplicationContext(), MeliorLoginActivity.class);
+        Intent intent = new Intent(getApplicationContext(), MelhorLoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         showSignedOutUI();

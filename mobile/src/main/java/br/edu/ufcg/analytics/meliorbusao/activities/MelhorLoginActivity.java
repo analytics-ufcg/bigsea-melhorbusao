@@ -2,7 +2,6 @@ package br.edu.ufcg.analytics.meliorbusao.activities;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -11,21 +10,19 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.plus.Plus;
 
 import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.R;
 
-public class MeliorLoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
+public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-    public static final String TAG = "MeliorLoginActivity";
+    public static final String TAG = "MelhorLoginActivity";
 
     private Button loginBtn;
 
@@ -33,10 +30,6 @@ public class MeliorLoginActivity extends AppCompatActivity implements GoogleApiC
     private static final int RC_SIGN_IN = 0;
     /* Client used to interact with Google APIs. */
     private GoogleApiClient mGoogleApiClient;
-    /* Should we automatically resolve ConnectionResults when possible? */
-    private boolean mShouldResolve = false;
-    /* Is there a ConnectionResult resolution in progress? */
-    private boolean mIsResolving = false;
 
     private static final int PERMISSION_ALL = 12345;
 
@@ -57,7 +50,7 @@ public class MeliorLoginActivity extends AppCompatActivity implements GoogleApiC
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             ActivityCompat.requestPermissions(
-                    MeliorLoginActivity.this,
+                    MelhorLoginActivity.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     PERMISSION_ALL
             );
@@ -80,20 +73,17 @@ public class MeliorLoginActivity extends AppCompatActivity implements GoogleApiC
 
     }
 
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult:" + requestCode + ":" + resultCode + ":" + data);
 
         if (requestCode == RC_SIGN_IN) {
-            // If the error resolution was not successful we should not resolve further.
-            if (resultCode != RESULT_OK) {
-                mShouldResolve = false;
-            }
-            mIsResolving = false;
             mGoogleApiClient.connect();
         }
     }
+
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
@@ -101,22 +91,6 @@ public class MeliorLoginActivity extends AppCompatActivity implements GoogleApiC
         // grant permissions or resolve an error in order to sign in. Refer to the javadoc for
         // ConnectionResult to see possible error codes.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
-
-        if (!mIsResolving && mShouldResolve) {
-            if (connectionResult.hasResolution()) {
-                try {
-                    connectionResult.startResolutionForResult(this, RC_SIGN_IN);
-                    mIsResolving = true;
-                } catch (IntentSender.SendIntentException e) {
-                    Log.e(TAG, "Could not resolve ConnectionResult.", e);
-                    mIsResolving = false;
-                    mGoogleApiClient.connect();
-                }
-            } else {
-                // Could not resolve the connection result, show the user an error dialog.
-                Toast.makeText(this, getString(R.string.msg_unable_to_connect), Toast.LENGTH_LONG);
-            }
-        }
     }
 
     @Override
@@ -125,7 +99,6 @@ public class MeliorLoginActivity extends AppCompatActivity implements GoogleApiC
         // account has granted any requested permissions to our app and that we were able to
         // establish a service connection to Google Play services.
         Log.d(TAG, "onConnected:" + bundle);
-        mShouldResolve = false;
 
         if (mGoogleApiClient.isConnected()){
             OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
@@ -139,21 +112,6 @@ public class MeliorLoginActivity extends AppCompatActivity implements GoogleApiC
             }
         }
     }
-    /*
-    @Override
-    public void onConnected(Bundle bundle) {
-        // onConnected indicates that an account was selected on the device, that the selected
-        // account has granted any requested permissions to our app and that we were able to
-        // establish a service connection to Google Play services.
-        Log.d(TAG, "onConnected:" + bundle);
-        mShouldResolve = false;
-
-        if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-            Intent intent = new Intent(getApplicationContext(), MeliorBusaoActivity.class);
-            Log.d(TAG, "connected: loading MeliorBusaoActivity");
-            startActivity(intent);
-        }
-    }*/
 
     @Override
     public void onConnectionSuspended(int i) {
@@ -174,16 +132,7 @@ public class MeliorLoginActivity extends AppCompatActivity implements GoogleApiC
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
         Log.d(TAG, "onSignInClicked");
-        mShouldResolve = true;
-        //mGoogleApiClient.connect();
     }
-    /*private void onSignInClicked() {
-        // User clicked the sign-in button, so begin the sign-in process and automatically
-        // attempt to resolve any errors that occur.
-        Log.d(TAG, "onSignInClicked");
-        mShouldResolve = true;
-        mGoogleApiClient.connect();
-    }*/
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],

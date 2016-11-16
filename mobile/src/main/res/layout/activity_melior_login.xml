@@ -6,7 +6,7 @@
     android:gravity="center_horizontal"
     android:layout_gravity="center"
     android:background="#f4f4fa"
-    tools:context="br.edu.ufcg.analytics.meliorbusao.activities.MeliorLoginActivity">
+    tools:context=".activities.MelhorLoginActivity">
 
     <ImageView android:id="@+id/meliorBusaoLogo"
         android:layout_width="100dp"

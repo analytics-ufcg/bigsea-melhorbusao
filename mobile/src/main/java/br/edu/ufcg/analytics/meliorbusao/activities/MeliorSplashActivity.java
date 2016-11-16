@@ -12,7 +12,6 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.plus.Plus;
 
 import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.R;
@@ -62,7 +61,7 @@ public class MeliorSplashActivity extends AppCompatActivity {
     }
 
     public Class getLaunchingActivity(){
-        Class activityToLauch = MeliorLoginActivity.class;
+        Class activityToLauch = MelhorLoginActivity.class;
 
         if (mGoogleApiClient.isConnected()){
             OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
@@ -79,7 +78,7 @@ public class MeliorSplashActivity extends AppCompatActivity {
     }
     /*
     public Class getLaunchingActivity() {
-        Class activityToLaunch = MeliorLoginActivity.class;
+        Class activityToLaunch = MelhorLoginActivity.class;
         if (mGoogleApiClient.isConnected() && Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
             activityToLaunch = MeliorBusaoActivity.class;
         }
