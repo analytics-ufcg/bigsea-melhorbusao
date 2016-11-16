@@ -105,8 +105,8 @@ public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiC
             if (opr.isDone()){
                 GoogleSignInResult result = opr.get();
                 if (result.getSignInAccount() != null){
-                    Intent intent = new Intent(getApplicationContext(), MeliorBusaoActivity.class);
-                    Log.d(TAG, "connected: loading MeliorBusaoActivity");
+                    Intent intent = new Intent(getApplicationContext(), MelhorBusaoActivity.class);
+                    Log.d(TAG, "connected: loading MelhorBusaoActivity");
                     startActivity(intent);
                 }
             }

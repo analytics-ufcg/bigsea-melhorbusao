@@ -17,7 +17,7 @@ import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.R;
 
 
-public class MeliorSplashActivity extends AppCompatActivity {
+public class MelhorSplashActivity extends AppCompatActivity {
 
     /**
      * The splash time out.
@@ -49,7 +49,7 @@ public class MeliorSplashActivity extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    final Intent i = new Intent(MeliorSplashActivity.this,
+                    final Intent i = new Intent(MelhorSplashActivity.this,
                             getLaunchingActivity());
                     startActivity(i);
                     finish();
@@ -68,7 +68,7 @@ public class MeliorSplashActivity extends AppCompatActivity {
             if (opr.isDone()){
                 GoogleSignInResult result = opr.get();
                 if (result.getSignInAccount() != null){
-                    activityToLauch = MeliorBusaoActivity.class;
+                    activityToLauch = MelhorBusaoActivity.class;
                 }
 
             }
@@ -76,14 +76,7 @@ public class MeliorSplashActivity extends AppCompatActivity {
 
         return activityToLauch;
     }
-    /*
-    public Class getLaunchingActivity() {
-        Class activityToLaunch = MelhorLoginActivity.class;
-        if (mGoogleApiClient.isConnected() && Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-            activityToLaunch = MeliorBusaoActivity.class;
-        }
-        return activityToLaunch;
-    } */
+
 
     public boolean isLocationEnabled() {
         LocationManager mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -92,7 +85,7 @@ public class MeliorSplashActivity extends AppCompatActivity {
     }
 
     protected void buildAlertMessageNoGps() {
-        final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MeliorSplashActivity.this);
+        final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MelhorSplashActivity.this);
         builder.setMessage(getString(R.string.msg_gps_disabled))
                 .setCancelable(false)
                 .setPositiveButton(getString(R.string.msg_yes), new DialogInterface.OnClickListener() {

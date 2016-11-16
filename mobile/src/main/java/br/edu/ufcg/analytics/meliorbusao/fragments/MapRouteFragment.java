@@ -42,7 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
-import br.edu.ufcg.analytics.meliorbusao.activities.MeliorBusaoActivity;
+import br.edu.ufcg.analytics.meliorbusao.activities.MelhorBusaoActivity;
 import br.edu.ufcg.analytics.meliorbusao.adapters.RouteArrayAdapter;
 import br.edu.ufcg.analytics.meliorbusao.adapters.SearchRouteResultsAdapter;
 import br.edu.ufcg.analytics.meliorbusao.adapters.StopInfoAdapter;
@@ -109,11 +109,11 @@ public class MapRouteFragment extends MeliorMapFragment implements GoogleMap.OnM
 
             @Override
             public boolean onMyLocationButtonClick() {
-                if (((MeliorBusaoActivity) getActivity()).isLocationEnabled()) {
+                if (((MelhorBusaoActivity) getActivity()).isLocationEnabled()) {
                     requestLocationUpdates();
                     Snackbar.make(getView(), R.string.reload_location, Snackbar.LENGTH_LONG).show();
                 } else {
-                    ((MeliorBusaoActivity) getActivity()).buildAlertMessageNoGps();
+                    ((MelhorBusaoActivity) getActivity()).buildAlertMessageNoGps();
                 }
                 return true;
             }

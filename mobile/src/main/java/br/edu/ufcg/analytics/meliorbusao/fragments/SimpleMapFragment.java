@@ -20,7 +20,7 @@ import java.util.Locale;
 
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
-import br.edu.ufcg.analytics.meliorbusao.activities.MeliorBusaoActivity;
+import br.edu.ufcg.analytics.meliorbusao.activities.MelhorBusaoActivity;
 
 public class SimpleMapFragment extends MeliorMapFragment implements GoogleMap.OnMapClickListener {
 
@@ -40,11 +40,11 @@ public class SimpleMapFragment extends MeliorMapFragment implements GoogleMap.On
 
             @Override
             public boolean onMyLocationButtonClick() {
-                if (((MeliorBusaoActivity) getActivity()).isLocationEnabled()) {
+                if (((MelhorBusaoActivity) getActivity()).isLocationEnabled()) {
                     getMap().animateCamera(getCameraUpdate());
                     updateMark(new LatLng(lat, lon));
                 } else {
-                    ((MeliorBusaoActivity) getActivity()).buildAlertMessageNoGps();
+                    ((MelhorBusaoActivity) getActivity()).buildAlertMessageNoGps();
                 }
                 return true;
             }

@@ -1,9 +1,6 @@
 package br.edu.ufcg.analytics.meliorbusao.fragments;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -45,7 +42,7 @@ import java.util.TreeSet;
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.R;
-import br.edu.ufcg.analytics.meliorbusao.activities.MeliorBusaoActivity;
+import br.edu.ufcg.analytics.meliorbusao.activities.MelhorBusaoActivity;
 import br.edu.ufcg.analytics.meliorbusao.adapters.RouteArrayAdapter;
 import br.edu.ufcg.analytics.meliorbusao.adapters.StopArrayAdapter;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
@@ -127,7 +124,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
             requestLocationUpdates();
             setRouteAdapter();
         } else {
-            ((MeliorBusaoActivity) getActivity()).buildAlertMessageNoGps();
+            ((MelhorBusaoActivity) getActivity()).buildAlertMessageNoGps();
         }
 
     }
@@ -362,7 +359,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
         LocationManager locationManager =
                 (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-        if (((MeliorBusaoActivity) getActivity()).isLocationEnabled()) {
+        if (((MelhorBusaoActivity) getActivity()).isLocationEnabled()) {
             return true;
         }
         return false;
@@ -430,7 +427,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
     }
 
     public boolean onQueryTextSubmit(String query) {
-        if (!((MeliorBusaoActivity) getActivity()).checkInternetConnection()){
+        if (!((MelhorBusaoActivity) getActivity()).checkInternetConnection()){
             Toast.makeText(getContext(),"Pesquisa só pode ser realizada com conexão a internet.", Toast.LENGTH_LONG).show();
             return false;
 

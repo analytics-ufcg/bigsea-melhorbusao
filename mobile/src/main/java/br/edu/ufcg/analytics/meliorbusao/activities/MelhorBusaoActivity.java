@@ -74,12 +74,12 @@ import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
 import br.edu.ufcg.analytics.meliorbusao.utils.ProfileImageLoader;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
-public class MeliorBusaoActivity extends AppCompatActivity
+public class MelhorBusaoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFinishedParseListener,
         TopBusFragment.OnTopBusSelectedListener, NearStopsFragment.OnNearStopsSelectedListener, SearchScheduleFragment.OnTakeBusSelectedListener,
         FragmentManager.OnBackStackChangedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    public static final String TAG = "MeliorBusaoActivity";
+    public static final String TAG = "MelhorBusaoActivity";
     private static final int RC_SIGN_IN = 0;
 
     // Fragments
@@ -193,7 +193,7 @@ public class MeliorBusaoActivity extends AppCompatActivity
 
         if (isLocationEnabled() && mGoogleApiClient.isConnected()) {
             try {
-                requestingLocationDialog = ProgressDialog.show(MeliorBusaoActivity.this, getString(R.string.requesting_location),
+                requestingLocationDialog = ProgressDialog.show(MelhorBusaoActivity.this, getString(R.string.requesting_location),
                         getString(R.string.wait_message), true);
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
@@ -614,29 +614,7 @@ public class MeliorBusaoActivity extends AppCompatActivity
             }
         }
     }
-    /*private void showSignedInUI() {
-        mSignedIn = true;
 
-        getNavigationView().findViewById(R.id.signed_in_header).setVisibility(View.VISIBLE);
-        getNavigationView().findViewById(R.id.signed_out_header).setVisibility(View.GONE);
-
-        updateSignInOutMenus();
-
-
-        if (mGoogleApiClient.isConnected()) {
-            if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-                Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-
-                TextView nameTextView = (TextView) getNavigationView().findViewById(R.id.nameTextView);
-                nameTextView.setText(getResources().getString(R.string.saudation_message) + currentPerson.getName().getGivenName() + " :-)");
-
-                String personPhoto = currentPerson.getImage().getUrl();
-                ImageView userImageView = (ImageView) getNavigationView().findViewById(R.id.userImageView);
-                ProfileImageLoader loader = new ProfileImageLoader(userImageView);
-                loader.execute(personPhoto);
-            }
-        }
-    } */
 
     /**
      * Serviços de login / logout do Google
@@ -908,7 +886,7 @@ public class MeliorBusaoActivity extends AppCompatActivity
     }
 
     public void buildAlertMessageNoGps() {
-        final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MeliorBusaoActivity.this);
+        final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MelhorBusaoActivity.this);
         builder.setMessage(getString(R.string.msg_gps_disabled))
                 .setCancelable(false)
                 .setPositiveButton(getString(R.string.msg_yes), new DialogInterface.OnClickListener() {

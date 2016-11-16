@@ -38,7 +38,7 @@ import java.util.TreeSet;
 
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
-import br.edu.ufcg.analytics.meliorbusao.activities.MeliorBusaoActivity;
+import br.edu.ufcg.analytics.meliorbusao.activities.MelhorBusaoActivity;
 import br.edu.ufcg.analytics.meliorbusao.adapters.StopInfoAdapter;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnMeliorBusaoQueryListener;
@@ -114,11 +114,11 @@ public class NearStopsFragment extends MeliorMapFragment implements
 
             @Override
             public boolean onMyLocationButtonClick() {
-                if (((MeliorBusaoActivity) getActivity()).isLocationEnabled()) {
+                if (((MelhorBusaoActivity) getActivity()).isLocationEnabled()) {
                     requestLocationUpdates();
                     Snackbar.make(getView(), R.string.reload_location, Snackbar.LENGTH_LONG).show();
                 } else {
-                    ((MeliorBusaoActivity) getActivity()).buildAlertMessageNoGps();
+                    ((MelhorBusaoActivity) getActivity()).buildAlertMessageNoGps();
                 }
                 return true;
             }
@@ -307,7 +307,7 @@ public class NearStopsFragment extends MeliorMapFragment implements
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        if (!((MeliorBusaoActivity) getActivity()).checkInternetConnection()) {
+        if (!((MelhorBusaoActivity) getActivity()).checkInternetConnection()) {
             Toast.makeText(getContext(), getString(R.string.msg_search_needs_internet), Toast.LENGTH_LONG).show();
             return false;
 
