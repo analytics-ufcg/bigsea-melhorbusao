@@ -109,8 +109,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
     private int pendingDBOperations;
     private static ProgressDialog mDialog;
     private String cityName;
-
-
     private static ProgressDialog requestingLocationDialog;
 
 
@@ -356,6 +354,11 @@ public class MelhorBusaoActivity extends AppCompatActivity
         if (mDialog != null && mDialog.isShowing()){
             mDialog.dismiss();
         }
+
+        if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
+            requestingLocationDialog.dismiss();
+            Log.d(TAG, "ProgressDialog de localizaçao esta sendo mostrado - onStop()");
+        }
     }
 
     /**
@@ -550,6 +553,22 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        System.out.print("works outside!");
+        if (requestCode == RC_SIGN_IN) {
+            if (resultCode == RESULT_OK) {
+                mIsResolving = false;
+                mGoogleApiClient.connect();
+            }
+            if (resultCode == RESULT_CANCELED) {
+                mShouldResolve = false;
+            }
+        }
+
+    }
+
+   /* @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN) {
             // If the error resolution was not successful we should not resolve further.
@@ -561,7 +580,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
         }
 
-    }
+    }*/
 
     /**
      * Serviços de login / logout do Google
@@ -678,7 +697,9 @@ public class MelhorBusaoActivity extends AppCompatActivity
     public void finishedParse(int kind) {
         pendingDBOperations--;
         if (pendingDBOperations == 0) {
-            mDialog.dismiss();
+            if (mDialog != null && mDialog.isShowing()) {
+                mDialog.dismiss();
+            }
             ParseUtils.getSumario(this, topBusFragment);
         }
     }
@@ -829,7 +850,10 @@ public class MelhorBusaoActivity extends AppCompatActivity
                 public void onLocationAvailability(LocationAvailability locationAvailability) {
                     super.onLocationAvailability(locationAvailability);
                     if (!locationAvailability.isLocationAvailable()) {
-                        requestingLocationDialog.dismiss();
+                        if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
+                            requestingLocationDialog.dismiss();
+                            Log.d(TAG, "Location ProgressDialog showing - getLocationCallback()");
+                        }
 
                         //colocar msg d erro, e pedir pra tentar novamente... abrir e tal sei la :(
 //                        requestLocationUpdates();
@@ -848,7 +872,11 @@ public class MelhorBusaoActivity extends AppCompatActivity
     }
 
     public void identifyUserCity(Location lastLocation) {
-        requestingLocationDialog.dismiss();
+        if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
+            requestingLocationDialog.dismiss();
+            Log.d(TAG, "O ProgressDialog de localizaçao esta sendo mostrado - Cidade do usuario");
+        }
+
         AssetManager assetManager = getAssets();
         String savedCity = SharedPreferencesUtils.getCityNameOnDatabase(this);
 
