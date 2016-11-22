@@ -172,7 +172,7 @@ public class NotificationTrigger implements MeliorListener {
                 // Set PendingIntent into Notification
                 .setContentIntent(pIntent)
                 // Action button
-                .addAction(R.drawable.heart, "Avalie agora!", pIntent);
+                .addAction(R.drawable.heart, mContext.getString(R.string.msg_evaluate), pIntent);
 
         return builder.build();
     }

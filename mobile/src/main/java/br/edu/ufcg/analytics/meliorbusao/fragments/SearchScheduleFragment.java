@@ -119,7 +119,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
         String screenTitle = getResources().getString(R.string.bus_schedule_title);
         mCallback.onTitleChange(screenTitle);
 
-        if (checkGps()){
+        if (((MelhorBusaoActivity) getActivity()).isLocationEnabled()) {
             Log.d(TAG, "Ativou o gps");
             requestLocationUpdates();
             setRouteAdapter();
@@ -258,8 +258,6 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
                 }
             }
 
-        } else {
-            checkGps();
         }
     }
 
@@ -274,7 +272,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
 
             mCallback.onClickTakeBusButton(stop);
         } catch (Exception e) {
-            Toast.makeText(getActivity(), "Rota não possui paradas perto do local selecionado.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), R.string.msg_no_stops_near, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -355,7 +353,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
     /**
      * Verifica se existe conexão com gps
      */
-    private boolean checkGps() {
+    /*private boolean checkGps() {
         LocationManager locationManager =
                 (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
@@ -363,7 +361,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
             return true;
         }
         return false;
-    }
+    }*/
 
     /**
      * Seleciona as rotas que passam nas paradas próximas.
@@ -397,7 +395,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
     public void onStopHeadsignReady(StopHeadsign stopHeadsignObj, ParseException e) {
         paradasDisponiveis.add(stopHeadsignObj);
         if (paradasDisponiveis.size() == 0) {
-            Toast.makeText(getContext(), "O ônibus escolhido não passa nesta área.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.msg_no_bus_near, Toast.LENGTH_SHORT).show();
             stopsSpinner.setBackgroundColor(Color.parseColor("#F3F3F3"));
         }
 
@@ -428,7 +426,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
 
     public boolean onQueryTextSubmit(String query) {
         if (!((MelhorBusaoActivity) getActivity()).checkInternetConnection()){
-            Toast.makeText(getContext(),"Pesquisa só pode ser realizada com conexão a internet.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(),R.string.msg_search_needs_internet, Toast.LENGTH_LONG).show();
             return false;
 
         }else{
@@ -446,7 +444,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
                         mMenu.findItem(R.id.action_search).collapseActionView();
                         return true;
                     } else {
-                        Toast.makeText(getActivity(), "Não foi possível identificar o local. Revise a busca e tente novamente.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), R.string.msg_failed_locate_search, Toast.LENGTH_LONG).show();
                     }
                 } catch (Exception e) {
                     Log.e("NearStopsFragment", e.getMessage());

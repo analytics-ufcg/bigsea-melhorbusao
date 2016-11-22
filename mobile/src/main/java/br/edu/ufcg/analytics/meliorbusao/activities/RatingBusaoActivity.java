@@ -230,7 +230,6 @@ public class RatingBusaoActivity extends AppCompatActivity implements
      */
     private void showRouteSelectionUI() {
         getSupportActionBar().setTitle(R.string.route_selection_title);
-        Log.d("RatingBusaoActivity", "Entrei aqui...");
     }
 
     /**

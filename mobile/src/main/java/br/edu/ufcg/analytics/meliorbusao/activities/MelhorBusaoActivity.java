@@ -353,6 +353,9 @@ public class MelhorBusaoActivity extends AppCompatActivity
     protected void onStop() {
         super.onStop();
         mGoogleApiClient.disconnect();
+        if (mDialog != null && mDialog.isShowing()){
+            mDialog.dismiss();
+        }
     }
 
     /**
