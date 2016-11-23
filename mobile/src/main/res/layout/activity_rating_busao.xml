@@ -12,10 +12,12 @@
         android:paddingTop="@dimen/appbar_padding_top"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar android:id="@+id/toolbar"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/primary_background"
+            android:titleTextColor="@color/toolbar_text_color"
             android:elevation="4dp"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
@@ -23,8 +25,10 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <br.edu.ufcg.analytics.meliorbusao.views.UnswipableViewPager android:id="@+id/container"
-        android:layout_width="match_parent" android:layout_height="match_parent"
+    <br.edu.ufcg.analytics.meliorbusao.views.UnswipableViewPager
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -452,7 +452,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
                 }
 
             } catch (Exception e) {
-                Log.e("NearStopsFragment", "Não foi possível achar a localizacao: " + e.getMessage());
+                Log.e("NearStopsFragment", R.string.address_not_found_toast + e.getMessage());
                 Toast.makeText(getActivity(), R.string.address_not_found_toast, Toast.LENGTH_LONG).show();
             }
         }

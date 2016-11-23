@@ -20,5 +20,6 @@
     <color name="primary_background">#eeeef4</color>
 
     <color name="white_gray">#DCDCDC</color>
+    <color name="toolbar_text_color">#857F90</color>
 
 </resources>

@@ -41,7 +41,7 @@ public class MelhorSplashActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (isLocationEnabled()) {
+        //if (isLocationEnabled()) {
 
             mGoogleApiClient = ((MeliorBusaoApplication) getApplication()).getGoogleApiClientInstance(this);
             mGoogleApiClient.connect();
@@ -55,9 +55,9 @@ public class MelhorSplashActivity extends AppCompatActivity {
                     finish();
                 }
             }, SPLASH_TIME_OUT);
-        } else {
+        /*} else {
             buildAlertMessageNoGps();
-        }
+        }*/
     }
 
     public Class getLaunchingActivity(){

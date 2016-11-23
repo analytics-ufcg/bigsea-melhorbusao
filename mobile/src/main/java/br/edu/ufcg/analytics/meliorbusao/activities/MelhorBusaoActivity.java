@@ -137,7 +137,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitleTextColor(Color.parseColor("#857F90"));
+        mToolbar.setTitleTextColor(getResources().getColor(R.color.toolbar_text_color));
         setSupportActionBar(mToolbar);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -357,7 +357,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
         if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
             requestingLocationDialog.dismiss();
-            Log.d(TAG, "ProgressDialog de localizaçao esta sendo mostrado - onStop()");
+            Log.d(TAG, "ProgressDialog (location) showing- onStop()");
         }
     }
 
@@ -852,7 +852,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
                     if (!locationAvailability.isLocationAvailable()) {
                         if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
                             requestingLocationDialog.dismiss();
-                            Log.d(TAG, "Location ProgressDialog showing - getLocationCallback()");
+                            Log.d(TAG, "ProgressDialog (location) showing - getLocationCallback()");
                         }
 
                         //colocar msg d erro, e pedir pra tentar novamente... abrir e tal sei la :(
@@ -874,7 +874,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
     public void identifyUserCity(Location lastLocation) {
         if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
             requestingLocationDialog.dismiss();
-            Log.d(TAG, "O ProgressDialog de localizaçao esta sendo mostrado - Cidade do usuario");
+            Log.d(TAG, "ProgressDialog (location) showing - User city");
         }
 
         AssetManager assetManager = getAssets();
