@@ -1,9 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="br.edu.ufcg.analytics.meliorbusao.fragments.RouteSelectionFragment">
+
+    <RelativeLayout
+        android:id="@+id/not_in_bus_list_button"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:background="@drawable/route_select_button"
+        android:layout_margin="15dp">
+
+        <LinearLayout
+            android:id="@+id/bus_icon_layout"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/bus_icon"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:src="@drawable/ic_no_in_bus"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_toRightOf="@+id/bus_icon_layout">
+
+            <TextView
+                android:id="@+id/numero_rota"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="@string/no_in_bus"
+                android:paddingRight="5dp"
+                />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:src="@drawable/dash"
+        android:layerType="software"
+        android:layout_below="@+id/not_in_bus_list_button"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"/>
 
     <ListView
         android:id="@+id/list"
@@ -11,13 +63,7 @@
         android:layout_height="match_parent"
         android:layout_margin="15dp"
         android:divider="@android:color/transparent"
-        android:dividerHeight="@dimen/space_between_cards"
-        />
+        android:layout_below="@+id/line"
+        android:dividerHeight="@dimen/space_between_cards" />
 
-    <TextView
-        android:id="@android:id/empty"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center" />
-
-</FrameLayout>
+</RelativeLayout>

@@ -116,5 +116,6 @@
     <string name="msg_evaluate">Avalie agora!</string>
     <string name="msg_no_bus_near">O ônibus escolhido não passa nesta área.</string>
     <string name="msg_no_stops_near">Rota não possui paradas perto do local selecionado.</string>
+    <string name="no_in_bus">Não estou no ônibus</string>
 
 </resources>

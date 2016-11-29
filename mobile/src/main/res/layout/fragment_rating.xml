@@ -123,7 +123,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="bottom"
+            android:gravity="center_horizontal"
             android:layout_weight="1">
 
                 <Button
@@ -135,8 +135,14 @@
                     android:layout_gravity="center_horizontal"
                     />
 
-        </LinearLayout>
+            <Button
+                android:id="@+id/not_in_bus_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_in_bus"
+                android:layout_gravity="center_horizontal" />
 
+        </LinearLayout>
 
     </LinearLayout>
 
