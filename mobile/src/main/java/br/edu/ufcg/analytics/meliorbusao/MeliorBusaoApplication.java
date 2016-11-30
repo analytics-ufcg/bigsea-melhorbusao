@@ -103,6 +103,15 @@ public class MeliorBusaoApplication extends MultiDexApplication implements Googl
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, getString(R.string.PARSE_APPLICATION_ID), getString(R.string.PARSE_CLIENT_KEY));
         TestFairy.begin(this, getString(R.string.TEST_FAIRY_API_KEY));
+
+        // Parse local
+//        Parse.initialize(new Parse.Configuration.Builder(this)
+//                .applicationId("****")
+//                .clientKey("***")
+//                .server("*****") // The trailing slash is important.
+//                .build()
+//        );
+
     }
 
     @Override
