@@ -36,6 +36,7 @@
             android:name=".services.DetectedActivitiesIntentService"
             android:exported="false" />
 
+        <!--TESTING APP WITHOUT DETECTION
         <receiver
             android:name=".receivers.BootCompletedReceiver"
             android:exported="true">
@@ -47,6 +48,8 @@
         <service
             android:name=".services.LocationService"
             android:exported="false" />
+        TESTING APP WITHOUT DETECTION -->
+
 
         <meta-data
             android:name="com.google.android.gms.version"

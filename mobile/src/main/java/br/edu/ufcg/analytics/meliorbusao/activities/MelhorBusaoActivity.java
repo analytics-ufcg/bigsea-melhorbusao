@@ -57,7 +57,7 @@ import java.util.List;
 import br.edu.ufcg.analytics.meliorbusao.db.CityDataManager;
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
-import br.edu.ufcg.analytics.meliorbusao.NotificationTrigger;
+//import br.edu.ufcg.analytics.meliorbusao.NotificationTrigger;
 import br.edu.ufcg.analytics.meliorbusao.db.MeliorDBOpenHelper;
 import br.edu.ufcg.analytics.meliorbusao.exceptions.NoDataForCityException;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnFinishedParseListener;
@@ -69,7 +69,7 @@ import br.edu.ufcg.analytics.meliorbusao.fragments.SearchScheduleFragment;
 import br.edu.ufcg.analytics.meliorbusao.fragments.TopBusFragment;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.models.StopHeadsign;
-import br.edu.ufcg.analytics.meliorbusao.services.LocationService;
+//import br.edu.ufcg.analytics.meliorbusao.services.LocationService;
 import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
 import br.edu.ufcg.analytics.meliorbusao.utils.ProfileImageLoader;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
@@ -133,7 +133,8 @@ public class MelhorBusaoActivity extends AppCompatActivity
             Log.d("status con", String.valueOf(mGoogleApiClient.isConnected()));
         }
 
-        startService(new Intent(this, LocationService.class));
+        //TESTING APP WITHOUT DETECTION //
+        //startService(new Intent(this, LocationService.class));
 
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -387,13 +388,17 @@ public class MelhorBusaoActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.melior_busao_action_bar, menu);
 
-        if (Constants.DEBUG_NOTIFICATION) {
+
+        //TESTING APP WITHOUT DETECTION //
+        /*if (Constants.DEBUG_NOTIFICATION) {
             menu.findItem(R.id.action_show_notification_single).setVisible(true);
             menu.findItem(R.id.action_show_notification).setVisible(true);
         }
         menu.findItem(R.id.action_search).setVisible(false);
         switchMonitoring(getBaseContext());
-        showSignedInUI();
+        showSignedInUI(); */
+        //TESTING APP WITHOUT DETECTION //
+
         return true;
     }
 
@@ -425,7 +430,9 @@ public class MelhorBusaoActivity extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+
+        //TESTING APP WITHOUT DETECTION //
+        /*int id = item.getItemId();
 
         switch (id) {
             case R.id.action_show_notification_single:
@@ -438,7 +445,11 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
             default:
                 return super.onOptionsItemSelected(item);
-        }
+        }*/
+        //TESTING APP WITHOUT DETECTION //
+
+
+        return false;
     }
 
     /**
@@ -567,20 +578,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
     }
 
-   /* @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            // If the error resolution was not successful we should not resolve further.
-            if (resultCode != RESULT_OK) {
-                mShouldResolve = false;
-            }
-            mIsResolving = false;
-            mGoogleApiClient.connect();
-
-        }
-
-    }*/
 
     /**
      * Serviços de login / logout do Google
@@ -676,22 +673,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
         });
     }
 
-
-
-
-    /*private void onSignOutClicked() {
-        // Clear the default account so that GoogleApiClient will not automatically connect in the future.
-        if (mGoogleApiClient.isConnected()) {
-            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-            mGoogleApiClient.disconnect();
-        }
-        Intent intent = new Intent(getApplicationContext(), MelhorLoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        showSignedOutUI();
-        onStop();
-        finish();
-    } */
 
     @Override
     public void finishedParse(int kind) {
