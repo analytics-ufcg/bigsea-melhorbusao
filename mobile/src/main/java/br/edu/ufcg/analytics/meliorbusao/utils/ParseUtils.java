@@ -308,28 +308,76 @@ public class ParseUtils {
         try {
             final HashSet<Route> rotas = DBUtils.getTodasAsRotas(context);
             getSummaryRoutes(context, listener, rotas);
-            getSummaryTest();
+            getSummaryTest(listener,rotas);
         } catch (Exception e) {
 
         }
     }
 
 
-//    public static void getSummaryTest() {
-//        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Rating");
-//        query.setLimit(1000);
-//        query.findInBackground(new FindCallback<ParseObject>() {
-//            public void done(List<ParseObject> markers, ParseException e) {
-//                if (e == null) {
-//                    for (ParseObject po : markers) {
-//                        Log.d("DDDDDDDDDDDDD", "done: " + po.getString("rota"));
-//                    }
-//                } else {
-//                    // handle Parse Exception here
-//                }
-//            }
-//        });
-//    }
+    public static void getSummaryTest(OnSumarioRotasReadyListener listener, final HashSet<Route> rotas) {
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Rating");
+        query.setLimit(1000);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> markers, ParseException e) {
+                if (e == null) {
+                    Map<String, Map<String, Integer>> routes = new HashMap<>();
+                    for (ParseObject parseObject : markers) {
+                        Map<String, Integer> values = new HashMap<>();
+
+                        if (!routes.containsKey(parseObject.getString("rota"))) {
+                            values.put("count", 0);
+                            values.put("media", 0);
+                            values.put("totalMotorista", 0);
+                            values.put("totalLotacao", 0);
+                            values.put("totalCondition", 0);
+                            routes.put(parseObject.getString("rota"), values);
+                        }
+
+                        values = routes.get(parseObject.getString("rota"));
+                        values.put("count", values.get("count") + 1);
+
+                        if (parseObject.getBoolean("motorista")){
+                            values.put("totalMotorista", values.get("totalMotorista") + 1);
+                        } if (!parseObject.getBoolean("lotacao")){
+                            values.put("totalLotacao", values.get("totalLotacao") + 1);
+                        } if (parseObject.getBoolean("condition")){
+                            values.put("totalCondition", values.get("totalCondition") + 1);
+                        }
+
+                    }
+
+                    // Esse tem de substituir o codigoSummaryRoutes
+                    for ( Route route : rotas){
+                        SumarioRota sumarioRota = new SumarioRota(route);
+
+                        if (routes.keySet().contains(route)){
+
+                            Map<String, Integer> resultado = routes.get(route);
+
+
+                            int count = resultado.get("count");
+
+                            if (count > 0) {
+                                sumarioRota.setAvaliada(true);
+                                sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_VIAGEM, resultado.get("media")), Long.MAX_VALUE, count);
+                                //Lotação é uma variavel cujo valor representa a quantidade de avaliações onde o onibus não estava lotado
+                                sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_LOTACAO, resultado.get("totalLotacao")), Long.MAX_VALUE, count);
+                                sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_MOTORISTA, resultado.get("totalMotorista")), Long.MAX_VALUE, count);
+                                sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORY_CONDITION, resultado.get("totalCondition")), Long.MAX_VALUE, count);
+                            }
+                        }
+                    }
+
+
+
+
+                } else {
+                    // handle Parse Exception here
+                }
+            }
+        });
+    }
 
     /**
      * Retorna o sumario de todas as rotas
@@ -352,12 +400,14 @@ public class ParseUtils {
                         for (String parseRoute : object.keySet()) {
                             if (route.getId().equals(parseRoute)) {
                                 Map<String, Integer> resultado = object.get(parseRoute);
+
+
                                 int count = resultado.get("count");
 
                                 if (count > 0) {
                                     sumarioRota.setAvaliada(true);
                                     sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_VIAGEM, resultado.get("media")), Long.MAX_VALUE, count);
-                                    /*Lotação é uma variavel cujo valor representa a quantidade de avaliações onde o onibus não estava lotado*/
+                                    //Lotação é uma variavel cujo valor representa a quantidade de avaliações onde o onibus não estava lotado
                                     sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_LOTACAO, resultado.get("totalLotacao")), Long.MAX_VALUE, count);
                                     sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_MOTORISTA, resultado.get("totalMotorista")), Long.MAX_VALUE, count);
                                     sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORY_CONDITION, resultado.get("totalCondition")), Long.MAX_VALUE, count);
