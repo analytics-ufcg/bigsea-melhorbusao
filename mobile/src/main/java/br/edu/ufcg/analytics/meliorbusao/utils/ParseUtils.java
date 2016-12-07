@@ -308,10 +308,28 @@ public class ParseUtils {
         try {
             final HashSet<Route> rotas = DBUtils.getTodasAsRotas(context);
             getSummaryRoutes(context, listener, rotas);
+            getSummaryTest();
         } catch (Exception e) {
 
         }
     }
+
+
+//    public static void getSummaryTest() {
+//        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Rating");
+//        query.setLimit(1000);
+//        query.findInBackground(new FindCallback<ParseObject>() {
+//            public void done(List<ParseObject> markers, ParseException e) {
+//                if (e == null) {
+//                    for (ParseObject po : markers) {
+//                        Log.d("DDDDDDDDDDDDD", "done: " + po.getString("rota"));
+//                    }
+//                } else {
+//                    // handle Parse Exception here
+//                }
+//            }
+//        });
+//    }
 
     /**
      * Retorna o sumario de todas as rotas
