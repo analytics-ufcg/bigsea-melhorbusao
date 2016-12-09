@@ -7,7 +7,7 @@ function getBusLoadEvaluation(loaded) {
 }
 
 Parse.Cloud.define("melhorSumario", function(request, response) {
-    var query = new Parse.Query("Rating");
+    var query = new Parse.Query("Rating").limit(1000);
         query.find({
             success: function(results) {
                 var routes = {};
