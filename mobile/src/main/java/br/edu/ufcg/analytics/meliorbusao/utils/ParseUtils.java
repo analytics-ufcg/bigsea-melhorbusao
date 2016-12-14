@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import br.edu.ufcg.analytics.meliorbusao.Cities;
 import br.edu.ufcg.analytics.meliorbusao.models.LocationHolder;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnStopTimesReadyListener;
@@ -39,16 +38,60 @@ import br.edu.ufcg.analytics.meliorbusao.models.StopTime;
 import br.edu.ufcg.analytics.meliorbusao.models.SumarioRota;
 
 public class ParseUtils {
-    public static final String LOG_TAG = "ParseUtils";
+    public static final String TAG = "ParseUtils";
     private static Context mContext;
 
-    public ParseUtils(Context context) {
-        mContext = context;
+    public static final String RATINGS_TABLE = "Rating";
+    private static List<ParseObject> allRatings = new ArrayList<>();
+    private static final int QUERY_MAX_LIMIT = 1000;
 
+    private static void getAllRatingsFromServer() {
+        final ParseQuery ratingQuery = new ParseQuery(RATINGS_TABLE);
+        ratingQuery.setLimit(QUERY_MAX_LIMIT);
+        int skip = 0;
+        ratingQuery.findInBackground(getAllRatings(skip));
     }
 
-    protected ParseUtils() {
+    private static FindCallback getAllRatings(int skip){
+        final int newSkip =  skip + QUERY_MAX_LIMIT;
+        FindCallback callback = new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    Log.d(TAG, "done: entrou aqui 1");
+                    ParseUtils.allRatings.addAll(objects);
+                    Log.d(TAG, "   " + allRatings.size() + "  "+ objects.size());
+                    if (objects.size() == QUERY_MAX_LIMIT) {
+                        Log.d(TAG, "done: entrou aqui 2");
+                        ParseQuery query = new ParseQuery(RATINGS_TABLE);
+                        query.setSkip(newSkip);
+                        query.setLimit(QUERY_MAX_LIMIT);
+                        query.findInBackground(getAllRatings(newSkip));
+                    }
+                    //We have a full PokeDex
+                    else {
+                        Log.d(TAG, "done: entrou aqui 3");
+                        //USE FULL DATA AS INTENDED
+                    }
+                }
+            }
+        };
+        Log.d(TAG, " xixiixixiix  " + allRatings.size());
+        return callback;
     }
+
+    public static List<ParseObject> getRatings() {
+        getAllRatingsFromServer();
+        if (allRatings.isEmpty()) {
+            Log.d(TAG, "getRatings: vazio");
+        }
+        for (ParseObject po : allRatings) {
+            Log.d("$$$$$$$$$", "getRatings: " + po.getString("rota"));
+        }
+        return allRatings;
+    }
+
+
 
     /**
      * Transforma a avaliação num objeto do parse e insere no bd
@@ -99,7 +142,7 @@ public class ParseUtils {
                                 parseRatingObject.put("condition", condition);
                                 parseRatingObject.saveEventually();
                             } catch (Exception ex) {
-                                Log.d(LOG_TAG, "Erro ao gravar sumario " + ex.getMessage());
+                                Log.d(TAG, "Erro ao gravar sumario " + ex.getMessage());
                             }
                         } else {
                             ParseQuery<ParseObject> queryUpdate = ParseQuery.getQuery("Sumario");
@@ -120,7 +163,7 @@ public class ParseUtils {
                 }
             });
         } catch (Exception e) {
-            Log.d(LOG_TAG, "ERRO::::::: " + id + " " + e.getMessage());
+            Log.d(TAG, "ERRO::::::: " + id + " " + e.getMessage());
         }
     }
 
@@ -155,13 +198,13 @@ public class ParseUtils {
                             parseLocationObject.put("tripId", tripId);
                             parseLocationObject.saveEventually();
                         } catch (Exception ex) {
-                            Log.d(LOG_TAG, "Erro ao gravar sumario " + ex.getMessage());
+                            Log.d(TAG, "Erro ao gravar sumario " + ex.getMessage());
                         }
                     }
                 }
             });
         } catch (Exception e) {
-            Log.d(LOG_TAG, "ERRO::::::: " + e.getMessage());
+            Log.d(TAG, "ERRO::::::: " + e.getMessage());
         }
     }
 
@@ -196,13 +239,13 @@ public class ParseUtils {
                                 preencheSumario(rID.getId(), media / scoreList.size(), 100 * (totalLotacao / scoreList.size()), 100 * (totalMotorista / scoreList.size()), totalCondition);
                             }
                         } else {
-                            Log.d(LOG_TAG, "score: Error: " + rID.getId() + " " + e.getMessage());
+                            Log.d(TAG, "score: Error: " + rID.getId() + " " + e.getMessage());
                         }
 
                     }
                 });
             } catch (Exception e) {
-                Log.d(LOG_TAG, "ERRO::::::: " + rID.getId() + " " + e.getMessage());
+                Log.d(TAG, "ERRO::::::: " + rID.getId() + " " + e.getMessage());
 
             }
         }
@@ -307,22 +350,20 @@ public class ParseUtils {
     public static void getSumario(Context context, final OnSumarioRotasReadyListener listener) {
         try {
             final HashSet<Route> rotas = DBUtils.getTodasAsRotas(context);
-            getSummaryRoutes(context, listener, rotas);
+            getSummaryRoutes(listener, rotas);
         } catch (Exception e) {
 
         }
     }
 
+
     /**
      * Retorna o sumario de todas as rotas
-     *
-     * @param context
-     * @param listener
+     *  @param listener
      * @param rotas
      */
-    public static void getSummaryRoutes(Context context, final OnSumarioRotasReadyListener listener, final HashSet<Route> rotas) {
-
-        ParseCloud.callFunctionInBackground("melhorSumario", new HashMap<String, Object>(), new FunctionCallback<Map<String, Map<String, Integer>>>() {
+    public static void getSummaryRoutes(final OnSumarioRotasReadyListener listener, final HashSet<Route> rotas) {
+        ParseCloud.callFunctionInBackground("getAllSummaries", new HashMap<String, Object>(), new FunctionCallback<Map<String, Map<String, Integer>>>() {
             @Override
             public void done(Map<String, Map<String, Integer>> object, ParseException e) {
                 if (e == null) {
@@ -331,19 +372,20 @@ public class ParseUtils {
                     for (Route route : rotas) {
                         SumarioRota sumarioRota = new SumarioRota(route);
 
-                        for (String parseRoute : object.keySet()) {
-                            if (route.getId().equals(parseRoute)) {
-                                Map<String, Integer> resultado = object.get(parseRoute);
-                                int count = resultado.get("count");
+                        if (object.keySet().contains(String.valueOf(route))){
 
-                                if (count > 0) {
-                                    sumarioRota.setAvaliada(true);
-                                    sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_VIAGEM, resultado.get("media")), Long.MAX_VALUE, count);
-                                    /*Lotação é uma variavel cujo valor representa a quantidade de avaliações onde o onibus não estava lotado*/
-                                    sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_LOTACAO, resultado.get("totalLotacao")), Long.MAX_VALUE, count);
-                                    sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_MOTORISTA, resultado.get("totalMotorista")), Long.MAX_VALUE, count);
-                                    sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORY_CONDITION, resultado.get("totalCondition")), Long.MAX_VALUE, count);
-                                }
+                            Map<String, Integer> resultado = object.get(String.valueOf(route));
+
+
+                            int count = resultado.get("count");
+
+                            if (count > 0) {
+                                sumarioRota.setAvaliada(true);
+                                sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_VIAGEM, resultado.get("media")), Long.MAX_VALUE, count);
+                                //Lotação é uma variavel cujo valor representa a quantidade de avaliações onde o onibus não estava lotado
+                                sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_LOTACAO, resultado.get("totalLotacao")), Long.MAX_VALUE, count);
+                                sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_MOTORISTA, resultado.get("totalMotorista")), Long.MAX_VALUE, count);
+                                sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORY_CONDITION, resultado.get("totalCondition")), Long.MAX_VALUE, count);
                             }
                         }
                         sumarios.add(sumarioRota);
@@ -352,7 +394,7 @@ public class ParseUtils {
                     listener.onSumarioRotasReady(sumarios, null);
                 } else {
                     listener.onSumarioRotasReady(null, e);
-                    Log.d(LOG_TAG, e.getMessage());
+                    Log.d(TAG, e.getMessage());
                 }
             }
         });
@@ -409,7 +451,7 @@ public class ParseUtils {
                         stopTimes.add(stopTime);
                     }
                 } else {
-                    Log.d(LOG_TAG, e.getMessage());
+                    Log.d(TAG, e.getMessage());
                 }
 
                 List<StopTime> uniquesStopTime = new ArrayList<>();
