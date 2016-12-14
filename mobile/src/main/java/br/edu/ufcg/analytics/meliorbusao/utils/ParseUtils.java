@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import br.edu.ufcg.analytics.meliorbusao.Cities;
 import br.edu.ufcg.analytics.meliorbusao.models.LocationHolder;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnStopTimesReadyListener;
@@ -351,53 +350,31 @@ public class ParseUtils {
     public static void getSumario(Context context, final OnSumarioRotasReadyListener listener) {
         try {
             final HashSet<Route> rotas = DBUtils.getTodasAsRotas(context);
-            getSummaryRoutes(context, listener, rotas);
-            //getSummaryTest(listener,rotas);
+            getSummaryRoutes(listener, rotas);
         } catch (Exception e) {
 
         }
     }
 
 
-    public static void getSummaryTest(OnSumarioRotasReadyListener listener, final HashSet<Route> rotas) {
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Rating");
-        query.setLimit(1000);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> markers, ParseException e) {
+    /**
+     * Retorna o sumario de todas as rotas
+     *  @param listener
+     * @param rotas
+     */
+    public static void getSummaryRoutes(final OnSumarioRotasReadyListener listener, final HashSet<Route> rotas) {
+        ParseCloud.callFunctionInBackground("getAllSummaries", new HashMap<String, Object>(), new FunctionCallback<Map<String, Map<String, Integer>>>() {
+            @Override
+            public void done(Map<String, Map<String, Integer>> object, ParseException e) {
                 if (e == null) {
-                    Map<String, Map<String, Integer>> routes = new HashMap<>();
-                    for (ParseObject parseObject : markers) {
-                        Map<String, Integer> values = new HashMap<>();
+                    ArrayList<SumarioRota> sumarios = new ArrayList<>();
 
-                        if (!routes.containsKey(parseObject.getString("rota"))) {
-                            values.put("count", 0);
-                            values.put("media", 0);
-                            values.put("totalMotorista", 0);
-                            values.put("totalLotacao", 0);
-                            values.put("totalCondition", 0);
-                            routes.put(parseObject.getString("rota"), values);
-                        }
-
-                        values = routes.get(parseObject.getString("rota"));
-                        values.put("count", values.get("count") + 1);
-
-                        if (parseObject.getBoolean("motorista")){
-                            values.put("totalMotorista", values.get("totalMotorista") + 1);
-                        } if (!parseObject.getBoolean("lotacao")){
-                            values.put("totalLotacao", values.get("totalLotacao") + 1);
-                        } if (parseObject.getBoolean("condition")){
-                            values.put("totalCondition", values.get("totalCondition") + 1);
-                        }
-
-                    }
-
-                    // Esse tem de substituir o codigoSummaryRoutes
-                    for ( Route route : rotas){
+                    for (Route route : rotas) {
                         SumarioRota sumarioRota = new SumarioRota(route);
 
-                        if (routes.keySet().contains(String.valueOf(route))){
+                        if (object.keySet().contains(String.valueOf(route))){
 
-                            Map<String, Integer> resultado = routes.get(String.valueOf(route));
+                            Map<String, Integer> resultado = object.get(String.valueOf(route));
 
 
                             int count = resultado.get("count");
@@ -409,52 +386,6 @@ public class ParseUtils {
                                 sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_LOTACAO, resultado.get("totalLotacao")), Long.MAX_VALUE, count);
                                 sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_MOTORISTA, resultado.get("totalMotorista")), Long.MAX_VALUE, count);
                                 sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORY_CONDITION, resultado.get("totalCondition")), Long.MAX_VALUE, count);
-                            }
-                        }
-                    }
-
-
-
-
-                } else {
-                    // handle Parse Exception here
-                }
-            }
-        });
-    }
-
-    /**
-     * Retorna o sumario de todas as rotas
-     *
-     * @param context
-     * @param listener
-     * @param rotas
-     */
-    public static void getSummaryRoutes(Context context, final OnSumarioRotasReadyListener listener, final HashSet<Route> rotas) {
-        ParseCloud.callFunctionInBackground("getAllSummaries", new HashMap<String, Object>(), new FunctionCallback<Map<String, Map<String, Integer>>>() {
-            @Override
-            public void done(Map<String, Map<String, Integer>> object, ParseException e) {
-                if (e == null) {
-                    ArrayList<SumarioRota> sumarios = new ArrayList<>();
-
-                    for (Route route : rotas) {
-                        SumarioRota sumarioRota = new SumarioRota(route);
-
-                        for (String parseRoute : object.keySet()) {
-                            if (route.getId().equals(parseRoute)) {
-                                Map<String, Integer> resultado = object.get(parseRoute);
-
-
-                                int count = resultado.get("count");
-
-                                if (count > 0) {
-                                    sumarioRota.setAvaliada(true);
-                                    sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_VIAGEM, resultado.get("media")), Long.MAX_VALUE, count);
-                                    //Lotação é uma variavel cujo valor representa a quantidade de avaliações onde o onibus não estava lotado
-                                    sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_LOTACAO, resultado.get("totalLotacao")), Long.MAX_VALUE, count);
-                                    sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_MOTORISTA, resultado.get("totalMotorista")), Long.MAX_VALUE, count);
-                                    sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORY_CONDITION, resultado.get("totalCondition")), Long.MAX_VALUE, count);
-                                }
                             }
                         }
                         sumarios.add(sumarioRota);

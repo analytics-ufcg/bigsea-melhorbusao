@@ -20,7 +20,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FilterQueryProvider;
-import android.widget.ListAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -137,7 +136,7 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
         String screenTitle = "";
 
         if (getRoutesToDisplay() != null) {
-            ParseUtils.getSummaryRoutes(getContext(), this, getRoutesToDisplay());
+            ParseUtils.getSummaryRoutes(this, getRoutesToDisplay());
             if (getStopName() != null) {
                 //Showing Stop Top Buses
                 screenTitle = getResources().getString(R.string.top_busao_title) +
@@ -230,7 +229,7 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
         if (searchRoute != null) {
             HashSet<Route> routes = new HashSet<Route>();
             routes.add(searchRoute);
-            ParseUtils.getSummaryRoutes(getContext(), this, routes);
+            ParseUtils.getSummaryRoutes(this, routes);
             mCallback.onTitleChange(buildScreenTitle(searchRoute.getShortName()));
             return true;
         }
@@ -245,7 +244,7 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
             routes.add(selectedRoute);
 
             setRoutesToDisplay(routes);
-            ParseUtils.getSummaryRoutes(getContext(), this, routes);
+            ParseUtils.getSummaryRoutes(this, routes);
             mCallback.onTitleChange(buildScreenTitle(selectedRoute.getShortName()));
             return true;
         } catch (Exception e) {
@@ -294,7 +293,7 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
         if (searchRoute != null) {
             HashSet<Route> routes = new HashSet<Route>();
             routes.add(searchRoute);
-            ParseUtils.getSummaryRoutes(getContext(), this, routes);
+            ParseUtils.getSummaryRoutes(this, routes);
             mCallback.onTitleChange(buildScreenTitle(searchRoute.getShortName()));
             mMenu.findItem(R.id.action_search).collapseActionView();
             return true;
