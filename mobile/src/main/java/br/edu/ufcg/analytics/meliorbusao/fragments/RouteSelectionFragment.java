@@ -14,7 +14,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Arrays;
 
@@ -106,6 +108,15 @@ public class RouteSelectionFragment extends Fragment implements AbsListView.OnIt
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
+
+        RelativeLayout notInBus = (RelativeLayout) view.findViewById(R.id.not_in_bus_list_button);
+        notInBus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(),"Sorry =(", Toast.LENGTH_LONG).show();
+                System.exit(0);
+            }
+        });
 
         return view;
     }

@@ -126,14 +126,13 @@
             android:gravity="center_horizontal"
             android:layout_weight="1">
 
-                <Button
-                    android:id="@+id/fragment_rating_rate_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="storeRate"
-                    android:text="@string/lbltext"
-                    android:layout_gravity="center_horizontal"
-                    />
+            <Button
+                android:id="@+id/fragment_rating_rate_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="storeRate"
+                android:text="@string/lbltext"
+                android:layout_gravity="center_horizontal" />
 
             <Button
                 android:id="@+id/not_in_bus_button"
