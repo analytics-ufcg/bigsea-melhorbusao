@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,13 @@ import android.widget.Toast;
 
 import com.parse.ParseException;
 
+import org.json.JSONArray;
+import org.json.JSONTokener;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -156,6 +164,36 @@ public class StopScheduleFragment extends Fragment implements OnStopTimesReadyLi
                     R.layout.schedule_item, stopTimes);
             mScheduleListView.setAdapter(routesArrayAdapter);
 
+        }
+    }
+
+    public JSONArray getBestTripRecommenderData(String API_URL, String route, String time, String date, int busStopId) {
+        try {
+            android.os.StrictMode.ThreadPolicy policy = new android.os.StrictMode.ThreadPolicy.Builder().permitAll().build();
+            android.os.StrictMode.setThreadPolicy(policy);
+
+            URL url = new URL(API_URL + "/get_best_trips?route=" + route + "&time=" + time + "&date=" + date + "&bus_stop_id=" + busStopId);
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                StringBuilder stringBuilder = new StringBuilder();
+                String line;
+
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line).append("\n");
+                }
+
+                bufferedReader.close();
+                String requestedData = stringBuilder.toString();
+
+                return (JSONArray) new JSONTokener(requestedData).nextValue();
+            } finally{
+                urlConnection.disconnect();
+            }
+        } catch(Exception e) {
+            Log.e("ERROR", e.getMessage(), e);
+            return null;
         }
     }
 }
