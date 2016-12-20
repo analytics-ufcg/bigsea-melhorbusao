@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.parse.ParseException;
 
@@ -149,9 +150,13 @@ public class StopScheduleFragment extends Fragment implements OnStopTimesReadyLi
                     R.layout.schedule_item, stopTimes);
             mScheduleListView.setAdapter(routesArrayAdapter);
         }*/
-        ArrayAdapter<StopTime> routesArrayAdapter = new ArrayAdapter<StopTime>(getContext(),
-                R.layout.schedule_item, stopTimes);
-        mScheduleListView.setAdapter(routesArrayAdapter);
+        if (stopTimes == null) {
+            Toast.makeText(getContext(),  getString(R.string.msg_no_bus_next_hour), Toast.LENGTH_LONG).show();
+        } else {
+            ArrayAdapter<StopTime> routesArrayAdapter = new ArrayAdapter<StopTime>(getContext(),
+                    R.layout.schedule_item, stopTimes);
+            mScheduleListView.setAdapter(routesArrayAdapter);
+        }
     }
 
     @Override

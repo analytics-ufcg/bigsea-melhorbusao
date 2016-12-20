@@ -287,6 +287,15 @@ public class StopTime implements Comparable<StopTime> {
         //String scheduleBefore = sdfDate.format(arrivalTimeBefore);
 
         //return  /*sb.toString() + " " + */scheduleBefore + " - " + scheduleAfter;
-        return sdfDate.format(arrivalTime);
+        String str = sdfDate.format(arrivalTime);
+
+        if (isBestNumPassengers()) {
+            str += " +vazio";
+        }
+        if (isBestTripDuration()) {
+            str += " +rápido";
+        }
+
+        return str;
     }
 }
