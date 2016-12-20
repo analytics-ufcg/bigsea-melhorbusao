@@ -381,10 +381,10 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
         }
     }
 
-    @Override
+    /*@Override
     public void onStopTimesReady(List<StopTime> stopTimes, ParseException e) {
 
-    }
+    }*/
 
     /**
      * Muda o adapter de paradas da rota quando a lista com as paradas que vem do banco está pronta

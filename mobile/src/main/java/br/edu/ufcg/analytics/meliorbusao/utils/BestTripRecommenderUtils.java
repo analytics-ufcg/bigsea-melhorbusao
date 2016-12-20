@@ -1,0 +1,90 @@
+package br.edu.ufcg.analytics.meliorbusao.utils;
+
+import android.content.Context;
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import br.edu.ufcg.analytics.meliorbusao.R;
+import br.edu.ufcg.analytics.meliorbusao.models.StopTime;
+
+/**
+ * Created by orion on 20/12/16.
+ */
+
+public class BestTripRecommenderUtils {
+    //Log.d("Debug", getBestTripRecommenderData(getString(R.string.BEST_TRIP_RECOMMENDER_URL), this.getRoute().getId(), "08:00:00", "2016-11-18", this.getStop().getId()).toString());
+    public static List<StopTime> getBestTripRecommenderData(String route, int busStopId, Context context) {
+        return getBestTripRecommenderData(context.getString(R.string.BEST_TRIP_RECOMMENDER_URL), route, "08:00:00", "2016-11-18", busStopId);
+    }
+
+    public static List<StopTime> getBestTripRecommenderData(String API_URL, String route, String time, String date, int busStopId) {
+        try {
+            android.os.StrictMode.ThreadPolicy policy = new android.os.StrictMode.ThreadPolicy.Builder().permitAll().build();
+            android.os.StrictMode.setThreadPolicy(policy);
+
+            URL url = new URL(API_URL + "/get_best_trips?route=" + route + "&time=" + time + "&date=" + date + "&bus_stop_id=" + busStopId + "&closest_trip_type=next_hour");
+            Log.d("", url.toString());
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                StringBuilder stringBuilder = new StringBuilder();
+                String line;
+
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line).append("\n");
+                }
+
+                bufferedReader.close();
+                String requestedData = stringBuilder.toString();
+
+                JSONArray jsonArray = (JSONArray) new JSONTokener(requestedData).nextValue();
+                ArrayList<StopTime> stopTimes = new ArrayList<StopTime>();
+
+                int minNumPassengers = 0;
+                int minTripDuration = 0;
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonStopTime = jsonArray.getJSONObject(i);
+
+                    double numberOfPassengers = Double.parseDouble(jsonStopTime.getString("passengers.number"));
+                    double tripDuration = Double.parseDouble(jsonStopTime.getString("trip.duration"));
+                    String start = jsonStopTime.getString("trip.initial.time");
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd hh:mm:ss");
+                    Date departure = sdf.parse(date + " " + start);
+
+                    stopTimes.add(new StopTime(route, busStopId, departure, numberOfPassengers, tripDuration));
+
+                    if (tripDuration < stopTimes.get(minTripDuration).getTripDuration()) {
+                        minTripDuration = i;
+                    }
+                    if (numberOfPassengers < stopTimes.get(minNumPassengers).getNumberOfPassengers()) {
+                        minNumPassengers = i;
+                    }
+                }
+
+                stopTimes.get(minNumPassengers).setBestNumPassengers(true);
+                stopTimes.get(minTripDuration).setBestTripDuration(true);
+
+                return stopTimes;
+            } finally{
+                urlConnection.disconnect();
+            }
+        } catch(Exception e) {
+            Log.e("ERROR", e.getMessage(), e);
+            return null;
+        }
+    }
+}

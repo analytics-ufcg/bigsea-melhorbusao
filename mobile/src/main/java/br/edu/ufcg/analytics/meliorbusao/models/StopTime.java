@@ -17,6 +17,8 @@ public class StopTime implements Comparable<StopTime> {
 
     private double numberOfPassengers;
     private double tripDuration;
+    private boolean isBestNumPassengers;
+    private boolean isBestTripDuration;
 
     public StopTime(String serviceId, String routeId, int stopId, Date arrivalTime, String stopHeadsign) {
         this.serviceId = serviceId;
@@ -53,6 +55,8 @@ public class StopTime implements Comparable<StopTime> {
         this.arrivalTime = departure;
         this.numberOfPassengers = numberOfPassengers;
         this.tripDuration = tripDuration;
+        this.isBestNumPassengers = false;
+        this.isBestTripDuration = false;
     }
 
     /**
@@ -212,6 +216,34 @@ public class StopTime implements Comparable<StopTime> {
      */
     public void setTripDuration(double tripDuration) {
         this.tripDuration = tripDuration;
+    }
+
+    /**
+     * @return True if this is the best trip duration
+     */
+    public boolean isBestTripDuration() {
+        return isBestTripDuration;
+    }
+
+    /**
+     * Set the best trip duration to true or false
+     */
+    public void setBestTripDuration(boolean bestTripDuration) {
+        isBestTripDuration = bestTripDuration;
+    }
+
+    /**
+     * @return True if this is the best trip number of passengers
+     */
+    public boolean isBestNumPassengers() {
+        return isBestNumPassengers;
+    }
+
+    /**
+     * Set the best trip number of passengers to true or false
+     */
+    public void setBestNumPassengers(boolean bestNumPassengers) {
+        isBestNumPassengers = bestNumPassengers;
     }
 
     /**

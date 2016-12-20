@@ -463,7 +463,7 @@ public class ParseUtils {
 
                 Collections.sort(uniquesStopTime);
 
-                listener.onStopTimesReady(uniquesStopTime, e);
+                listener.onStopTimesReady(uniquesStopTime);
             }
 
         });
