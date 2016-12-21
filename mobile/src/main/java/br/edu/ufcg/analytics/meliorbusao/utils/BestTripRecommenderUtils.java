@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,7 +22,11 @@ import br.edu.ufcg.analytics.meliorbusao.models.StopTime;
 
 public class BestTripRecommenderUtils {
     public static List<StopTime> getBestTripRecommenderData(String route, int busStopId, Context context) {
-        return getBestTripRecommenderData(context.getString(R.string.BEST_TRIP_RECOMMENDER_URL), route, "08:00:00", "2016-11-18", busStopId);
+        DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date currDate = new Date();
+
+        return getBestTripRecommenderData(context.getString(R.string.BEST_TRIP_RECOMMENDER_URL), route, timeFormat.format(currDate), dateFormat.format(currDate), busStopId);
     }
 
     public static List<StopTime> getBestTripRecommenderData(String API_URL, String route, String time, String date, int busStopId) {
@@ -55,7 +60,7 @@ public class BestTripRecommenderUtils {
 
                     double numberOfPassengers = Double.parseDouble(jsonStopTime.getString("passengers.number"));
                     double tripDuration = Double.parseDouble(jsonStopTime.getString("trip.duration"));
-                    String start = jsonStopTime.getString("trip.initial.time");
+                    String start = jsonStopTime.getString("mean.timetable");
 
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd hh:mm:ss");
                     Date departure = sdf.parse(date + " " + start);
