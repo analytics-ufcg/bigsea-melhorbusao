@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
+import br.edu.ufcg.analytics.meliorbusao.activities.MelhorBusaoActivity;
 import br.edu.ufcg.analytics.meliorbusao.models.StopTime;
 
 public class BestTripRecommenderUtils {
@@ -25,6 +26,11 @@ public class BestTripRecommenderUtils {
         DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date currDate = new Date();
+
+        // This is a temporary solution!! It'll be resolved when correct the prediction data file!!!
+        if (( (MelhorBusaoActivity) context).getCityName().equals("Campina Grande") && route.length() == 3) {
+            route = "0" + route;
+        }
 
         return getBestTripRecommenderData(context.getString(R.string.BEST_TRIP_RECOMMENDER_URL), route, timeFormat.format(currDate), dateFormat.format(currDate), busStopId);
     }

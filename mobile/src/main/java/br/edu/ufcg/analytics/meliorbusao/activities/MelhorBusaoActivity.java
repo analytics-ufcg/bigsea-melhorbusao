@@ -934,4 +934,8 @@ public class MelhorBusaoActivity extends AppCompatActivity
         alert.show();
     }
 
+    public String getCityName() {
+        return cityName;
+    }
+
 }

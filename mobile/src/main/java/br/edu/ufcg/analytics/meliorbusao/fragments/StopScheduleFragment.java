@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -130,27 +129,8 @@ public class StopScheduleFragment extends Fragment implements OnStopTimesReadyLi
         return route;
     }
 
-
-    /*@Override
-    public void onStopTimesReady(List<StopTime> stopTimes, ParseException e) {
-        if (stopTimes.size() == 0) {
-            Toast.makeText(getContext(), getString(R.string.msg_no_bus_next_hour), Toast.LENGTH_LONG).show();
-        } else {
-            ArrayAdapter<StopTime> routesArrayAdapter = new ArrayAdapter<StopTime>(getContext(),
-                    R.layout.schedule_item, stopTimes);
-            mScheduleListView.setAdapter(routesArrayAdapter);
-        }
-    }*/
-
     @Override
     public void onStopTimesReady(List<StopTime> stopTimes) {
-        /*if (stopTimes.size() == 0) {
-            Toast.makeText(getContext(),  getString(R.string.msg_no_bus_next_hour), Toast.LENGTH_LONG).show();
-        } else {
-            ArrayAdapter<StopTime> routesArrayAdapter = new ArrayAdapter<StopTime>(getContext(),
-                    R.layout.schedule_item, stopTimes);
-            mScheduleListView.setAdapter(routesArrayAdapter);
-        }*/
         if (stopTimes == null) {
             Toast.makeText(getContext(),  getString(R.string.msg_no_bus_next_hour), Toast.LENGTH_LONG).show();
         } else {
