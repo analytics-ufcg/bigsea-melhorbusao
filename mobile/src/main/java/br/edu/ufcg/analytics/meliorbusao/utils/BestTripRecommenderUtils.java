@@ -19,12 +19,7 @@ import java.util.List;
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.models.StopTime;
 
-/**
- * Created by orion on 20/12/16.
- */
-
 public class BestTripRecommenderUtils {
-    //Log.d("Debug", getBestTripRecommenderData(getString(R.string.BEST_TRIP_RECOMMENDER_URL), this.getRoute().getId(), "08:00:00", "2016-11-18", this.getStop().getId()).toString());
     public static List<StopTime> getBestTripRecommenderData(String route, int busStopId, Context context) {
         return getBestTripRecommenderData(context.getString(R.string.BEST_TRIP_RECOMMENDER_URL), route, "08:00:00", "2016-11-18", busStopId);
     }

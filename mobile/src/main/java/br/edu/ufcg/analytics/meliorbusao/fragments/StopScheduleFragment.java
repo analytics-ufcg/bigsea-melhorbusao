@@ -19,6 +19,7 @@ import java.util.List;
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.SchedulesProbableParser;
 import br.edu.ufcg.analytics.meliorbusao.adapters.RouteArrayAdapter;
+import br.edu.ufcg.analytics.meliorbusao.adapters.ScheduleAdapter;
 import br.edu.ufcg.analytics.meliorbusao.adapters.StopArrayAdapter;
 import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnStopTimesReadyListener;
@@ -153,9 +154,9 @@ public class StopScheduleFragment extends Fragment implements OnStopTimesReadyLi
         if (stopTimes == null) {
             Toast.makeText(getContext(),  getString(R.string.msg_no_bus_next_hour), Toast.LENGTH_LONG).show();
         } else {
-            ArrayAdapter<StopTime> routesArrayAdapter = new ArrayAdapter<StopTime>(getContext(),
+            ScheduleAdapter scheduleAdapter = new ScheduleAdapter(getActivity(),
                     R.layout.schedule_item, stopTimes);
-            mScheduleListView.setAdapter(routesArrayAdapter);
+            mScheduleListView.setAdapter(scheduleAdapter);
         }
     }
 
