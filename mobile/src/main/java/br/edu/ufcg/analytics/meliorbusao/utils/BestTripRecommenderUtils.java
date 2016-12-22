@@ -66,12 +66,18 @@ public class BestTripRecommenderUtils {
 
                     double numberOfPassengers = Double.parseDouble(jsonStopTime.getString("passengers.number"));
                     double tripDuration = Double.parseDouble(jsonStopTime.getString("trip.duration"));
-                    String start = jsonStopTime.getString("mean.timetable");
+                    String meanSchedule = jsonStopTime.getString("mean.timetable");
+                    String lowerScheduleConfidenceInterval = jsonStopTime.getString("previous.timetable");
+                    String higherScheduleConfidenceInterval = jsonStopTime.getString("next.timetable");
+
 
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd hh:mm:ss");
-                    Date departure = sdf.parse(date + " " + start);
+                    Date departure = sdf.parse(date + " " + meanSchedule);
+                    Date lowerScheduleConfidenceIntervalDate = sdf.parse(date + " " + lowerScheduleConfidenceInterval);
+                    Date higherScheduleConfidenceIntervalDate = sdf.parse(date + " " + higherScheduleConfidenceInterval);
 
-                    stopTimes.add(new StopTime(route, busStopId, departure, numberOfPassengers, tripDuration));
+                    stopTimes.add(new StopTime(route, busStopId, departure, lowerScheduleConfidenceIntervalDate,
+                            higherScheduleConfidenceIntervalDate, numberOfPassengers, tripDuration));
 
                     if (tripDuration < stopTimes.get(minTripDuration).getTripDuration()) {
                         minTripDuration = i;

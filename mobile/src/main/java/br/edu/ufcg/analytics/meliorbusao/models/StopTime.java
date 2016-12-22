@@ -49,10 +49,12 @@ public class StopTime implements Comparable<StopTime> {
 
     }
 
-    public StopTime(String routeId, int stopId, Date departure, double numberOfPassengers, double tripDuration) {
+    public StopTime(String routeId, int stopId, Date scheduleMean, Date scheduleBefore, Date scheduleAfter, double numberOfPassengers, double tripDuration) {
         this.routeId = routeId;
         this.stopId = stopId;
-        this.arrivalTime = departure;
+        this.arrivalTime = scheduleMean;
+        this.arrivalTimeBefore=scheduleBefore;
+        this.arrivalTimeAfter=scheduleAfter;
         this.numberOfPassengers = numberOfPassengers;
         this.tripDuration = tripDuration;
         this.isBestNumPassengers = false;
@@ -283,10 +285,10 @@ public class StopTime implements Comparable<StopTime> {
 
         //sb.append(sdfDate.format(arrivalTime));
 
-        //String scheduleAfter = sdfDate.format(arrivalTimeAfter);
-        //String scheduleBefore = sdfDate.format(arrivalTimeBefore);
+        String scheduleAfter = sdfDate.format(arrivalTimeAfter);
+        String scheduleBefore = sdfDate.format(arrivalTimeBefore);
 
-        //return  /*sb.toString() + " " + */scheduleBefore + " - " + scheduleAfter;
-        return sdfDate.format(arrivalTime);
+        return  /*sb.toString() + " " + */ scheduleBefore + " - " + scheduleAfter;
+        //return sdfDate.format(arrivalTime);
     }
 }
