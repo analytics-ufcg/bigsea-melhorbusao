@@ -59,8 +59,6 @@ public class BestTripRecommenderUtils {
                 JSONArray jsonArray = (JSONArray) new JSONTokener(requestedData).nextValue();
                 ArrayList<StopTime> stopTimes = new ArrayList<StopTime>();
 
-                int minNumPassengers = 0;
-                int minTripDuration = 0;
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonStopTime = jsonArray.getJSONObject(i);
 
@@ -69,26 +67,17 @@ public class BestTripRecommenderUtils {
                     String meanSchedule = jsonStopTime.getString("mean.timetable");
                     String lowerScheduleConfidenceInterval = jsonStopTime.getString("previous.timetable");
                     String higherScheduleConfidenceInterval = jsonStopTime.getString("next.timetable");
+                    boolean isFastestTrip = Boolean.parseBoolean(jsonStopTime.getString("is.fastest.trip"));
+                    boolean isEmptiestTrip = Boolean.parseBoolean(jsonStopTime.getString("is.emptiest.trip"));
 
-
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd hh:mm:ss");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
                     Date departure = sdf.parse(date + " " + meanSchedule);
                     Date lowerScheduleConfidenceIntervalDate = sdf.parse(date + " " + lowerScheduleConfidenceInterval);
                     Date higherScheduleConfidenceIntervalDate = sdf.parse(date + " " + higherScheduleConfidenceInterval);
 
                     stopTimes.add(new StopTime(route, busStopId, departure, lowerScheduleConfidenceIntervalDate,
-                            higherScheduleConfidenceIntervalDate, numberOfPassengers, tripDuration));
-
-                    if (tripDuration < stopTimes.get(minTripDuration).getTripDuration()) {
-                        minTripDuration = i;
-                    }
-                    if (numberOfPassengers < stopTimes.get(minNumPassengers).getNumberOfPassengers()) {
-                        minNumPassengers = i;
-                    }
+                            higherScheduleConfidenceIntervalDate, numberOfPassengers, tripDuration, isEmptiestTrip, isFastestTrip));
                 }
-
-                stopTimes.get(minNumPassengers).setBestNumPassengers(true);
-                stopTimes.get(minTripDuration).setBestTripDuration(true);
 
                 return stopTimes;
             } finally{

@@ -49,7 +49,9 @@ public class StopTime implements Comparable<StopTime> {
 
     }
 
-    public StopTime(String routeId, int stopId, Date scheduleMean, Date scheduleBefore, Date scheduleAfter, double numberOfPassengers, double tripDuration) {
+    public StopTime(String routeId, int stopId, Date scheduleMean, Date scheduleBefore, Date scheduleAfter,
+                    double numberOfPassengers, double tripDuration, boolean isBestNumPassengers, boolean isBestTripDuration) {
+
         this.routeId = routeId;
         this.stopId = stopId;
         this.arrivalTime = scheduleMean;
@@ -57,8 +59,8 @@ public class StopTime implements Comparable<StopTime> {
         this.arrivalTimeAfter=scheduleAfter;
         this.numberOfPassengers = numberOfPassengers;
         this.tripDuration = tripDuration;
-        this.isBestNumPassengers = false;
-        this.isBestTripDuration = false;
+        this.isBestNumPassengers = isBestNumPassengers;
+        this.isBestTripDuration = isBestTripDuration;
     }
 
     /**
