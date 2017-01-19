@@ -31,6 +31,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseException;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -79,6 +81,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
     private StopArrayAdapter mAdapterStop;
     private SearchView mSearchView;
     private SimpleMapFragment mapFragment;
+    private MapFragment osmFragment;
 
     private TextView addressField;
 
@@ -118,6 +121,8 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
         super.onResume();
         String screenTitle = getResources().getString(R.string.bus_schedule_title);
         mCallback.onTitleChange(screenTitle);
+        //TODO: colocar a linha abaixo em um lugar melhor.
+        osmFragment.setCenterPoint(new GeoPoint(-7.236425, -35.896936));
 
         if (((MelhorBusaoActivity) getActivity()).isLocationEnabled()) {
             Log.d(TAG, "Ativou o gps");
@@ -164,8 +169,10 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_search_schedule, container, false);
+        osmFragment = new MapFragment();
 
-        getChildFragmentManager().beginTransaction().replace(R.id.melior_map_fragment, mapFragment).commit();
+        getChildFragmentManager().beginTransaction().replace(R.id.melior_map_fragment, osmFragment).commit();
+
 
         routesSpinner = (Spinner) mView.findViewById(R.id.take_bus_routes_spinner);
         routesSpinner.setOnItemSelectedListener(this);
@@ -193,7 +200,6 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
         takeBusButton.setBackgroundColor(Color.parseColor("#DCDCDC"));
 //        takeBusButton.setBackgroundColor(getResources().getColor(R.color.white_gray));
         takeBusButton.setOnClickListener(this);
-
         return mView;
     }
 

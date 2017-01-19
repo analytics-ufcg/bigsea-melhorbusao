@@ -1,1 +1,1 @@
-include ':mobile'
+include ':mobile', ':osmdroid-android-4.2', ':slf4j-android-1.6.1-RC1', ':osmbonuspack_v5.1'
