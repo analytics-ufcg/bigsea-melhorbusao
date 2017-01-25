@@ -121,8 +121,6 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
         super.onResume();
         String screenTitle = getResources().getString(R.string.bus_schedule_title);
         mCallback.onTitleChange(screenTitle);
-        //TODO: colocar a linha abaixo em um lugar melhor.
-        osmFragment.setCenterPoint(new GeoPoint(-7.236425, -35.896936));
 
         if (((MelhorBusaoActivity) getActivity()).isLocationEnabled()) {
             Log.d(TAG, "Ativou o gps");

@@ -130,7 +130,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_melior_busao);
 
-
         topBusFragment = TopBusFragment.getInstance();
         nearStopsFragment = NearStopsFragment.getInstance();
         mapRouteFragment = MapRouteFragment.getInstance();
