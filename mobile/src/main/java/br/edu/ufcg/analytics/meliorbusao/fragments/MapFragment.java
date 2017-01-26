@@ -42,7 +42,6 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private AddressResultReceiver mResultReceiver;
-
     private OnMapInformationReadyListener mMapListener;
 
     public MapFragment() {
@@ -150,6 +149,9 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         GeoPoint actualLocation = new GeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         addMarker(actualLocation);
         startIntentService();
+        if (mMapListener != null) {
+            mMapListener.onMapLocationAvailable(mLastLocation);
+        }
     }
 
     @Override

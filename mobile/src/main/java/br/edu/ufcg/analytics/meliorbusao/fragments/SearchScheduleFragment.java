@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -64,9 +63,9 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
     private static SearchScheduleFragment instance;
     ArrayList<StopHeadsign> paradasDisponiveis;
     private OnTakeBusSelectedListener mCallback;
-    private Location mLocation;
+
     private View mView;
-    private ArrayList<Route> rotas;
+
     private Route selectedRoute;
     private LocationCallback locationCallback;
     private GoogleApiClient mGoogleApiClient;
@@ -75,7 +74,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
     private Spinner stopsSpinner;
     private Spinner routesSpinner;
     private HashSet<Stop> paradasDaRota;
-    private ArrayList<NearStop> paradasProximas;
+
     private RouteArrayAdapter mAdapter;
     private StopArrayAdapter mAdapterStop;
     private SearchView mSearchView;
@@ -83,6 +82,9 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
     private MapFragment osmFragment;
 
     private TextView addressField;
+    private Location mLocation;
+    private Set<NearStop> nearbyStops;
+    private ArrayList<Route> nearbyRoutes;
 
     private Menu mMenu;
 
@@ -125,7 +127,6 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
         if (((MelhorBusaoActivity) getActivity()).isLocationEnabled()) {
             Log.d(TAG, "Ativou o gps");
             requestLocationUpdates();
-            setRouteAdapter();
         } else {
             ((MelhorBusaoActivity) getActivity()).buildAlertMessageNoGps();
         }
@@ -211,16 +212,13 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
      * Muda o adpater de Rotas de acordo com a localização atual do usuario
      */
     protected void setRouteAdapter() {
-        getNearRoutes();
-        Collections.sort(rotas);
-
-        Boolean existRoute = false;
+        Collections.sort(nearbyRoutes);
 
         if (selectedRouteName != null) {
 
-            if (rotas.contains(selectedRoute)) {
-                for (int i = 0; i < rotas.size(); i++) {
-                    if (rotas.get(i).getShortName().equals(selectedRouteName.getShortName())) {
+            if (nearbyRoutes.contains(selectedRoute)) {
+                for (int i = 0; i < nearbyRoutes.size(); i++) {
+                    if (nearbyRoutes.get(i).getShortName().equals(selectedRouteName.getShortName())) {
                         final int finalI = i;
                         routesSpinner.post(new Runnable() {
                             @Override
@@ -235,13 +233,17 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
                 Toast.makeText(getContext(), "O ônibus escolhido não passa nesta área.", Toast.LENGTH_LONG).show();
             }
         }
-        mAdapter = new RouteArrayAdapter(getActivity(), rotas);
+        mAdapter = new RouteArrayAdapter(getActivity(), nearbyRoutes);
         routesSpinner.setAdapter(mAdapter);
+    }
+
+    private void routeSpinnerHandler() {
+
     }
 
 
     /**
-     * A lista de paradas - próximas à localização atual - das rotas é preenchida de acordo com a rota selecionada
+     * A lista de paradas - próximas à localização atual - das nearbyRoutes é preenchida de acordo com a rota selecionada
      *
      * @param parent
      * @param view
@@ -251,18 +253,18 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        selectedRoute = rotas.get(position);
+        selectedRoute = nearbyRoutes.get(position);
 
         paradasDaRota = DBUtils.getParadasRota(getContext(), selectedRoute);
 
         if (mapFragment != null) {
 
-            paradasProximas = new ArrayList<NearStop>(DBUtils.getNearStops(getContext(),
+            nearbyStops = new TreeSet<NearStop>(DBUtils.getNearStops(getContext(),
                     mapFragment.getLat(), mapFragment.getLon(), Constants.NEAR_STOPS_RADIUS, null));
 
             paradasDisponiveis = new ArrayList<>();
 
-            for (NearStop nearStop : paradasProximas) {
+            for (NearStop nearStop : nearbyStops) {
                 if (paradasDaRota.contains(nearStop)) {
                     ParseUtils.getStopTime(getContext(), selectedRoute, nearStop, this);
                 }
@@ -272,7 +274,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
     }
 
     /**
-     * OnClick do DropDown de rotas
+     * OnClick do DropDown de nearbyRoutes
      *
      * @param v
      */
@@ -309,7 +311,6 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
         } else {
             mLocation = lastLocation;
             Log.d(TAG, "aqui ja tem a localização" + mLocation);
-            setRouteAdapter();
         }
     }
 
@@ -361,35 +362,19 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
         return mLocation;
     }
 
-    /**
-     * Verifica se existe conexão com gps
-     */
-    /*private boolean checkGps() {
-        LocationManager locationManager =
-                (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-        if (((MelhorBusaoActivity) getActivity()).isLocationEnabled()) {
-            return true;
-        }
-        return false;
-    }*/
 
+    // VERIFICADO
     /**
-     * Seleciona as rotas que passam nas paradas próximas.
+     * Seleciona as nearbyRoutes que passam nas paradas próximas.
      *
-     * @return Um conjunto de rotas próximas.
+     * @return Um conjunto de nearbyRoutes próximas.
      */
-    public void getNearRoutes() {
-        if (mapFragment != null) {
-            paradasProximas = new ArrayList<NearStop>(DBUtils.getNearStops(getContext(),
-                    mapFragment.getLat(), mapFragment.getLon(), Constants.NEAR_STOPS_RADIUS, null));
-
-            Set<Route> availableRoutes = StopRouteUtils.getRoutesFromStops(new TreeSet<NearStop>(paradasProximas));
-            rotas = new ArrayList<Route>(availableRoutes);
-
-        } else {
-            rotas = new ArrayList<Route>();
-        }
+    public void getNearbyRoutes(Location location) {
+            nearbyStops = new TreeSet<>(DBUtils.getNearStops(getContext(),
+                    location.getLatitude(), location.getLongitude(), Constants.NEAR_STOPS_RADIUS, null));
+            Set<Route> availableRoutes = StopRouteUtils.getRoutesFromStops(new TreeSet<NearStop>(nearbyStops));
+            nearbyRoutes = new ArrayList<Route>(availableRoutes);
     }
 
     @Override
@@ -469,6 +454,13 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
     @Override
     public void onMapAddressFetched(String mapAddres) {
         addressField.setText(mapAddres);
+    }
+
+    @Override
+    public void onMapLocationAvailable(Location mapLocation) {
+        this.mLocation = mapLocation;
+        getNearbyRoutes(mapLocation);
+        setRouteAdapter();
     }
 
     @Override
