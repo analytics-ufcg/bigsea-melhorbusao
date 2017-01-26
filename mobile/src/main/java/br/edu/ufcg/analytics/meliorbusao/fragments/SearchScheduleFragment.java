@@ -31,8 +31,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseException;
 
-import org.osmdroid.util.GeoPoint;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -49,6 +47,7 @@ import br.edu.ufcg.analytics.meliorbusao.adapters.RouteArrayAdapter;
 import br.edu.ufcg.analytics.meliorbusao.adapters.StopArrayAdapter;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
+import br.edu.ufcg.analytics.meliorbusao.listeners.OnMapInformationReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnStopTimesReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.models.NearStop;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
@@ -59,7 +58,7 @@ import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
 import br.edu.ufcg.analytics.meliorbusao.utils.StopRouteUtils;
 
 public class SearchScheduleFragment extends Fragment implements AdapterView.OnItemSelectedListener,
-        GoogleApiClient.ConnectionCallbacks, View.OnClickListener, OnStopTimesReadyListener, SearchView.OnQueryTextListener {
+        GoogleApiClient.ConnectionCallbacks, View.OnClickListener, OnStopTimesReadyListener, SearchView.OnQueryTextListener, OnMapInformationReadyListener {
 
     public static final String TAG = "SEARCH_SCHEDULE_FRAG";
     private static SearchScheduleFragment instance;
@@ -92,6 +91,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
 
     /**
      * Returns one instance of SearchScheduleFragment (it guarantees that there is only one SearchScheduleFragment object at the same time)
+     *
      * @return
      */
     public static SearchScheduleFragment getInstance() {
@@ -111,8 +111,8 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
         mGoogleApiClient.registerConnectionCallbacks(this);
         mGoogleApiClient.connect();
 
-        mapFragment = new SimpleMapFragment();
-
+        osmFragment = new MapFragment();
+        osmFragment.setOnMapInformationReadyListener(this);
         setHasOptionsMenu(true);
     }
 
@@ -160,14 +160,14 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
         mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
         mSearchView.setOnQueryTextListener(this);
         mSearchView.setQueryHint(getResources().getString(R.string.search_hint_near_stops));
-        
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_search_schedule, container, false);
-        osmFragment = new MapFragment();
+
 
         getChildFragmentManager().beginTransaction().replace(R.id.melior_map_fragment, osmFragment).commit();
 
@@ -198,9 +198,14 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
         takeBusButton.setBackgroundColor(Color.parseColor("#DCDCDC"));
 //        takeBusButton.setBackgroundColor(getResources().getColor(R.color.white_gray));
         takeBusButton.setOnClickListener(this);
+
+        loadViewComponents();
         return mView;
     }
 
+    private void loadViewComponents() {
+        addressField = (TextView) mView.findViewById(R.id.address_field);
+    }
 
     /**
      * Muda o adpater de Rotas de acordo com a localização atual do usuario
@@ -213,7 +218,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
 
         if (selectedRouteName != null) {
 
-            if (rotas.contains(selectedRoute)){
+            if (rotas.contains(selectedRoute)) {
                 for (int i = 0; i < rotas.size(); i++) {
                     if (rotas.get(i).getShortName().equals(selectedRouteName.getShortName())) {
                         final int finalI = i;
@@ -237,6 +242,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
 
     /**
      * A lista de paradas - próximas à localização atual - das rotas é preenchida de acordo com a rota selecionada
+     *
      * @param parent
      * @param view
      * @param position
@@ -267,6 +273,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
 
     /**
      * OnClick do DropDown de rotas
+     *
      * @param v
      */
     @Override
@@ -392,6 +399,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
 
     /**
      * Muda o adapter de paradas da rota quando a lista com as paradas que vem do banco está pronta
+     *
      * @param stopHeadsignObj
      * @param e
      */
@@ -418,22 +426,17 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
 
     }
 
-    public void setAddress(String address) {
-        addressField = (TextView) mView.findViewById(R.id.address_field);
-        addressField.setText(address);
-    }
-
     @Override
     public void onStopTimesReady(List<StopTime> stopTimes) {
 
     }
 
     public boolean onQueryTextSubmit(String query) {
-        if (!((MelhorBusaoActivity) getActivity()).checkInternetConnection()){
-            Toast.makeText(getContext(),R.string.msg_search_needs_internet, Toast.LENGTH_LONG).show();
+        if (!((MelhorBusaoActivity) getActivity()).checkInternetConnection()) {
+            Toast.makeText(getContext(), R.string.msg_search_needs_internet, Toast.LENGTH_LONG).show();
             return false;
 
-        }else{
+        } else {
             try {
                 mapFragment.setAddress(query);
                 try {
@@ -463,13 +466,18 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
         return false;
     }
 
-    public interface OnTakeBusSelectedListener extends FragmentTitleChangeListener {
-        void onClickTakeBusButton(StopHeadsign stopHeadsign);
+    @Override
+    public void onMapAddressFetched(String mapAddres) {
+        addressField.setText(mapAddres);
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
         return true;
+    }
+
+    public interface OnTakeBusSelectedListener extends FragmentTitleChangeListener {
+        void onClickTakeBusButton(StopHeadsign stopHeadsign);
     }
 
 }

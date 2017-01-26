@@ -110,6 +110,11 @@
     <string name="msg_failed_detect_location">Não foi possível detectar a localização!</string>
     <string name="msg_failed_locate_search">Não foi possível identificar o local. Revise a busca e tente novamente.</string>
     <string name="msg_no_bus_next_hour">Não há horários para essa parada na próxima hora.</string>
+    <!--Fetch Address Service-->
+    <string name="service_not_available">Serviço indisponível!</string>
+    <string name="invalid_lat_long_used">Coordenadas inválidas!</string>
+    <string name="no_address_found">Nenhum endereço foi encontrado.</string>
+    <string name="address_found">Endereço encontrado!</string>
 
     <!--General-->
     <string name="bus_stop">Parada </string>

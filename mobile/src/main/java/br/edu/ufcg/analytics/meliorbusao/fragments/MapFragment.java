@@ -2,10 +2,13 @@ package br.edu.ufcg.analytics.meliorbusao.fragments;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,8 +27,10 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
 
+import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
-
+import br.edu.ufcg.analytics.meliorbusao.listeners.OnMapInformationReadyListener;
+import br.edu.ufcg.analytics.meliorbusao.services.FetchAddressService;
 
 public class MapFragment extends Fragment implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -36,6 +41,9 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     private LocationManager mLocationManager;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+    private AddressResultReceiver mResultReceiver;
+
+    private OnMapInformationReadyListener mMapListener;
 
     public MapFragment() {
         // Required empty public constructor
@@ -95,6 +103,9 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     public void onStart() {
         mGoogleApiClient.connect();
         super.onStart();
+        if (mGoogleApiClient.isConnected() && mLastLocation != null) {
+            startIntentService();
+        }
     }
 
     @Override
@@ -138,6 +149,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         GeoPoint actualLocation = new GeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         addMarker(actualLocation);
+        startIntentService();
     }
 
     @Override
@@ -153,7 +165,32 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     @Nullable
     public GeoPoint getLocation() {
         IGeoPoint centerPoint = mOpenStreetMap.getMapCenter();
-        mOpenStreetMap.getOverlays().get(0).
         return new GeoPoint(centerPoint.getLatitude(), centerPoint.getLongitude());
+    }
+
+    protected void startIntentService() {
+        mResultReceiver = new AddressResultReceiver(new Handler());
+        Intent intent = new Intent(getContext(), FetchAddressService.class);
+        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
+        getActivity().startService(intent);
+    }
+
+    class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            String addressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+            if (mMapListener != null) {
+                mMapListener.onMapAddressFetched(addressOutput);
+            }
+        }
+    }
+
+    public void setOnMapInformationReadyListener(OnMapInformationReadyListener mapListener) {
+        this.mMapListener = mapListener;
     }
 }

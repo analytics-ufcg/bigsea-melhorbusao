@@ -14,9 +14,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
-    <!-- battery status and drainage (testfairy)-->
+    <!-- battery status and drainage (testfairy) -->
     <uses-permission android:name="android.permission.BATTERY_STATS" />
-
 
     <application
         android:name=".MeliorBusaoApplication"
@@ -33,10 +32,9 @@
         <meta-data
             android:name="com.parse.CLIENT_KEY"
             android:value="@string/PARSE_CLIENT_KEY" />
-
-        <service
-            android:name=".services.DetectedActivitiesIntentService"
-            android:exported="false" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
         <receiver
             android:name=".receivers.BootCompletedReceiver"
@@ -47,46 +45,43 @@
         </receiver>
 
         <service
+            android:name=".services.DetectedActivitiesIntentService"
+            android:exported="false" />
+        <service
             android:name=".services.LocationService"
             android:exported="false" />
-
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+        <service
+            android:name=".services.FetchAddressService"
+            android:exported="false"/>
 
         <activity
             android:name=".activities.MelhorSplashActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop">
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activities.MelhorBusaoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop"></activity>
-
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.RatingBusaoActivity"
             android:label="@string/title_activity_rating_busao"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop"></activity>
-
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.MelhorLoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop">
-
-        </activity>
-
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

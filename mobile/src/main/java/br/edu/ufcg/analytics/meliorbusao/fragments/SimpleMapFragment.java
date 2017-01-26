@@ -128,7 +128,6 @@ public class SimpleMapFragment extends MeliorMapFragment implements GoogleMap.On
 
     private void putAddressName() {
         setAddressName(getLat(), getLon());
-        ((SearchScheduleFragment) getParentFragment()).setAddress(getAddress());
     }
 
 }
