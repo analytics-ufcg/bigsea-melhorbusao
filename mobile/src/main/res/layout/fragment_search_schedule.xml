@@ -34,8 +34,7 @@
                 android:layout_marginTop="13dp"
                 android:textStyle="bold"
                 android:textSize="12sp"
-                android:textColor="@color/primary_text_color"
-                android:text="R. Endereço, numero - Bairro"/>
+                android:textColor="@color/primary_text_color" />
 
             <FrameLayout
                 android:id="@+id/melior_map_fragment"

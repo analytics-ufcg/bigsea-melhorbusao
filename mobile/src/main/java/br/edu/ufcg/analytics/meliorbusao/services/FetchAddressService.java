@@ -1,16 +1,15 @@
 package br.edu.ufcg.analytics.meliorbusao.services;
 
 import android.app.IntentService;
-import android.app.Service;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.text.TextUtils;
 import android.util.Log;
+
+import org.osmdroid.util.GeoPoint;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,15 +38,15 @@ public class FetchAddressService extends IntentService {
         String errorMessage = "";
 
         // Get the location passed to this service through an extra.
-        Location location = intent.getParcelableExtra(Constants.LOCATION_DATA_EXTRA);
+        GeoPoint mGeoPoint = intent.getParcelableExtra(Constants.GEOPOINT_DATA_EXTRA);
         mReceiver = intent.getParcelableExtra(Constants.RECEIVER);
 
         List<Address> addresses = null;
 
         try {
             addresses = geocoder.getFromLocation(
-                    location.getLatitude(),
-                    location.getLongitude(),
+                    mGeoPoint.getLatitude(),
+                    mGeoPoint.getLongitude(),
                     // In this sample, get just a single address.
                     1);
         } catch (IOException ioException) {
@@ -57,8 +56,8 @@ public class FetchAddressService extends IntentService {
         } catch (IllegalArgumentException illegalArgumentException) {
             // Catch invalid latitude or longitude values.
             errorMessage = getString(R.string.invalid_lat_long_used);
-            Log.e(TAG, errorMessage + ". " + "Latitude = " + location.getLatitude() +
-                    ", Longitude = " + location.getLongitude(), illegalArgumentException);
+            Log.e(TAG, errorMessage + ". " + "Latitude = " + mGeoPoint.getLatitude() +
+                    ", Longitude = " + mGeoPoint.getLongitude(), illegalArgumentException);
         }
 
         // Handle case where no address was found.

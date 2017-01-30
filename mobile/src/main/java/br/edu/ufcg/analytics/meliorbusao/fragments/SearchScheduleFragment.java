@@ -30,6 +30,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseException;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -78,7 +80,6 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
     private RouteArrayAdapter mAdapter;
     private StopArrayAdapter mAdapterStop;
     private SearchView mSearchView;
-    private SimpleMapFragment mapFragment;
     private MapFragment osmFragment;
 
     private TextView addressField;
@@ -257,10 +258,9 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
 
         paradasDaRota = DBUtils.getParadasRota(getContext(), selectedRoute);
 
-        if (mapFragment != null) {
-
+        if (osmFragment != null) {
             nearbyStops = new TreeSet<NearStop>(DBUtils.getNearStops(getContext(),
-                    mapFragment.getLat(), mapFragment.getLon(), Constants.NEAR_STOPS_RADIUS, null));
+                    mLocation.getLatitude(), mLocation.getLongitude(), Constants.NEAR_STOPS_RADIUS, null));
 
             paradasDisponiveis = new ArrayList<>();
 
@@ -370,9 +370,9 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
      *
      * @return Um conjunto de nearbyRoutes próximas.
      */
-    public void getNearbyRoutes(Location location) {
+    public void getNearbyRoutes(double latitude, double longitude) {
             nearbyStops = new TreeSet<>(DBUtils.getNearStops(getContext(),
-                    location.getLatitude(), location.getLongitude(), Constants.NEAR_STOPS_RADIUS, null));
+                    latitude, longitude, Constants.NEAR_STOPS_RADIUS, null));
             Set<Route> availableRoutes = StopRouteUtils.getRoutesFromStops(new TreeSet<NearStop>(nearbyStops));
             nearbyRoutes = new ArrayList<Route>(availableRoutes);
     }
@@ -417,37 +417,37 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
     }
 
     public boolean onQueryTextSubmit(String query) {
-        if (!((MelhorBusaoActivity) getActivity()).checkInternetConnection()) {
-            Toast.makeText(getContext(), R.string.msg_search_needs_internet, Toast.LENGTH_LONG).show();
-            return false;
-
-        } else {
-            try {
-                mapFragment.setAddress(query);
-                try {
-                    Geocoder geocoder;
-                    geocoder = new Geocoder(getContext(), Locale.getDefault());
-                    LatLng point = new LatLng(geocoder.getFromLocationName(mapFragment.getAddress() + "," + Constants.CITY, 1).get(0).getLatitude(),
-                            geocoder.getFromLocationName(mapFragment.getAddress() + "," + Constants.CITY, 1).get(0).getLongitude());
-                    List<Address> addresses;
-                    addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
-                    if (addresses.get(0).getLocality().compareTo(Constants.CITY) == 0) {
-                        mapFragment.updateMark(point);
-                        mMenu.findItem(R.id.action_search).collapseActionView();
-                        return true;
-                    } else {
-                        Toast.makeText(getActivity(), R.string.msg_failed_locate_search, Toast.LENGTH_LONG).show();
-                    }
-                } catch (Exception e) {
-                    Log.e("NearStopsFragment", e.getMessage());
-                    Toast.makeText(getActivity(), R.string.address_not_found_toast, Toast.LENGTH_LONG).show();
-                }
-
-            } catch (Exception e) {
-                Log.e("NearStopsFragment", R.string.address_not_found_toast + e.getMessage());
-                Toast.makeText(getActivity(), R.string.address_not_found_toast, Toast.LENGTH_LONG).show();
-            }
-        }
+//        if (!((MelhorBusaoActivity) getActivity()).checkInternetConnection()) {
+//            Toast.makeText(getContext(), R.string.msg_search_needs_internet, Toast.LENGTH_LONG).show();
+//            return false;
+//
+//        } else {
+//            try {
+//                mapFragment.setAddress(query);
+//                try {
+//                    Geocoder geocoder;
+//                    geocoder = new Geocoder(getContext(), Locale.getDefault());
+//                    LatLng point = new LatLng(geocoder.getFromLocationName(mapFragment.getAddress() + "," + Constants.CITY, 1).get(0).getLatitude(),
+//                            geocoder.getFromLocationName(mapFragment.getAddress() + "," + Constants.CITY, 1).get(0).getLongitude());
+//                    List<Address> addresses;
+//                    addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
+//                    if (addresses.get(0).getLocality().compareTo(Constants.CITY) == 0) {
+//                        mapFragment.updateMark(point);
+//                        mMenu.findItem(R.id.action_search).collapseActionView();
+//                        return true;
+//                    } else {
+//                        Toast.makeText(getActivity(), R.string.msg_failed_locate_search, Toast.LENGTH_LONG).show();
+//                    }
+//                } catch (Exception e) {
+//                    Log.e("NearStopsFragment", e.getMessage());
+//                    Toast.makeText(getActivity(), R.string.address_not_found_toast, Toast.LENGTH_LONG).show();
+//                }
+//
+//            } catch (Exception e) {
+//                Log.e("NearStopsFragment", R.string.address_not_found_toast + e.getMessage());
+//                Toast.makeText(getActivity(), R.string.address_not_found_toast, Toast.LENGTH_LONG).show();
+//            }
+//        }
         return false;
     }
 
@@ -459,7 +459,13 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
     @Override
     public void onMapLocationAvailable(Location mapLocation) {
         this.mLocation = mapLocation;
-        getNearbyRoutes(mapLocation);
+        getNearbyRoutes(mapLocation.getLatitude(), mapLocation.getLongitude());
+        setRouteAdapter();
+    }
+
+    @Override
+    public void onMapClick(GeoPoint geoPoint) {
+        getNearbyRoutes(geoPoint.getLatitude(), geoPoint.getLongitude());
         setRouteAdapter();
     }
 
