@@ -32,8 +32,6 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.Projection;
 import org.osmdroid.views.overlay.Overlay;
 
-import java.io.Serializable;
-
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnMapInformationReadyListener;
@@ -130,6 +128,11 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         mOpenStreetMap.invalidate();
 
         mMapController.animateTo(center);
+    }
+
+    public void updateMarker(GeoPoint geoPoint) {
+        addMarker(geoPoint);
+        startIntentService(geoPoint);
     }
 
     @Override

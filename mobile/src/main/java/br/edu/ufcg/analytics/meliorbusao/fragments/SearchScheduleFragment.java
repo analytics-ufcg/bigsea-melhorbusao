@@ -5,8 +5,8 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -363,18 +363,18 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
     }
 
 
-
     // VERIFICADO
+
     /**
      * Seleciona as nearbyRoutes que passam nas paradas próximas.
      *
      * @return Um conjunto de nearbyRoutes próximas.
      */
     public void getNearbyRoutes(double latitude, double longitude) {
-            nearbyStops = new TreeSet<>(DBUtils.getNearStops(getContext(),
-                    latitude, longitude, Constants.NEAR_STOPS_RADIUS, null));
-            Set<Route> availableRoutes = StopRouteUtils.getRoutesFromStops(new TreeSet<NearStop>(nearbyStops));
-            nearbyRoutes = new ArrayList<Route>(availableRoutes);
+        nearbyStops = new TreeSet<>(DBUtils.getNearStops(getContext(),
+                latitude, longitude, Constants.NEAR_STOPS_RADIUS, null));
+        Set<Route> availableRoutes = StopRouteUtils.getRoutesFromStops(new TreeSet<NearStop>(nearbyStops));
+        nearbyRoutes = new ArrayList<Route>(availableRoutes);
     }
 
     @Override
@@ -417,37 +417,30 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
     }
 
     public boolean onQueryTextSubmit(String query) {
-//        if (!((MelhorBusaoActivity) getActivity()).checkInternetConnection()) {
-//            Toast.makeText(getContext(), R.string.msg_search_needs_internet, Toast.LENGTH_LONG).show();
-//            return false;
-//
-//        } else {
-//            try {
-//                mapFragment.setAddress(query);
-//                try {
-//                    Geocoder geocoder;
-//                    geocoder = new Geocoder(getContext(), Locale.getDefault());
-//                    LatLng point = new LatLng(geocoder.getFromLocationName(mapFragment.getAddress() + "," + Constants.CITY, 1).get(0).getLatitude(),
-//                            geocoder.getFromLocationName(mapFragment.getAddress() + "," + Constants.CITY, 1).get(0).getLongitude());
-//                    List<Address> addresses;
-//                    addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
-//                    if (addresses.get(0).getLocality().compareTo(Constants.CITY) == 0) {
-//                        mapFragment.updateMark(point);
-//                        mMenu.findItem(R.id.action_search).collapseActionView();
-//                        return true;
-//                    } else {
-//                        Toast.makeText(getActivity(), R.string.msg_failed_locate_search, Toast.LENGTH_LONG).show();
-//                    }
-//                } catch (Exception e) {
-//                    Log.e("NearStopsFragment", e.getMessage());
-//                    Toast.makeText(getActivity(), R.string.address_not_found_toast, Toast.LENGTH_LONG).show();
-//                }
-//
-//            } catch (Exception e) {
-//                Log.e("NearStopsFragment", R.string.address_not_found_toast + e.getMessage());
-//                Toast.makeText(getActivity(), R.string.address_not_found_toast, Toast.LENGTH_LONG).show();
-//            }
-//        }
+        if (!((MelhorBusaoActivity) getActivity()).checkInternetConnection()) {
+            Toast.makeText(getContext(), R.string.msg_search_needs_internet, Toast.LENGTH_LONG).show();
+            return false;
+
+        } else {
+            try {
+                Geocoder geocoder;
+                geocoder = new Geocoder(getContext(), Locale.getDefault());
+                LatLng point = new LatLng(geocoder.getFromLocationName(query + "," + Constants.CITY, 1).get(0).getLatitude(),
+                        geocoder.getFromLocationName(query + "," + Constants.CITY, 1).get(0).getLongitude());
+                List<Address> addresses;
+                addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
+                if (addresses.get(0).getLocality().compareTo(Constants.CITY) == 0) {
+                    osmFragment.updateMarker(new GeoPoint(point.latitude, point.longitude));
+                    mMenu.findItem(R.id.action_search).collapseActionView();
+                    return true;
+                } else {
+                    Toast.makeText(getActivity(), R.string.msg_failed_locate_search, Toast.LENGTH_LONG).show();
+                }
+            } catch (Exception e) {
+                Log.e("NearStopsFragment", e.getMessage());
+                Toast.makeText(getActivity(), R.string.address_not_found_toast, Toast.LENGTH_LONG).show();
+            }
+        }
         return false;
     }
 
