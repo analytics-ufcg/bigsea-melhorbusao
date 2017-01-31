@@ -77,7 +77,6 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         mMapController.setZoom(MAP_ZOOM_LEVEL);
 
         buildGoogleApiClient();
-
         return mainView;
     }
 
@@ -91,7 +90,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         }
     }
 
-    private void addMarker(GeoPoint center) {
+    private void addLocationMarker(GeoPoint center) {
         Marker marker = new Marker(mOpenStreetMap);
         marker.setPosition(center);
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
@@ -130,8 +129,17 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         mMapController.animateTo(center);
     }
 
+    public Marker addMarker(GeoPoint markerPoint) {
+        Marker marker = new Marker(mOpenStreetMap);
+        marker.setPosition(markerPoint);
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        mOpenStreetMap.getOverlays().add(marker);
+        mOpenStreetMap.invalidate();
+        return marker;
+    }
+
     public void updateMarker(GeoPoint geoPoint) {
-        addMarker(geoPoint);
+        addLocationMarker(geoPoint);
         startIntentService(geoPoint);
     }
 
@@ -155,7 +163,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     public void onLocationChanged(Location location) {
         GeoPoint newCenter = new GeoPoint(location.getLatitude(), location.getLongitude());
         mMapController.animateTo(newCenter);
-        addMarker(newCenter);
+        addLocationMarker(newCenter);
     }
 
     @Override
@@ -185,7 +193,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     public void onConnected(@Nullable Bundle bundle) {
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         GeoPoint actualLocation = new GeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        addMarker(actualLocation);
+        addLocationMarker(actualLocation);
         startIntentService(actualLocation);
         if (mMapListener != null) {
             mMapListener.onMapLocationAvailable(mLastLocation);
@@ -249,7 +257,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         public boolean onSingleTapConfirmed(MotionEvent e, MapView mapView) {
             Projection mProjection = mOpenStreetMap.getProjection();
             GeoPoint geoPoint = (GeoPoint) mProjection.fromPixels((int) e.getX(), (int) e.getY());
-            addMarker(geoPoint);
+            addLocationMarker(geoPoint);
             startIntentService(geoPoint);
             if (mMapListener != null) {
                 mMapListener.onMapClick(geoPoint);

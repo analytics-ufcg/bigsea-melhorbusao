@@ -6,6 +6,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
@@ -31,6 +32,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 
+import org.osmdroid.util.GeoPoint;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -41,6 +44,7 @@ import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.activities.MelhorBusaoActivity;
 import br.edu.ufcg.analytics.meliorbusao.adapters.StopInfoAdapter;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
+import br.edu.ufcg.analytics.meliorbusao.listeners.OnMapInformationReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnMeliorBusaoQueryListener;
 import br.edu.ufcg.analytics.meliorbusao.models.NearStop;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
@@ -50,9 +54,9 @@ import br.edu.ufcg.analytics.meliorbusao.utils.ProgressUtils;
 import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
 
 
-public class NearStopsFragment extends MeliorMapFragment implements
+public class NearStopsFragment extends Fragment implements
         GoogleMap.OnInfoWindowClickListener, OnMeliorBusaoQueryListener,
-        SearchView.OnQueryTextListener, GoogleMap.OnMapClickListener {
+        SearchView.OnQueryTextListener, GoogleMap.OnMapClickListener, OnMapInformationReadyListener {
 
     private static NearStopsFragment instance;
 
@@ -60,6 +64,7 @@ public class NearStopsFragment extends MeliorMapFragment implements
     private FloatingActionButton mReloadButton;
     private Menu mMenu;
     private SearchView mSearchView;
+    private MapFragment mMapFragment;
 
     private final double raio = 500;
 
@@ -84,6 +89,14 @@ public class NearStopsFragment extends MeliorMapFragment implements
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mMapFragment = new MapFragment();
+        mMapFragment.setOnMapInformationReadyListener(this);
+    }
+
+    @Override
     public void onInfoWindowClick(Marker marker) {
         String[] routes = marker.getSnippet().split(",");
         //ArrayList<SumarioRota> listSummaryRoutesThisMarker = new ArrayList<SumarioRota>();
@@ -105,72 +118,24 @@ public class NearStopsFragment extends MeliorMapFragment implements
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        FrameLayout viewMain = (FrameLayout) super.onCreateView(inflater, container, savedInstanceState);
+        View mView = inflater.inflate(R.layout.fragment_near_stops, container, false);
+        getChildFragmentManager().beginTransaction().replace(R.id.near_stops_map_fragment, mMapFragment).commit();
 
         progressSpinner = ProgressUtils.buildProgressBar(getContext());
 
-        getMap().setOnMapClickListener(this);
-        getMap().setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-
-            @Override
-            public boolean onMyLocationButtonClick() {
-                if (((MelhorBusaoActivity) getActivity()).isLocationEnabled()) {
-                    requestLocationUpdates();
-                    Snackbar.make(getView(), R.string.reload_location, Snackbar.LENGTH_LONG).show();
-                } else {
-                    ((MelhorBusaoActivity) getActivity()).buildAlertMessageNoGps();
-                }
-                return true;
-            }
-        });
-//        getMap().setOnMapLongClickListener(this);
-
-        //Enable Options Menu handling
         setHasOptionsMenu(true);
 
-        return viewMain;
+        return mView;
     }
 
-    private void setUpMap() {
-        getMap().clear();
-        getMap().setMyLocationEnabled(true);
-        getMap().animateCamera(getCameraUpdate());
-        getMap().addCircle(getCircleOptions());
-        inicializarParadas();
-        StopInfoAdapter stopInfo = new StopInfoAdapter();
-        stopInfo.setActivity(getActivity());
-        getMap().setInfoWindowAdapter(stopInfo);
-        getMap().setOnInfoWindowClickListener(this);
 
-        progressSpinner.setVisibility(View.GONE);
-    }
 
-    @Override
-    public void onMeliorLocationAvaliable(Location result) {
-        super.onMeliorLocationAvaliable(result);
-
-        setUpMap();
-    }
-
-    private CameraUpdate getCameraUpdate(LatLng point) {
-        return CameraUpdateFactory.newLatLngZoom(new LatLng(point.latitude, point.longitude), 15.5f);
-    }
-
-    private CircleOptions getCircleOptions() {
-        CircleOptions circleOptions = new CircleOptions();
-        circleOptions.radius(raio);
-        circleOptions.fillColor(ContextCompat.getColor(getContext(), R.color.nearStopsAreaFill));
-        circleOptions.strokeColor(ContextCompat.getColor(getContext(), R.color.nearStopsAreaStroke));
-        circleOptions.strokeWidth(3);
-        circleOptions.center(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
-        return circleOptions;
-    }
-
-    private void inicializarParadas() {
-        TreeSet<NearStop> paradas = DBUtils.getNearStops(getContext(), mLastLocation.getLatitude(),
-                mLastLocation.getLongitude(), raio, null);
+    private void loadNearStops(Location location) {
+        TreeSet<NearStop> paradas = DBUtils.getNearStops(getContext(), location.getLatitude(),
+                location.getLongitude(), raio, null);
         for (NearStop parada : paradas) {
-            getMap().addMarker(getMarkerOptionsFromStop(parada, getStopBitmap()));
+            org.osmdroid.bonuspack.overlays.Marker stopMarker = mMapFragment.addMarker(new GeoPoint(parada.getLatitude(), parada.getLongitude()));
+            stopMarker.setIcon(getResources().getDrawable(R.drawable.ic_bus_stop));
         }
     }
 
@@ -178,7 +143,7 @@ public class NearStopsFragment extends MeliorMapFragment implements
         TreeSet<NearStop> paradas = DBUtils.getNearStops(getContext(), point.latitude,
                 point.longitude, raio, null);
         for (NearStop parada : paradas) {
-            getMap().addMarker(getMarkerOptionsFromStop(parada, getStopBitmap()));
+//            getMap().addMarker(getMarkerOptionsFromStop(parada, getStopBitmap()));
         }
     }
 
@@ -204,12 +169,12 @@ public class NearStopsFragment extends MeliorMapFragment implements
     }
 
     private void updateNearStops(LatLng point) {
-        getMap().clear();
-        getMap().animateCamera(getCameraUpdate(point));
-        getMap().addCircle(getCircleOptions(point));
-
-        getMap().addMarker(new MarkerOptions().position(point).title(
-                getAddress()));
+//        getMap().clear();
+//        getMap().animateCamera(getCameraUpdate(point));
+//        getMap().addCircle(getCircleOptions(point));
+//
+//        getMap().addMarker(new MarkerOptions().position(point).title(
+//                getAddress()));
         inicializarParadas(point);
         progressSpinner.setVisibility(View.GONE);
     }
@@ -264,6 +229,21 @@ public class NearStopsFragment extends MeliorMapFragment implements
             Toast.makeText(getActivity(), getString(R.string.msg_failed_detect_location), Toast.LENGTH_SHORT).show();
         }
         return false;
+    }
+
+    @Override
+    public void onMapAddressFetched(String mapAddres) {
+
+    }
+
+    @Override
+    public void onMapLocationAvailable(Location mapLocation) {
+        loadNearStops(mapLocation);
+    }
+
+    @Override
+    public void onMapClick(GeoPoint geoPoint) {
+
     }
 
     public interface OnNearStopsSelectedListener extends FragmentTitleChangeListener {
@@ -348,7 +328,7 @@ public class NearStopsFragment extends MeliorMapFragment implements
 
     private BitmapDescriptor getStopBitmap() {
         if (mParadaBitmap == null) {
-            mParadaBitmap = getBitmapDescriptor(R.drawable.ic_parada, 52, 40);
+//            mParadaBitmap = getBitmapDescriptor(R.drawable.ic_parada, 52, 40);
         }
         return mParadaBitmap;
     }
