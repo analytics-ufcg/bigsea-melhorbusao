@@ -430,7 +430,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
                 List<Address> addresses;
                 addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
                 if (addresses.get(0).getLocality().compareTo(Constants.CITY) == 0) {
-                    osmFragment.updateMarker(new GeoPoint(point.latitude, point.longitude));
+                    osmFragment.updatePlaceMarker(new GeoPoint(point.latitude, point.longitude));
                     mMenu.findItem(R.id.action_search).collapseActionView();
                     return true;
                 } else {
