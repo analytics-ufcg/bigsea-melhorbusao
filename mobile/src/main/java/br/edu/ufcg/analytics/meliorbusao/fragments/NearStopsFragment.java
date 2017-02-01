@@ -131,11 +131,11 @@ public class NearStopsFragment extends Fragment implements
 
     /**
      * Add a marker in the map to each bus stop that is located within a certain diameter.
-     * @param location The center of the diameter.
+     * @param centerPoint The center of the diameter.
      */
-    private void loadNearStops(Location location) {
-        TreeSet<NearStop> paradas = DBUtils.getNearStops(getContext(), location.getLatitude(),
-                location.getLongitude(), raio, null);
+    private void loadNearStops(GeoPoint centerPoint) {
+        TreeSet<NearStop> paradas = DBUtils.getNearStops(getContext(), centerPoint.getLatitude(),
+                centerPoint.getLongitude(), raio, null);
         for (NearStop parada : paradas) {
             org.osmdroid.bonuspack.overlays.Marker stopMarker = mMapFragment.addMarker(new GeoPoint(parada.getLatitude(), parada.getLongitude()));
             stopMarker.setIcon(getResources().getDrawable(R.drawable.ic_bus_stop_sign));
@@ -241,11 +241,14 @@ public class NearStopsFragment extends Fragment implements
 
     @Override
     public void onMapLocationAvailable(Location mapLocation) {
-        loadNearStops(mapLocation);
+        loadNearStops(new GeoPoint(mapLocation.getLatitude(), mapLocation.getLongitude()));
     }
 
     @Override
     public void onMapClick(GeoPoint geoPoint) {
+        mMapFragment.clearMap();
+        mMapFragment.updatePlaceMarker(geoPoint);
+        loadNearStops(geoPoint);
 
     }
 
