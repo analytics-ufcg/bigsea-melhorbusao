@@ -37,6 +37,9 @@ import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnMapInformationReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.services.FetchAddressService;
 
+/**
+ * Represents a map and provide some features using Open Street Maps
+ */
 public class MapFragment extends Fragment implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final int MAP_ZOOM_LEVEL = 16;
@@ -46,7 +49,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     private LocationManager mLocationManager;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
-    private Location mLocationPoint;
+    private Marker mPlaceMarker;
     private AddressResultReceiver mResultReceiver;
     private OnMapInformationReadyListener mMapListener;
 
@@ -72,39 +75,33 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         mOpenStreetMap.setTileSource(TileSourceFactory.MAPNIK);
         mOpenStreetMap.setBuiltInZoomControls(true);
         mOpenStreetMap.setMultiTouchControls(true);
+        mOpenStreetMap.getOverlays().add(new MapOverlay(getContext()));
 
         mMapController = (MapController) mOpenStreetMap.getController();
         mMapController.setZoom(MAP_ZOOM_LEVEL);
 
+        initializePlaceMarker();
         buildGoogleApiClient();
+
         return mainView;
     }
 
-    private void buildGoogleApiClient() {
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(getContext())
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
-    }
+    /**
+     * Initialize the place marker and its listeners
+     */
+    private void initializePlaceMarker() {
+        mPlaceMarker = new Marker(mOpenStreetMap);
+        mPlaceMarker.setIcon(getResources().getDrawable(R.drawable.ic_map_marker));
+        mPlaceMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        mPlaceMarker.setDraggable(true);
 
-    private void addLocationMarker(GeoPoint center) {
-        Marker marker = new Marker(mOpenStreetMap);
-        marker.setPosition(center);
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-        marker.setIcon(getResources().getDrawable(R.drawable.ic_map_marker));
-        marker.setDraggable(true);
-
-        marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+        mPlaceMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker, MapView mapView) {
                 return false;
             }
         });
-
-        marker.setOnMarkerDragListener(new Marker.OnMarkerDragListener() {
+        mPlaceMarker.setOnMarkerDragListener(new Marker.OnMarkerDragListener() {
             @Override
             public void onMarkerDrag(Marker marker) {
 
@@ -120,27 +117,49 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
 
             }
         });
-
-        mOpenStreetMap.getOverlays().clear();
-        mOpenStreetMap.getOverlays().add(new MapOverlay(getContext()));
-        mOpenStreetMap.getOverlays().add(marker);
-        mOpenStreetMap.invalidate();
-
-        mMapController.animateTo(center);
     }
 
-    public Marker addMarker(GeoPoint markerPoint) {
+    /**
+     * Call connection for mGoogleApiClient
+     */
+    private void buildGoogleApiClient() {
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+    }
+
+    /**
+     * Updates the place marker by removing it from the map overlays, updating its position and then adding it again.
+     *
+     * @param markerPosition The new position where the marker should be.
+     */
+    public void updatePlaceMarker(GeoPoint markerPosition) {
+        mOpenStreetMap.getOverlays().remove(mPlaceMarker);
+
+        mPlaceMarker.setPosition(markerPosition);
+
+        mOpenStreetMap.getOverlays().add(mPlaceMarker);
+        mOpenStreetMap.invalidate();
+        mMapController.animateTo(markerPosition);
+        startIntentService(markerPosition);
+    }
+
+    /**
+     * Add an Marker object to the map.
+     * @param markerPosition The position of the marker in the map.
+     * @return The marker object that was added to the map.
+     */
+    public Marker addMarker(GeoPoint markerPosition) {
         Marker marker = new Marker(mOpenStreetMap);
-        marker.setPosition(markerPoint);
+        marker.setPosition(markerPosition);
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         mOpenStreetMap.getOverlays().add(marker);
         mOpenStreetMap.invalidate();
         return marker;
-    }
-
-    public void updateMarker(GeoPoint geoPoint) {
-        addLocationMarker(geoPoint);
-        startIntentService(geoPoint);
     }
 
     @Override
@@ -163,7 +182,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     public void onLocationChanged(Location location) {
         GeoPoint newCenter = new GeoPoint(location.getLatitude(), location.getLongitude());
         mMapController.animateTo(newCenter);
-        addLocationMarker(newCenter);
+        updatePlaceMarker(newCenter);
     }
 
     @Override
@@ -193,8 +212,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     public void onConnected(@Nullable Bundle bundle) {
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         GeoPoint actualLocation = new GeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        addLocationMarker(actualLocation);
-        startIntentService(actualLocation);
+        updatePlaceMarker(actualLocation);
         if (mMapListener != null) {
             mMapListener.onMapLocationAvailable(mLastLocation);
         }
@@ -216,6 +234,10 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         return new GeoPoint(centerPoint.getLatitude(), centerPoint.getLongitude());
     }
 
+    /**
+     * Starts a service that fetchs the address corresponding to a geopoint's latitude and longitude.
+     * @param geoPoint The point that holds the coordinates for searching the address.
+     */
     protected void startIntentService(GeoPoint geoPoint) {
         mResultReceiver = new AddressResultReceiver(new Handler());
         Intent intent = new Intent(getContext(), FetchAddressService.class);
@@ -224,10 +246,17 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         getActivity().startService(intent);
     }
 
+    /**
+     * Set the OnMapInformationReadyListener for this map.
+     * @param mapListener the listener that must be set.
+     */
     public void setOnMapInformationReadyListener(OnMapInformationReadyListener mapListener) {
         this.mMapListener = mapListener;
     }
 
+    /**
+     * Handles the results found by the FetchAddressService
+     */
     class AddressResultReceiver extends ResultReceiver {
         public AddressResultReceiver(Handler handler) {
             super(handler);
@@ -242,6 +271,9 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         }
     }
 
+    /**
+     * A map overlay that listens to taps on the map.
+     */
     class MapOverlay extends Overlay {
 
         public MapOverlay(Context ctx) {
@@ -257,8 +289,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         public boolean onSingleTapConfirmed(MotionEvent e, MapView mapView) {
             Projection mProjection = mOpenStreetMap.getProjection();
             GeoPoint geoPoint = (GeoPoint) mProjection.fromPixels((int) e.getX(), (int) e.getY());
-            addLocationMarker(geoPoint);
-            startIntentService(geoPoint);
+            updatePlaceMarker(geoPoint);
             if (mMapListener != null) {
                 mMapListener.onMapClick(geoPoint);
             }
