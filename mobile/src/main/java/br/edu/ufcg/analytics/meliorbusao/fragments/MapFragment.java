@@ -22,8 +22,10 @@ import android.view.ViewGroup;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.osmdroid.api.IGeoPoint;
+import org.osmdroid.api.Polyline;
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
@@ -31,6 +33,9 @@ import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.Projection;
 import org.osmdroid.views.overlay.Overlay;
+import org.osmdroid.views.overlay.PathOverlay;
+
+import java.util.ArrayList;
 
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
@@ -255,6 +260,22 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     }
 
     /**
+     * Draw route
+     * @param pathOverlay
+     */
+
+    public void drawRoute(PathOverlay pathOverlay){
+        mOpenStreetMap.getOverlays().add(pathOverlay);
+    }
+
+    public void clear (){
+        mOpenStreetMap.getOverlays().clear();
+    }
+
+
+
+
+    /**
      * Handles the results found by the FetchAddressService
      */
     class AddressResultReceiver extends ResultReceiver {
@@ -296,4 +317,6 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
             return super.onSingleTapConfirmed(e, mapView);
         }
     }
+
+
 }

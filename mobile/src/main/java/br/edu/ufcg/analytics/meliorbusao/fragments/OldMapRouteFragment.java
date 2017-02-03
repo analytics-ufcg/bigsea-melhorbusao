@@ -203,7 +203,7 @@ public class OldMapRouteFragment  extends MeliorMapFragment implements GoogleMap
             polygonOptions.visible(true);
             Log.d("OldMapRouteFragment", "#" + shape.getColor());
             polygonOptions.color(Color.parseColor("#" + shape.getColor()));
-            polygonOptions.addAll(shape);
+            //polygonOptions.addAll(shape);
             getMap().addPolyline(polygonOptions);
         }
         inicializarParadas(route);
@@ -418,7 +418,7 @@ public class OldMapRouteFragment  extends MeliorMapFragment implements GoogleMap
             if (cameraPosition.zoom >= DEFAULT_ZOOM_THRESHOLD) {
                 if (!isZoomingIn) {
                     for (Marker stopMarker : stopsMarkers) {
-                        stopMarker.setIcon(getBitmapDescriptor(R.drawable.ic_parada, 52, 40));
+                        stopMarker.setIcon(getBitmapDescriptor(R.drawable.ic_bus_stop, 52, 40));
                     }
                 }
                 isZoomingIn = true;

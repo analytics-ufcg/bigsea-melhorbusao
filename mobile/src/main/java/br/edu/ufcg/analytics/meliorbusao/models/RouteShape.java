@@ -2,11 +2,13 @@ package br.edu.ufcg.analytics.meliorbusao.models;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class RouteShape extends ArrayList<LatLng> {
+public class RouteShape extends ArrayList<GeoPoint> {
     private String sub;
     private String routeId;
     private String color;
@@ -125,7 +127,7 @@ public class RouteShape extends ArrayList<LatLng> {
      * @return
      */
     @Override
-    public boolean add(LatLng object) {
+    public boolean add(GeoPoint object) {
         updateEdges(object);
         return super.add(object);
     }
@@ -136,7 +138,7 @@ public class RouteShape extends ArrayList<LatLng> {
      * @param object
      */
     @Override
-    public void add(int index, LatLng object) {
+    public void add(int index, GeoPoint object) {
         updateEdges(object);
         super.add(index, object);
     }
@@ -147,7 +149,7 @@ public class RouteShape extends ArrayList<LatLng> {
      * @return
      */
     @Override
-    public boolean addAll(Collection<? extends LatLng> collection) {
+    public boolean addAll(Collection<? extends GeoPoint> collection) {
         throw new UnsupportedOperationException();
     }
 
@@ -158,7 +160,7 @@ public class RouteShape extends ArrayList<LatLng> {
      * @return
      */
     @Override
-    public boolean addAll(int index, Collection<? extends LatLng> collection) {
+    public boolean addAll(int index, Collection<? extends GeoPoint> collection) {
         throw new UnsupportedOperationException();
     }
 
@@ -181,10 +183,11 @@ public class RouteShape extends ArrayList<LatLng> {
      * atualiza as arestas da rota
      * @param object
      */
-    private void updateEdges(LatLng object) {
-        if (object.latitude > maxLat) maxLat = object.latitude;
-        if (object.latitude < minLat) minLat = object.latitude;
-        if (object.longitude > maxLng) maxLng = object.longitude;
-        if (object.longitude < minLng) minLng = object.longitude;
+    private void updateEdges(GeoPoint object) {
+        if (object.getLatitude() > maxLat) maxLat = object.getLongitude();
+        if (object.getLatitude() < minLat) minLat = object.getLongitude();
+        if (object.getLatitude() > maxLng) maxLng = object.getLongitude();
+        if (object.getLatitude() < minLng) minLng = object.getLongitude();
     }
+
 }

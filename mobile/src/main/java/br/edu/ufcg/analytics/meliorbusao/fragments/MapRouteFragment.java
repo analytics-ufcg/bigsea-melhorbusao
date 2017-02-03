@@ -4,6 +4,7 @@ package br.edu.ufcg.analytics.meliorbusao.fragments;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -37,7 +38,10 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.osmdroid.api.IGeoPoint;
+import org.osmdroid.api.Polyline;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.PathOverlay;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,16 +118,14 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
 
 
 
-        //       progressSpinner = ProgressUtils.buildProgressBar(this.getContext());
-
-//        viewMain.addView(progressSpinner);
+        //progressSpinner = ProgressUtils.buildProgressBar(this.getContext());
+        //viewMain.addView(progressSpinner);
         osmFragment = new MapFragment();
         osmFragment.setOnMapInformationReadyListener(this);
 
         getChildFragmentManager().beginTransaction().replace(R.id.melior_map_fragment, osmFragment).commit();
 
 
-        //getChildFragmentManager().beginTransaction().replace(R.id.melior_map_fragment, osmFragment).commit();
 
 
         //  TODO
@@ -205,7 +207,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
                     mCallback.onTitleChange(buildScreenTitle(route.getShortName()));
-                    //TODO setUpMap(route);
+                    setUpMap(route);
                     return false;
                 }
             });
@@ -214,33 +216,34 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
         bottomSheet.show();
     }
 
-    //TODO
-    /*
+
     private void setUpMap(Route r) {
-        getMap().clear();
+        osmFragment.clear();
         drawRoute(r);
         StopInfoAdapter stopInfo = new StopInfoAdapter();
         stopInfo.setActivity(getActivity());
-        getMap().setInfoWindowAdapter(stopInfo);
-    }*/
 
-    //TODO
-    /*private void drawRoute(Route route) {
+        //getMap().setInfoWindowAdapter(stopInfo);
+    }
+
+    private void drawRoute(Route route) {
         List<RouteShape> shapes = DBUtils.getRouteShape(getContext(), route.getId());
 
-        for (RouteShape shape : shapes) {
-            PolylineOptions polygonOptions = new PolylineOptions();
-            polygonOptions.visible(true);
-            Log.d("MapRouteFragment", "#" + shape.getColor());
-            polygonOptions.color(Color.parseColor("#" + shape.getColor()));
-            polygonOptions.addAll(shape);
-            getMap().addPolyline(polygonOptions);
-        }
+
+    for (RouteShape shape : shapes) {
+        PathOverlay pathOverlay = new PathOverlay(Color.parseColor("#"+ shape.getColor()), getContext());
+        pathOverlay.addPoints((ArrayList) shape);
+        osmFragment.drawRoute(pathOverlay);
+        Paint pPaint = pathOverlay.getPaint();
+        pPaint.setStrokeWidth(5);
+        pathOverlay.setPaint(pPaint);
+
+    }
         inicializarParadas(route);
-        getMap().animateCamera(getCameraUpdate(shapes));
+
+        //TODO getMap().animateCamera(getCameraUpdate(shapes));
         progressSpinner.setVisibility(View.GONE);
     }
-    */
 
 
     private void inicializarParadas(Route rota) {
@@ -294,7 +297,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
             mCallback.onTitleChange(buildScreenTitle(routeShortName));
         } else {
             mCallback.onTitleChange(getResources().getString(R.string.map_routes_title));
-            //TODO getMap().clear();
+            osmFragment.clear();
         }
     }
 
@@ -333,7 +336,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
         try {
             Route searchRoute = DBUtils.getRoute(getContext(), query);
             mCallback.onTitleChange(buildScreenTitle(searchRoute.getShortName()));
-            //TODO setUpMap(searchRoute);
+            setUpMap(searchRoute);
             return true;
         } catch (Exception e) {
             Toast.makeText(getActivity(), getString(R.string.msg_unable_to_find_route), Toast.LENGTH_SHORT).show();
@@ -345,7 +348,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
     public boolean onRouteSuggestionClick(Route selectedRoute) {
         try {
             mCallback.onTitleChange(buildScreenTitle(selectedRoute.getShortName()));
-            //TODO setUpMap(selectedRoute);
+            setUpMap(selectedRoute);
             return true;
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -384,7 +387,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
         try {
             Route searchRoute = DBUtils.getRoute(getContext(), query);
             mCallback.onTitleChange(buildScreenTitle(searchRoute.getShortName()));
-            //TODO setUpMap(searchRoute);
+            setUpMap(searchRoute);
             mMenu.findItem(R.id.action_search).collapseActionView();
             return true;
         } catch (Exception e) {
@@ -410,7 +413,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
 
     @Override
     public boolean onSuggestionClick(int position) {
-        progressSpinner.setVisibility(View.VISIBLE);
+        //progressSpinner.setVisibility(View.VISIBLE);
         Cursor c = mSearchView.getSuggestionsAdapter().getCursor();
         Route selectedRoute = new Route(c.getString(0), c.getString(1),
                 c.getString(2), c.getString(3));
