@@ -116,6 +116,7 @@ public class SearchScheduleFragment extends Fragment implements AdapterView.OnIt
 
         osmFragment = new MapFragment();
         osmFragment.setOnMapInformationReadyListener(this);
+        osmFragment.enableFetchAddressService();
         setHasOptionsMenu(true);
     }
 
