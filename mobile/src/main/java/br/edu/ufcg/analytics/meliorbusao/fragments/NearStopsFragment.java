@@ -1,11 +1,9 @@
 package br.edu.ufcg.analytics.meliorbusao.fragments;
 
-import android.content.Context;
+import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -16,22 +14,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-import android.location.Address;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
 
+import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.util.GeoPoint;
 
 import java.util.HashSet;
@@ -42,8 +32,8 @@ import java.util.TreeSet;
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.activities.MelhorBusaoActivity;
-import br.edu.ufcg.analytics.meliorbusao.adapters.StopInfoAdapter;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
+import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnMapInformationReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnMeliorBusaoQueryListener;
 import br.edu.ufcg.analytics.meliorbusao.models.NearStop;
@@ -51,17 +41,11 @@ import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.utils.ProgressUtils;
 
 
-import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
-
-
-public class NearStopsFragment extends Fragment implements
-        GoogleMap.OnInfoWindowClickListener, OnMeliorBusaoQueryListener,
-        SearchView.OnQueryTextListener, GoogleMap.OnMapClickListener, OnMapInformationReadyListener {
+public class NearStopsFragment extends Fragment implements OnMeliorBusaoQueryListener,
+        SearchView.OnQueryTextListener, OnMapInformationReadyListener {
 
     private static NearStopsFragment instance;
 
-    private OnNearStopsSelectedListener mCallback;
-    private FloatingActionButton mReloadButton;
     private Menu mMenu;
     private SearchView mSearchView;
     private MapFragment mMapFragment;
@@ -97,26 +81,6 @@ public class NearStopsFragment extends Fragment implements
     }
 
     @Override
-    public void onInfoWindowClick(Marker marker) {
-        String[] routes = marker.getSnippet().split(",");
-        //ArrayList<SumarioRota> listSummaryRoutesThisMarker = new ArrayList<SumarioRota>();
-        HashSet<Route> hashRoute = new HashSet<Route>();
-
-        for (String route : routes) {
-            String[] routeAux = route.split(";");
-            //SumarioRota summaryRoute = DBUtils.getSumarioRota(getContext(), DBUtils.getRoute(getContext(), routeAux[0]));
-            hashRoute.add(DBUtils.getRoute(getContext(), routeAux[0]));
-            //listSummaryRoutesThisMarker.add(summaryRoute);
-        }
-
-        String stopName = marker.getTitle().substring(marker.getTitle().indexOf(" - ") + 3);
-        if (stopName.substring(0, 1).matches("[0-9]")) {
-            stopName = getString(R.string.bus_stop) + stopName;
-        }
-        mCallback.onClickStopWindowInfo(hashRoute, stopName);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View mView = inflater.inflate(R.layout.fragment_near_stops, container, false);
         getChildFragmentManager().beginTransaction().replace(R.id.near_stops_map_fragment, mMapFragment).commit();
@@ -137,25 +101,11 @@ public class NearStopsFragment extends Fragment implements
         TreeSet<NearStop> paradas = DBUtils.getNearStops(getContext(), centerPoint.getLatitude(),
                 centerPoint.getLongitude(), raio, null);
         for (NearStop parada : paradas) {
-            org.osmdroid.bonuspack.overlays.Marker stopMarker = mMapFragment.addMarker(new GeoPoint(parada.getLatitude(), parada.getLongitude()));
+            Marker stopMarker = mMapFragment.addMarker(new GeoPoint(parada.getLatitude(), parada.getLongitude()));
             stopMarker.setIcon(getResources().getDrawable(R.drawable.ic_bus_stop_sign));
         }
     }
 
-    private void inicializarParadas(LatLng point) {
-        TreeSet<NearStop> paradas = DBUtils.getNearStops(getContext(), point.latitude,
-                point.longitude, raio, null);
-        for (NearStop parada : paradas) {
-//            getMap().addMarker(getMarkerOptionsFromStop(parada, getStopBitmap()));
-        }
-    }
-
-    @Override
-    public void onMapClick(LatLng latLng) {
-        progressSpinner.setVisibility(View.VISIBLE);
-        setAddressName(latLng.latitude, latLng.longitude);
-        updateNearStops(latLng);
-    }
 
     private void setAddressName(double lat, double lon) {
         Geocoder geocoder;
@@ -169,17 +119,6 @@ public class NearStopsFragment extends Fragment implements
         } catch (Exception e) {
             Log.e("Erro address", e.getMessage());
         }
-    }
-
-    private void updateNearStops(LatLng point) {
-//        getMap().clear();
-//        getMap().animateCamera(getCameraUpdate(point));
-//        getMap().addCircle(getCircleOptions(point));
-//
-//        getMap().addMarker(new MarkerOptions().position(point).title(
-//                getAddress()));
-        inicializarParadas(point);
-        progressSpinner.setVisibility(View.GONE);
     }
 
     public String getAddress() {
@@ -218,7 +157,6 @@ public class NearStopsFragment extends Fragment implements
                 addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
                 if (addresses.get(0).getLocality().compareTo(Constants.CITY) == 0) {
                     setAddressName(point.latitude, point.longitude);
-                    updateNearStops(point);
                     return true;
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.msg_unable_to_find_route), Toast.LENGTH_LONG).show();
@@ -249,31 +187,10 @@ public class NearStopsFragment extends Fragment implements
         mMapFragment.clearMap();
         mMapFragment.updatePlaceMarker(geoPoint);
         loadNearStops(geoPoint);
-
     }
 
     public interface OnNearStopsSelectedListener extends FragmentTitleChangeListener {
         void onClickStopWindowInfo(HashSet<Route> routes, String stopName);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            mCallback = (OnNearStopsSelectedListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement OnHeadlineSelectedListener");
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mCallback.onTitleChange(getResources().getString(R.string.near_stops_title));
     }
 
     @Override
@@ -308,7 +225,6 @@ public class NearStopsFragment extends Fragment implements
                     List<Address> addresses;
                     addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
                     if (addresses.get(0).getLocality().compareTo(Constants.CITY) == 0) {
-                        updateNearStops(point);
                         mMenu.findItem(R.id.action_search).collapseActionView();
                         return true;
                     } else {
@@ -329,14 +245,6 @@ public class NearStopsFragment extends Fragment implements
     @Override
     public boolean onQueryTextChange(String newText) {
         return true;
-    }
-
-
-    private BitmapDescriptor getStopBitmap() {
-        if (mParadaBitmap == null) {
-//            mParadaBitmap = getBitmapDescriptor(R.drawable.ic_bus_stop_sign, 52, 40);
-        }
-        return mParadaBitmap;
     }
 
 }
