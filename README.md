@@ -24,6 +24,12 @@ Melhor Busão is an app designed to simplify public transportation users daily l
   <img src="./screenshots/route_map2.png" alt="Drawing" width: "180px" height="300px"/> 
   <img src="./screenshots/bus_schedule.png" alt="Drawing" width: "180px" height="300px"/>
   <img src="./screenshots/bus_stop_times.png" alt="Drawing" width: "180px" height="300px"/>
+  <img src="./screenshots/notification.png" alt="Drawing" width: "180px" height="300px"/>
+  <img src="./screenshots/choose_Route.png" alt="Drawing" width: "180px" height="300px"/>
+  <img src="./screenshots/evaluate.png" alt="Drawing" width: "180px" height="300px"/>
+
+
+  
 </div>
 
 ### Build
