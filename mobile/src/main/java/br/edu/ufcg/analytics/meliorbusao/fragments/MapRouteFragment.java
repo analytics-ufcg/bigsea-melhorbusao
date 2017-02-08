@@ -218,7 +218,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
 
 
     private void setUpMap(Route r) {
-        osmFragment.clear();
+        osmFragment.clearMap();
         drawRoute(r);
         StopInfoAdapter stopInfo = new StopInfoAdapter();
         stopInfo.setActivity(getActivity());
@@ -230,15 +230,16 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
         List<RouteShape> shapes = DBUtils.getRouteShape(getContext(), route.getId());
 
 
-    for (RouteShape shape : shapes) {
-        PathOverlay pathOverlay = new PathOverlay(Color.parseColor("#"+ shape.getColor()), getContext());
-        pathOverlay.addPoints((ArrayList) shape);
-        osmFragment.drawRoute(pathOverlay);
-        Paint pPaint = pathOverlay.getPaint();
-        pPaint.setStrokeWidth(5);
-        pathOverlay.setPaint(pPaint);
+        for (RouteShape shape : shapes) {
+            PathOverlay pathOverlay = new PathOverlay(Color.parseColor("#"+ shape.getColor()), getContext());
+            pathOverlay.addPoints((ArrayList) shape);
+            osmFragment.drawRoute(pathOverlay);
+            Paint pPaint = pathOverlay.getPaint();
+            pPaint.setStrokeWidth(5);
+            pathOverlay.setPaint(pPaint);
+            osmFragment.animateTo(shape);
 
-    }
+        }
         inicializarParadas(route);
 
         //TODO getMap().animateCamera(getCameraUpdate(shapes));
@@ -297,7 +298,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
             mCallback.onTitleChange(buildScreenTitle(routeShortName));
         } else {
             mCallback.onTitleChange(getResources().getString(R.string.map_routes_title));
-            osmFragment.clear();
+            osmFragment.clearMap();
         }
     }
 

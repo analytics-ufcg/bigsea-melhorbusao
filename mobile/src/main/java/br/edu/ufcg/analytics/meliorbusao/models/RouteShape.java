@@ -184,10 +184,25 @@ public class RouteShape extends ArrayList<GeoPoint> {
      * @param object
      */
     private void updateEdges(GeoPoint object) {
-        if (object.getLatitude() > maxLat) maxLat = object.getLongitude();
-        if (object.getLatitude() < minLat) minLat = object.getLongitude();
-        if (object.getLatitude() > maxLng) maxLng = object.getLongitude();
-        if (object.getLatitude() < minLng) minLng = object.getLongitude();
+        if (object.getLatitude() > maxLat) maxLat = object.getLatitude();
+        if (object.getLatitude() < minLat) minLat = object.getLatitude();
+        if (object.getLongitude() > maxLng) maxLng = object.getLongitude();
+        if (object.getLongitude() < minLng) minLng = object.getLongitude();
     }
 
+    public double getMaxLat() {
+        return maxLat;
+    }
+
+    public double getMaxLng() {
+        return maxLng;
+    }
+
+    public double getMinLat() {
+        return minLat;
+    }
+
+    public double getMinLng() {
+        return minLng;
+    }
 }
