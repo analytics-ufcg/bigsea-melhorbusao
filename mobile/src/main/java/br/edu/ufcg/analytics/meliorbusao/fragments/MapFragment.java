@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -59,6 +60,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     private AddressResultReceiver mResultReceiver;
     private OnMapInformationReadyListener mMapListener;
     private boolean isEnabledFetchAddressService = false;
+    private ImageButton myLocationButton;
 
     public MapFragment() {
         // Required empty public constructor
@@ -86,11 +88,26 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         mMapController = (MapController) mOpenStreetMap.getController();
         mMapController.setZoom(MAP_ZOOM_LEVEL);
 
+        myLocationButton = (ImageButton) mainView.findViewById(R.id.my_location_button);
+        setUpMyLocationButton();
+
         initializePlaceMarker();
         initializeMyLocationMarker();
         buildGoogleApiClient();
 
         return mainView;
+    }
+
+    private void setUpMyLocationButton() {
+        myLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mLastLocation != null) {
+                    GeoPoint myLocationGeopoint = new GeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                    mMapController.animateTo(myLocationGeopoint);
+                }
+            }
+        });
     }
 
     /**
@@ -181,6 +198,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
 
     /**
      * Add an Marker object to the map.
+     *
      * @param markerPosition The position of the marker in the map.
      * @return The marker object that was added to the map.
      */
@@ -205,6 +223,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
      */
     public void clearMap() {
         mOpenStreetMap.getOverlays().clear();
+        mOpenStreetMap.getOverlays().add(new MapOverlay(getContext()));
         if (mLastLocation != null) {
             updateMyLocationMarker(new GeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
         }
@@ -262,11 +281,13 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        GeoPoint actualLocation = new GeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        updateMyLocationMarker(actualLocation);
-        updatePlaceMarker(actualLocation);
-        if (mMapListener != null) {
-            mMapListener.onMapLocationAvailable(mLastLocation);
+        if (mLastLocation != null) {
+            GeoPoint actualLocation = new GeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            updateMyLocationMarker(actualLocation);
+            mMapController.animateTo(actualLocation);
+            if (mMapListener != null) {
+                mMapListener.onMapLocationAvailable(mLastLocation);
+            }
         }
     }
 
@@ -288,6 +309,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
 
     /**
      * Starts a service that fetchs the address corresponding to a geopoint's latitude and longitude.
+     *
      * @param geoPoint The point that holds the coordinates for searching the address.
      */
     protected void startIntentService(GeoPoint geoPoint) {
@@ -300,6 +322,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
 
     /**
      * Set the OnMapInformationReadyListener for this map.
+     *
      * @param mapListener the listener that must be set.
      */
     public void setOnMapInformationReadyListener(OnMapInformationReadyListener mapListener) {
