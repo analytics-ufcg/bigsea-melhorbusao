@@ -116,37 +116,10 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
         //FrameLayout viewMain = (FrameLayout) super.onCreateView(inflater, container, savedInstanceState);
         View viewMain = inflater.inflate(R.layout.fragment_map_route, container, false);
 
-
-
-        //progressSpinner = ProgressUtils.buildProgressBar(this.getContext());
-        //viewMain.addView(progressSpinner);
         osmFragment = new MapFragment();
         osmFragment.setOnMapInformationReadyListener(this);
 
         getChildFragmentManager().beginTransaction().replace(R.id.melior_map_fragment, osmFragment).commit();
-
-
-
-
-        //  TODO
-        /*
-        getMap().setOnMapLoadedCallback(this);
-        getMap().setOnMapClickListener(this);
-        getMap().setOnCameraChangeListener(this);
-        getMap().setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-
-            @Override
-            public boolean onMyLocationButtonClick() {
-                if (((MelhorBusaoActivity) getActivity()).isLocationEnabled()) {
-                    requestLocationUpdates();
-                    Snackbar.make(getView(), R.string.reload_location, Snackbar.LENGTH_LONG).show();
-                } else {
-                    ((MelhorBusaoActivity) getActivity()).buildAlertMessageNoGps();
-                }
-                return true;
-            }
-        });
-        */
 
         itemsAdapter =
                 new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, routeSuggestionList);
@@ -180,21 +153,6 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
 
         bottomSheet.show();
     }
-
-    //TODO
-    /*private CameraUpdate getCameraUpdate(List<RouteShape> shapes) {
-        LatLngBounds.Builder latLngBoundsBuilder = LatLngBounds.builder();
-
-        for (RouteShape shape : shapes) {
-            LatLng[] edges = shape.edges();
-            for (LatLng edge : edges) {
-                latLngBoundsBuilder.include(edge);
-                Log.d("Edge", edge.toString());
-            }
-        }
-        return CameraUpdateFactory.newLatLngBounds(latLngBoundsBuilder.build(), 10);
-
-    } */
 
     private void showRoutesLineMenu(CharSequence linhaName) {
         BottomSheet.Builder builder = new BottomSheet.Builder(getActivity());
@@ -242,8 +200,6 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
         }
         inicializarParadas(route);
 
-        //TODO getMap().animateCamera(getCameraUpdate(shapes));
-        progressSpinner.setVisibility(View.GONE);
     }
 
 
@@ -258,17 +214,6 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
            //TODO stopsMarkers.add(getMap().addMarker(getMarkerOptionsFromStop(parada, getStopBitmap())));
         }
     }
-
-    //TODO
-    /*
-    @Override
-    public void onMeliorLocationAvaliable(Location result) {
-        super.onMeliorLocationAvaliable(result);
-
-        if (getRouteShortName() == null) {
-            getMap().animateCamera(getCameraUpdate());
-        }
-    } */
 
     public void setRoute(String routeShortName) {
         this.routeShortName = routeShortName;
@@ -296,35 +241,19 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
         super.onResume();
         if (routeShortName != null) {
             mCallback.onTitleChange(buildScreenTitle(routeShortName));
+            Route route = DBUtils.getRoute(getContext(), routeShortName);
+            setUpMap(route);
+            setRoute(null);
         } else {
+            //progressSpinner.setVisibility(View.GONE);
             mCallback.onTitleChange(getResources().getString(R.string.map_routes_title));
             osmFragment.clearMap();
         }
     }
 
-    //TODO
-   /* @Override
-    public void onMapLoaded() {
-        if (routeShortName == null) {
-            progressSpinner.setVisibility(View.GONE);
-        } else {
-            Route route = DBUtils.getRoute(getContext(), routeShortName);
-            setUpMap(route);
-//          mSpinner.setSelection(((ArrayAdapter) mSpinner.getAdapter()).getPosition(route));
-            setRoute(null);
-        }
-    } */
-
     private String buildScreenTitle(String routeName) {
         return getResources().getString(R.string.map_route_screen_base_title) + routeName;
     }
-
-    //TODO
-    /*
-    @Override
-    public void onMapClick(LatLng latLng) {
-//        search.onActionViewCollapsed();
-    }*/
 
     @Override
     public void onMeliorBusaoQueryChange(String query) {
@@ -333,7 +262,6 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
 
     @Override
     public boolean onMeliorBusaoQuerySubmit(String query) {
-//        searchListView.setVisibility(View.INVISIBLE);
         try {
             Route searchRoute = DBUtils.getRoute(getContext(), query);
             mCallback.onTitleChange(buildScreenTitle(searchRoute.getShortName()));
@@ -384,7 +312,6 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        progressSpinner.setVisibility(View.VISIBLE);
         try {
             Route searchRoute = DBUtils.getRoute(getContext(), query);
             mCallback.onTitleChange(buildScreenTitle(searchRoute.getShortName()));
@@ -414,7 +341,6 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
 
     @Override
     public boolean onSuggestionClick(int position) {
-        //progressSpinner.setVisibility(View.VISIBLE);
         Cursor c = mSearchView.getSuggestionsAdapter().getCursor();
         Route selectedRoute = new Route(c.getString(0), c.getString(1),
                 c.getString(2), c.getString(3));
