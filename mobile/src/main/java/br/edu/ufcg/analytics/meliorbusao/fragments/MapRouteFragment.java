@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
@@ -25,13 +24,12 @@ import android.widget.FilterQueryProvider;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.widget.ZoomButtonsController;
 
 import com.cocosw.bottomsheet.BottomSheet;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 
-import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.bonuspack.overlays.Marker;
-import org.osmdroid.api.Polyline;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.PathOverlay;
 
@@ -40,9 +38,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.R;
-import br.edu.ufcg.analytics.meliorbusao.activities.MelhorBusaoActivity;
 import br.edu.ufcg.analytics.meliorbusao.adapters.RouteArrayAdapter;
 import br.edu.ufcg.analytics.meliorbusao.adapters.SearchRouteResultsAdapter;
 import br.edu.ufcg.analytics.meliorbusao.adapters.StopInfoAdapter;
@@ -54,11 +50,10 @@ import br.edu.ufcg.analytics.meliorbusao.listeners.OnRouteSuggestionListener;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.models.RouteShape;
 import br.edu.ufcg.analytics.meliorbusao.models.Stop;
-import br.edu.ufcg.analytics.meliorbusao.utils.ProgressUtils;
 
 public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryListener, OnRouteSuggestionListener,
         SearchView.OnQueryTextListener, FilterQueryProvider, SearchView.OnSuggestionListener,
-        AdapterView.OnItemSelectedListener, OnMapInformationReadyListener {
+        AdapterView.OnItemSelectedListener, OnMapInformationReadyListener, ZoomButtonsController.OnZoomListener {
 
     public static final String TAG = "MAP_ROUTE_FRAGMENT";
     private static final double DEFAULT_ZOOM_THRESHOLD = 15.0;
@@ -71,7 +66,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
     private ArrayAdapter<String> itemsAdapter;
     private float previousZoomLevel;
     private boolean isZoomingIn;
-    private List<Marker> stopsMarkers;
+    private ArrayList<Marker> stopsMarkers;
     private BitmapDescriptor mParadaBitmap;
     private ProgressBar progressSpinner;
     private MapFragment osmFragment;
@@ -117,7 +112,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
         //Enable Options Menu handling
         setHasOptionsMenu(true);
         if (stopsMarkers == null) {
-            stopsMarkers = new ArrayList<Marker>();
+            stopsMarkers = new ArrayList<>();
         }
 
         return viewMain;
@@ -197,13 +192,13 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
     private void inicializarParadas(Route rota) {
         HashSet<Stop> paradas = DBUtils.getParadasRota(getContext(), rota);
         if (stopsMarkers == null) {
-            stopsMarkers = new ArrayList<Marker>();
+            stopsMarkers = new ArrayList<>();
         } else {
             stopsMarkers.clear();
         }
         for (Stop parada : paradas) {
 
-            stopsMarkers.add(osmFragment.addMarker(new GeoPoint(parada.getLatitude(), parada.getLongitude()), getResources().getDrawable(R.drawable.ic_bus_stop_sign)));
+            stopsMarkers.add(osmFragment.addMarker(new GeoPoint(parada.getLatitude(), parada.getLongitude()), R.drawable.ic_bus_stop_sign));
 
         }
     }
@@ -412,4 +407,41 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
     }
 
 
+    //ZoomButtonsController.OnZoomListener
+    @Override
+    public void onVisibilityChanged(boolean b) {
+        /*if (b){
+            if (MapFragment.getMapZoomLevel() >= DEFAULT_ZOOM_THRESHOLD){
+                for (Marker stopMarker : stopsMarkers) {
+
+                    osmFragment.addMarker(stopMarker,R.drawable.ic_bus_stop_sign);
+                    stopMarker.setIcon(getBitmapDescriptor(R.drawable.ic_bus_stop_sign, 52, 40));
+                }
+            }
+        }
+        if (previousZoomLevel != cameraPosition.zoom && stopsMarkers!=null) {
+            if (cameraPosition.zoom >= DEFAULT_ZOOM_THRESHOLD) {
+                if (!isZoomingIn) {
+                    for (Marker stopMarker : stopsMarkers) {
+                        stopMarker.setIcon(getBitmapDescriptor(R.drawable.ic_bus_stop_sign, 52, 40));
+                    }
+                }
+                isZoomingIn = true;
+            } else {
+                if (isZoomingIn) {
+                    for (Marker stopMarker : stopsMarkers) {
+                        stopMarker.setIcon(getBitmapDescriptor(R.drawable.ic_bus_stop, 5, 5));
+                    }
+                }
+                isZoomingIn = false;
+            }
+        }
+        previousZoomLevel = cameraPosition.zoom; */
+    }
+
+    //ZoomButtonsController.OnZoomListener
+    @Override
+    public void onZoom(boolean b) {
+
+    }
 }

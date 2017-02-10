@@ -363,14 +363,18 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
 
     }
 
-    public Marker addMarker(GeoPoint geoPoint, Drawable drawable) {
+    public Marker addMarker(GeoPoint geoPoint, int drawable) {
         Marker marker = new Marker(mOpenStreetMap);
         marker.setPosition(geoPoint);
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-        marker.setIcon(drawable);
+        marker.setIcon(getResources().getDrawable(drawable));
         mOpenStreetMap.getOverlays().add(marker);
         mOpenStreetMap.invalidate();
         return marker;
+    }
+
+    public static int getMapZoomLevel() {
+        return MAP_ZOOM_LEVEL;
     }
 
     /**
