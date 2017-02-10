@@ -4,6 +4,7 @@ package br.edu.ufcg.analytics.meliorbusao.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -362,6 +363,15 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
 
     }
 
+    public Marker addMarker(GeoPoint geoPoint, Drawable drawable) {
+        Marker marker = new Marker(mOpenStreetMap);
+        marker.setPosition(geoPoint);
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        marker.setIcon(drawable);
+        mOpenStreetMap.getOverlays().add(marker);
+        mOpenStreetMap.invalidate();
+        return marker;
+    }
 
     /**
      * Handles the results found by the FetchAddressService

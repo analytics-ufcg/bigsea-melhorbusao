@@ -22,23 +22,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FilterQueryProvider;
-import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.cocosw.bottomsheet.BottomSheet;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.osmdroid.api.IGeoPoint;
+import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.api.Polyline;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.PathOverlay;
@@ -75,7 +67,6 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
     private String routeShortName;
     private Menu mMenu;
     private SearchView mSearchView;
-    private Spinner mSpinner;
     private List<String> routeSuggestionList = new ArrayList<>();
     private ArrayAdapter<String> itemsAdapter;
     private float previousZoomLevel;
@@ -211,7 +202,9 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
             stopsMarkers.clear();
         }
         for (Stop parada : paradas) {
-           //TODO stopsMarkers.add(getMap().addMarker(getMarkerOptionsFromStop(parada, getStopBitmap())));
+
+            stopsMarkers.add(osmFragment.addMarker(new GeoPoint(parada.getLatitude(), parada.getLongitude()), getResources().getDrawable(R.drawable.ic_bus_stop_sign)));
+
         }
     }
 
@@ -345,7 +338,6 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
         Route selectedRoute = new Route(c.getString(0), c.getString(1),
                 c.getString(2), c.getString(3));
         onRouteSuggestionClick(selectedRoute);
-//        mSpinner.setSelection(((ArrayAdapter) mSpinner.getAdapter()).getPosition(selectedRoute));
 
         try {
             mMenu.findItem(R.id.action_search).collapseActionView();
@@ -380,8 +372,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
     }
 
 
-    //TODO
-   /* @Override
+/*
     public void onCameraChange(CameraPosition cameraPosition) {
         if (previousZoomLevel != cameraPosition.zoom && stopsMarkers!=null) {
             if (cameraPosition.zoom >= DEFAULT_ZOOM_THRESHOLD) {
@@ -401,15 +392,9 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
             }
         }
         previousZoomLevel = cameraPosition.zoom;
-    }*/
+    } */
 
-    // TODO
-    /*private BitmapDescriptor getStopBitmap() {
-        if (mParadaBitmap == null) {
-            mParadaBitmap = getBitmapDescriptor(R.drawable.ic_bus_stop, 5, 5);
-        }
-        return mParadaBitmap;
-    }*/
+
 
     @Override
     public void onMapAddressFetched(String mapAddres) {
