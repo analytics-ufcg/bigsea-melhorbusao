@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/bus_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="4dp"
+            android:src="@drawable/ic_melior_busao" />
+
+        <ImageView
+            android:id="@+id/circle"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_gravity="right"
+            android:src="@mipmap/circle" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/route_name_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:gravity="center"
+        android:text="263A"
+        android:textColor="@color/textPrimaryColorDark"
+        android:textStyle="bold" />
+
+
+</LinearLayout>

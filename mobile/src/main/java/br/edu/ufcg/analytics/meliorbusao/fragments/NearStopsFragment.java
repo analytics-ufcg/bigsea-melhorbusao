@@ -14,7 +14,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -22,7 +24,9 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.osmdroid.bonuspack.overlays.Marker;
+import org.osmdroid.bonuspack.overlays.MarkerInfoWindow;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
 
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +36,7 @@ import java.util.TreeSet;
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.activities.MelhorBusaoActivity;
+import br.edu.ufcg.analytics.meliorbusao.adapters.InfoWindowAdapter;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnMapInformationReadyListener;
@@ -103,6 +108,7 @@ public class NearStopsFragment extends Fragment implements OnMeliorBusaoQueryLis
         for (NearStop parada : paradas) {
             Marker stopMarker = mMapFragment.addMarker(new GeoPoint(parada.getLatitude(), parada.getLongitude()));
             stopMarker.setIcon(getResources().getDrawable(R.drawable.ic_bus_stop_sign));
+            stopMarker.setInfoWindow(new NearStopMarkerInfoWindow(mMapFragment.getMapView(), parada));
         }
     }
 
@@ -245,6 +251,25 @@ public class NearStopsFragment extends Fragment implements OnMeliorBusaoQueryLis
     @Override
     public boolean onQueryTextChange(String newText) {
         return true;
+    }
+
+    class NearStopMarkerInfoWindow extends MarkerInfoWindow {
+
+        private NearStop mStop;
+
+        public NearStopMarkerInfoWindow(MapView mapView, NearStop stop) {
+            super(R.layout.near_stop_info_window, mapView);
+            this.mStop = stop;
+        }
+
+        @Override
+        public void onOpen(Object item) {
+            GridView infoWindowGrid = (GridView) mView.findViewById(R.id.info_window_grid);
+            infoWindowGrid.setAdapter(new InfoWindowAdapter(mView.getContext(), mStop.getRoutes()));
+
+            TextView windowTitle = (TextView) mView.findViewById(R.id.bubble_title);
+            windowTitle.setText(mStop.getName());
+        }
     }
 
 }

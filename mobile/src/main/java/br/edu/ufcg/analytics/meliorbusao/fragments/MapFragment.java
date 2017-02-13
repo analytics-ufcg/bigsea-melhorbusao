@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.ImageButton;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -26,6 +27,7 @@ import com.google.android.gms.location.LocationServices;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.bonuspack.overlays.Marker;
+import org.osmdroid.bonuspack.overlays.MarkerInfoWindow;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
@@ -35,7 +37,9 @@ import org.osmdroid.views.overlay.Overlay;
 
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
+import br.edu.ufcg.analytics.meliorbusao.adapters.InfoWindowAdapter;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnMapInformationReadyListener;
+import br.edu.ufcg.analytics.meliorbusao.models.NearStop;
 import br.edu.ufcg.analytics.meliorbusao.services.FetchAddressService;
 
 /**
@@ -56,6 +60,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     private OnMapInformationReadyListener mMapListener;
     private boolean isEnabledFetchAddressService = false;
     private ImageButton myLocationButton;
+    private Context mContext;
 
     public MapFragment() {
         // Required empty public constructor
@@ -146,6 +151,12 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         myLocationMarker.setIcon(getResources().getDrawable(R.drawable.ic_my_location_marker));
         myLocationMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         myLocationMarker.setDraggable(false);
+        myLocationMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker, MapView mapView) {
+                return false;
+            }
+        });
     }
 
     /**
@@ -365,5 +376,12 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
             }
             return super.onSingleTapConfirmed(e, mapView);
         }
+    }
+
+    /**
+     * Returns the map view.
+     */
+    public MapView getMapView() {
+        return mOpenStreetMap;
     }
 }
