@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -59,10 +60,10 @@ public class NearStopsFragment extends Fragment implements OnMeliorBusaoQueryLis
 
     private String address = "";
 
-    public static final String TAG = "NEAR_STOPS_FRAGMENT";
+    public static final String TAG = "NearStopsFragment";
     private BitmapDescriptor mParadaBitmap;
     private ProgressBar progressSpinner;
-
+    private NearStopListener mCallback;
 
     public static NearStopsFragment getInstance() {
         if (instance == null) {
@@ -195,9 +196,6 @@ public class NearStopsFragment extends Fragment implements OnMeliorBusaoQueryLis
         loadNearStops(geoPoint);
     }
 
-    public interface OnNearStopsSelectedListener extends FragmentTitleChangeListener {
-        void onClickStopWindowInfo(HashSet<Route> routes, String stopName);
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -222,30 +220,36 @@ public class NearStopsFragment extends Fragment implements OnMeliorBusaoQueryLis
 
         } else {
             try {
-                address = query;
-                try {
-                    Geocoder geocoder;
-                    geocoder = new Geocoder(getContext(), Locale.getDefault());
-                    LatLng point = new LatLng(geocoder.getFromLocationName(address + "," + Constants.CITY, 1).get(0).getLatitude(),
-                            geocoder.getFromLocationName(address + "," + Constants.CITY, 1).get(0).getLongitude());
-                    List<Address> addresses;
-                    addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
-                    if (addresses.get(0).getLocality().compareTo(Constants.CITY) == 0) {
-                        mMenu.findItem(R.id.action_search).collapseActionView();
-                        return true;
-                    } else {
-                        Toast.makeText(getActivity(), getString(R.string.msg_failed_locate_search), Toast.LENGTH_LONG).show();
-                    }
-                } catch (Exception e) {
-                    Log.e("NearStopsFragment", e.getMessage());
+                Geocoder geocoder;
+                geocoder = new Geocoder(getContext(), Locale.getDefault());
+                LatLng point = new LatLng(geocoder.getFromLocationName(query + "," + Constants.CITY, 1).get(0).getLatitude(),
+                        geocoder.getFromLocationName(query + "," + Constants.CITY, 1).get(0).getLongitude());
+                List<Address> addresses;
+                addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
+                if (addresses.get(0).getLocality().compareTo(Constants.CITY) == 0) {
+                    GeoPoint geoPoint = new GeoPoint(point.latitude, point.longitude);
+                    mMapFragment.clearMap();
+                    mMapFragment.updatePlaceMarker(geoPoint);
+                    loadNearStops(geoPoint);
+                    mMenu.findItem(R.id.action_search).collapseActionView();
+                    return true;
+                } else {
+                    Toast.makeText(getActivity(), getString(R.string.msg_failed_locate_search), Toast.LENGTH_LONG).show();
                 }
-
             } catch (Exception e) {
-                Log.e("NearStopsFragment", "Não foi possível achar a localizacao: " + e.getMessage());
-                Toast.makeText(getActivity(), getString(R.string.msg_failed_detect_location), Toast.LENGTH_SHORT).show();
+                Log.e("NearStopsFragment", e.getMessage());
             }
+
         }
         return false;
+    }
+
+    public void addNearStopListener(NearStopListener callback) {
+        mCallback = callback;
+    }
+
+    public interface NearStopListener extends FragmentTitleChangeListener {
+        void onInfoWindowClick(HashSet<Route> routes, String stopName);
     }
 
     @Override
@@ -266,10 +270,19 @@ public class NearStopsFragment extends Fragment implements OnMeliorBusaoQueryLis
         public void onOpen(Object item) {
             GridView infoWindowGrid = (GridView) mView.findViewById(R.id.info_window_grid);
             infoWindowGrid.setAdapter(new InfoWindowAdapter(mView.getContext(), mStop.getRoutes()));
-
             TextView windowTitle = (TextView) mView.findViewById(R.id.bubble_title);
             windowTitle.setText(mStop.getName());
+
+            infoWindowGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if (mCallback != null) {
+                        mCallback.onInfoWindowClick(new HashSet<>(mStop.getRoutes()), mStop.getName());
+                    }
+                }
+            });
         }
+
     }
 
 }

@@ -60,4 +60,9 @@ public class InfoWindowAdapter extends BaseAdapter {
 
         return gridItemview;
     }
+
+    @Override
+    public boolean areAllItemsEnabled() {
+        return false;
+    }
 }
