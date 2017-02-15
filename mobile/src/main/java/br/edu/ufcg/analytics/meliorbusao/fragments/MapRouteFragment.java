@@ -5,9 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -21,15 +19,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FilterQueryProvider;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
-import android.widget.ZoomButtonsController;
+import android.support.v4.app.Fragment;
 
 import com.cocosw.bottomsheet.BottomSheet;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 
-import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.PathOverlay;
 
@@ -44,16 +40,15 @@ import br.edu.ufcg.analytics.meliorbusao.adapters.SearchRouteResultsAdapter;
 import br.edu.ufcg.analytics.meliorbusao.adapters.StopInfoAdapter;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
-import br.edu.ufcg.analytics.meliorbusao.listeners.OnMapInformationReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnMeliorBusaoQueryListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnRouteSuggestionListener;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.models.RouteShape;
 import br.edu.ufcg.analytics.meliorbusao.models.Stop;
 
-public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryListener, OnRouteSuggestionListener,
+public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryListener, OnRouteSuggestionListener,
         SearchView.OnQueryTextListener, FilterQueryProvider, SearchView.OnSuggestionListener,
-        AdapterView.OnItemSelectedListener, OnMapInformationReadyListener, ZoomButtonsController.OnZoomListener {
+        AdapterView.OnItemSelectedListener {
 
     public static final String TAG = "MAP_ROUTE_FRAGMENT";
     private static final double DEFAULT_ZOOM_THRESHOLD = 15.0;
@@ -62,13 +57,13 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
     private String routeShortName;
     private Menu mMenu;
     private SearchView mSearchView;
+    private Spinner mSpinner;
     private List<String> routeSuggestionList = new ArrayList<>();
     private ArrayAdapter<String> itemsAdapter;
     private float previousZoomLevel;
     private boolean isZoomingIn;
-    private ArrayList<Marker> stopsMarkers;
+    private List<org.osmdroid.bonuspack.overlays.Marker> stopsMarkers;
     private BitmapDescriptor mParadaBitmap;
-    private ProgressBar progressSpinner;
     private MapFragment osmFragment;
 
     public MapRouteFragment() {
@@ -90,23 +85,13 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
-        setHasOptionsMenu(true);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //FrameLayout viewMain = (FrameLayout) super.onCreateView(inflater, container, savedInstanceState);
         View viewMain = inflater.inflate(R.layout.fragment_map_route, container, false);
 
         osmFragment = new MapFragment();
-        osmFragment.setOnMapInformationReadyListener(this);
+        //osmFragment.setOnMapInformationReadyListener(this);
 
         getChildFragmentManager().beginTransaction().replace(R.id.melior_map_fragment, osmFragment).commit();
-
         itemsAdapter =
                 new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, routeSuggestionList);
         //Enable Options Menu handling
@@ -140,6 +125,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
         bottomSheet.show();
     }
 
+
     private void showRoutesLineMenu(CharSequence linhaName) {
         BottomSheet.Builder builder = new BottomSheet.Builder(getActivity());
         builder.title("Linha " + linhaName);
@@ -160,19 +146,16 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
         bottomSheet.show();
     }
 
-
     private void setUpMap(Route r) {
         osmFragment.clearMap();
         drawRoute(r);
         StopInfoAdapter stopInfo = new StopInfoAdapter();
         stopInfo.setActivity(getActivity());
-
-        //getMap().setInfoWindowAdapter(stopInfo);
+        //TODO getMap().setInfoWindowAdapter(stopInfo);
     }
 
     private void drawRoute(Route route) {
         List<RouteShape> shapes = DBUtils.getRouteShape(getContext(), route.getId());
-
 
         for (RouteShape shape : shapes) {
             PathOverlay pathOverlay = new PathOverlay(Color.parseColor("#"+ shape.getColor()), getContext());
@@ -188,6 +171,8 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
 
     }
 
+    //TODO parei aqui - nao esta desenhando a rota quando vem do top busao
+
 
     private void inicializarParadas(Route rota) {
         HashSet<Stop> paradas = DBUtils.getParadasRota(getContext(), rota);
@@ -197,11 +182,12 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
             stopsMarkers.clear();
         }
         for (Stop parada : paradas) {
-
             stopsMarkers.add(osmFragment.addMarker(new GeoPoint(parada.getLatitude(), parada.getLongitude()), R.drawable.ic_bus_stop_sign));
 
         }
     }
+
+
 
     public void setRoute(String routeShortName) {
         this.routeShortName = routeShortName;
@@ -229,11 +215,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
         super.onResume();
         if (routeShortName != null) {
             mCallback.onTitleChange(buildScreenTitle(routeShortName));
-            Route route = DBUtils.getRoute(getContext(), routeShortName);
-            setUpMap(route);
-            setRoute(null);
         } else {
-            //progressSpinner.setVisibility(View.GONE);
             mCallback.onTitleChange(getResources().getString(R.string.map_routes_title));
             osmFragment.clearMap();
         }
@@ -250,6 +232,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
 
     @Override
     public boolean onMeliorBusaoQuerySubmit(String query) {
+//        searchListView.setVisibility(View.INVISIBLE);
         try {
             Route searchRoute = DBUtils.getRoute(getContext(), query);
             mCallback.onTitleChange(buildScreenTitle(searchRoute.getShortName()));
@@ -266,6 +249,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
         try {
             mCallback.onTitleChange(buildScreenTitle(selectedRoute.getShortName()));
             setUpMap(selectedRoute);
+            Log.d(TAG, selectedRoute.getShortName());
             return true;
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -333,6 +317,7 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
         Route selectedRoute = new Route(c.getString(0), c.getString(1),
                 c.getString(2), c.getString(3));
         onRouteSuggestionClick(selectedRoute);
+//        mSpinner.setSelection(((ArrayAdapter) mSpinner.getAdapter()).getPosition(selectedRoute));
 
         try {
             mMenu.findItem(R.id.action_search).collapseActionView();
@@ -367,81 +352,5 @@ public class MapRouteFragment extends Fragment implements OnMeliorBusaoQueryList
     }
 
 
-/*
-    public void onCameraChange(CameraPosition cameraPosition) {
-        if (previousZoomLevel != cameraPosition.zoom && stopsMarkers!=null) {
-            if (cameraPosition.zoom >= DEFAULT_ZOOM_THRESHOLD) {
-                if (!isZoomingIn) {
-                    for (Marker stopMarker : stopsMarkers) {
-                        stopMarker.setIcon(getBitmapDescriptor(R.drawable.ic_bus_stop_sign, 52, 40));
-                    }
-                }
-                isZoomingIn = true;
-            } else {
-                if (isZoomingIn) {
-                    for (Marker stopMarker : stopsMarkers) {
-                        stopMarker.setIcon(getBitmapDescriptor(R.drawable.ic_bus_stop, 5, 5));
-                    }
-                }
-                isZoomingIn = false;
-            }
-        }
-        previousZoomLevel = cameraPosition.zoom;
-    } */
 
-
-
-    @Override
-    public void onMapAddressFetched(String mapAddres) {
-
-    }
-
-    @Override
-    public void onMapLocationAvailable(Location mapLocation) {
-
-    }
-
-    @Override
-    public void onMapClick(GeoPoint geoPoint) {
-
-    }
-
-
-    //ZoomButtonsController.OnZoomListener
-    @Override
-    public void onVisibilityChanged(boolean b) {
-        /*if (b){
-            if (MapFragment.getMapZoomLevel() >= DEFAULT_ZOOM_THRESHOLD){
-                for (Marker stopMarker : stopsMarkers) {
-
-                    osmFragment.addMarker(stopMarker,R.drawable.ic_bus_stop_sign);
-                    stopMarker.setIcon(getBitmapDescriptor(R.drawable.ic_bus_stop_sign, 52, 40));
-                }
-            }
-        }
-        if (previousZoomLevel != cameraPosition.zoom && stopsMarkers!=null) {
-            if (cameraPosition.zoom >= DEFAULT_ZOOM_THRESHOLD) {
-                if (!isZoomingIn) {
-                    for (Marker stopMarker : stopsMarkers) {
-                        stopMarker.setIcon(getBitmapDescriptor(R.drawable.ic_bus_stop_sign, 52, 40));
-                    }
-                }
-                isZoomingIn = true;
-            } else {
-                if (isZoomingIn) {
-                    for (Marker stopMarker : stopsMarkers) {
-                        stopMarker.setIcon(getBitmapDescriptor(R.drawable.ic_bus_stop, 5, 5));
-                    }
-                }
-                isZoomingIn = false;
-            }
-        }
-        previousZoomLevel = cameraPosition.zoom; */
-    }
-
-    //ZoomButtonsController.OnZoomListener
-    @Override
-    public void onZoom(boolean b) {
-
-    }
 }
