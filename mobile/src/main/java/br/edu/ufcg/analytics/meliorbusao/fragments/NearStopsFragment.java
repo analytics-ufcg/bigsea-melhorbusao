@@ -81,7 +81,6 @@ public class NearStopsFragment extends Fragment implements SearchView.OnQueryTex
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-
         mMenu = menu;
 
         menu.findItem(R.id.list_routes_btn).setVisible(false);
@@ -115,6 +114,7 @@ public class NearStopsFragment extends Fragment implements SearchView.OnQueryTex
             Marker stopMarker = mMapFragment.addMarker(new GeoPoint(stop.getLatitude(), stop.getLongitude()));
             stopMarker.setIcon(getResources().getDrawable(R.drawable.ic_bus_stop_sign));
             stopMarker.setInfoWindow(new NearStopMarkerInfoWindow(mMapFragment.getMapView(), stop));
+            stopMarker.setInfoWindowAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_TOP);
         }
     }
 
@@ -189,14 +189,17 @@ public class NearStopsFragment extends Fragment implements SearchView.OnQueryTex
     class NearStopMarkerInfoWindow extends MarkerInfoWindow {
 
         private NearStop mStop;
+        private MapView mMapView;
 
         public NearStopMarkerInfoWindow(MapView mapView, NearStop stop) {
             super(R.layout.near_stop_info_window, mapView);
             this.mStop = stop;
+            this.mMapView = mapView;
         }
 
         @Override
         public void onOpen(Object item) {
+            closeAllInfoWindowsOn(mMapView);
             GridView infoWindowGrid = (GridView) mView.findViewById(R.id.info_window_grid);
             infoWindowGrid.setAdapter(new InfoWindowAdapter(mView.getContext(), mStop.getRoutes()));
             TextView windowTitle = (TextView) mView.findViewById(R.id.bubble_title);

@@ -26,6 +26,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 import org.osmdroid.api.IGeoPoint;
+import org.osmdroid.bonuspack.overlays.InfoWindow;
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.bonuspack.overlays.MarkerInfoWindow;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -257,7 +258,6 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     public void onLocationChanged(Location location) {
         mLastLocation = location;
         GeoPoint newCenter = new GeoPoint(location.getLatitude(), location.getLongitude());
-        mMapController.animateTo(newCenter);
         updateMyLocationMarker(newCenter);
     }
 
@@ -368,6 +368,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e, MapView mapView) {
+            InfoWindow.closeAllInfoWindowsOn(mOpenStreetMap);
             Projection mProjection = mOpenStreetMap.getProjection();
             GeoPoint geoPoint = (GeoPoint) mProjection.fromPixels((int) e.getX(), (int) e.getY());
             updatePlaceMarker(geoPoint);
