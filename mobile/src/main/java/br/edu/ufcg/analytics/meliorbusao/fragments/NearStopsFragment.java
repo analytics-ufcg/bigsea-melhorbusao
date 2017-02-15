@@ -1,5 +1,6 @@
 package br.edu.ufcg.analytics.meliorbusao.fragments;
 
+import android.graphics.Rect;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -20,9 +21,11 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.osmdroid.bonuspack.overlays.InfoWindow;
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.bonuspack.overlays.MarkerInfoWindow;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
 
 import java.util.HashSet;
@@ -111,11 +114,22 @@ public class NearStopsFragment extends Fragment implements SearchView.OnQueryTex
         TreeSet<NearStop> nearStops = DBUtils.getNearStops(getContext(), centerPoint.getLatitude(),
                 centerPoint.getLongitude(), RAIO, null);
         for (NearStop stop : nearStops) {
-            Marker stopMarker = mMapFragment.addMarker(new GeoPoint(stop.getLatitude(), stop.getLongitude()));
-            stopMarker.setIcon(getResources().getDrawable(R.drawable.ic_bus_stop_sign));
-            stopMarker.setInfoWindow(new NearStopMarkerInfoWindow(mMapFragment.getMapView(), stop));
-            stopMarker.setInfoWindowAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_TOP);
+            addNearStopMarker(stop);
         }
+    }
+
+    private void addNearStopMarker(NearStop stop) {
+        Marker stopMarker = mMapFragment.addMarker(new GeoPoint(stop.getLatitude(), stop.getLongitude()));
+        stopMarker.setIcon(getResources().getDrawable(R.drawable.ic_bus_stop_sign));
+        stopMarker.setInfoWindow(new NearStopMarkerInfoWindow(mMapFragment.getMapView(), stop));
+        stopMarker.setInfoWindowAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_TOP);
+        stopMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker, MapView mapView) {
+                marker.showInfoWindow();
+                return true;
+            }
+        });
     }
 
 
@@ -204,6 +218,13 @@ public class NearStopsFragment extends Fragment implements SearchView.OnQueryTex
             infoWindowGrid.setAdapter(new InfoWindowAdapter(mView.getContext(), mStop.getRoutes()));
             TextView windowTitle = (TextView) mView.findViewById(R.id.bubble_title);
             windowTitle.setText(mStop.getName());
+// // TODO: 15/02/17 continuar isso aqui 
+//            Rect rectf = new Rect();
+//            mView.requestRectangleOnScreen(rectf);
+//            MapController mapController = (MapController) mMapView.getController();
+//            int x = rectf.right + rectf.width();
+//            int y = rectf.top - (rectf.height() / 2);
+//            mapController.animateTo(x, y);
 
             infoWindowGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override

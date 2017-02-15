@@ -1,6 +1,5 @@
 package br.edu.ufcg.analytics.meliorbusao.fragments;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -18,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 import android.widget.ImageButton;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -28,7 +26,6 @@ import com.google.android.gms.location.LocationServices;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.bonuspack.overlays.InfoWindow;
 import org.osmdroid.bonuspack.overlays.Marker;
-import org.osmdroid.bonuspack.overlays.MarkerInfoWindow;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
@@ -38,9 +35,7 @@ import org.osmdroid.views.overlay.Overlay;
 
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
-import br.edu.ufcg.analytics.meliorbusao.adapters.InfoWindowAdapter;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnMapInformationReadyListener;
-import br.edu.ufcg.analytics.meliorbusao.models.NearStop;
 import br.edu.ufcg.analytics.meliorbusao.services.FetchAddressService;
 
 /**
@@ -72,7 +67,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         super.onCreate(savedInstanceState);
 
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, this);
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 50, this);
     }
 
     @Override

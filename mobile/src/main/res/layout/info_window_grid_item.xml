@@ -16,12 +16,12 @@
             android:layout_margin="4dp"
             android:src="@drawable/ic_melior_busao" />
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/circle"
             android:layout_width="15dp"
             android:layout_height="15dp"
             android:layout_gravity="right"
-            android:src="@mipmap/circle" />
+            android:src="#88FFFFFF"/>
 
     </FrameLayout>
 

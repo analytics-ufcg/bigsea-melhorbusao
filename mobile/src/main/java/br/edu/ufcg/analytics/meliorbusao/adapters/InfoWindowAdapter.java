@@ -47,7 +47,7 @@ public class InfoWindowAdapter extends BaseAdapter {
         ImageView circle;
         TextView routeNameTextView;
         Route route;
-        String circleOpacity = "#70";
+        String circleOpacity = "#FF";
 
         gridItemview = new View(mContext);
         gridItemview = inflater.inflate(R.layout.info_window_grid_item, null);
