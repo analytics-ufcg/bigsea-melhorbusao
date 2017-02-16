@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bonuspack_bubble"
+    android:orientation="vertical">
+
+    <!--Madatory:-->
+    <!--ImageView with id bubble_image-->
+    <!--TextView with id bubble_title-->
+    <!--TextView with id bubble_description-->
+    <!--TextView with id bubble_subdescription-->
+
+    <ImageView
+        android:id="@+id/bubble_image"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/bubble_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_weight="1"
+        android:maxEms="17"
+        android:text="Title"
+        android:textStyle="bold"
+        android:textColor="@color/textPrimaryColorDark" />
+
+    <TextView
+        android:id="@+id/bubble_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxEms="17"
+        android:text="Description"
+        android:textColor="#000000"
+        android:textSize="12dp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/bubble_subdescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxEms="17"
+        android:text="Address"
+        android:textColor="#000000"
+        android:textSize="10dp"
+        android:visibility="gone"
+        />
+
+    <GridView
+        android:layout_marginTop="20dp"
+        android:id="@+id/info_window_grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="5dp"
+        android:stretchMode="columnWidth"
+        android:gravity="left"
+        android:numColumns="auto_fit">
+    </GridView>
+
+</LinearLayout>

@@ -18,8 +18,26 @@
     <!-- Predicted Schedule screen-->
     <color name="primary_text_color">#33334C</color>
     <color name="primary_background">#eeeef4</color>
-
     <color name="white_gray">#DCDCDC</color>
     <color name="toolbar_text_color">#857F90</color>
+
+
+    <!--White text colors for dark backgrounds-->
+    <color name="textPrimaryColorLight">#FFFFFFFF</color>
+    <color name="textSecondaryColorLight">#B3FFFFFF</color>
+    <color name="hintDisableTextColorLight">#80FFFFFF</color>
+    <color name="dividerColorLight">#1FFFFFFF</color>
+
+    <!--Black text colors for light backgrounds-->
+    <color name="textPrimaryColorDark">#DD000000</color>
+    <color name="textSecondaryColorDark">#8A000000</color>
+    <color name="hintDisableTextColorDark">#61000000</color>
+    <color name="dividerColorDark">#1F000000</color>
+
+    <!--Icons colors-->
+    <color name="activeIconColorDark">#8A000000</color>
+    <color name="inactiveIconColorDark">#61000000</color>
+    <color name="activeIconColorLight">#FFFFFFFF</color>
+    <color name="inactiveIconColorLight">#80FFFFFF</color>
 
 </resources>

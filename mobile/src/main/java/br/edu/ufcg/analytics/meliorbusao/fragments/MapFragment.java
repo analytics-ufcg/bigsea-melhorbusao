@@ -1,6 +1,5 @@
 package br.edu.ufcg.analytics.meliorbusao.fragments;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -31,6 +30,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.Polyline;
+import org.osmdroid.bonuspack.overlays.InfoWindow;
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBoxE6;
@@ -68,6 +68,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     private OnMapInformationReadyListener mMapListener;
     private boolean isEnabledFetchAddressService = false;
     private ImageButton myLocationButton;
+    private Context mContext;
 
     public MapFragment() {
         // Required empty public constructor
@@ -78,7 +79,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         super.onCreate(savedInstanceState);
 
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, this);
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 50, this);
     }
 
     @Override
@@ -158,6 +159,12 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         myLocationMarker.setIcon(getResources().getDrawable(R.drawable.ic_my_location_marker));
         myLocationMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         myLocationMarker.setDraggable(false);
+        myLocationMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker, MapView mapView) {
+                return false;
+            }
+        });
     }
 
     /**
@@ -258,7 +265,6 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     public void onLocationChanged(Location location) {
         mLastLocation = location;
         GeoPoint newCenter = new GeoPoint(location.getLatitude(), location.getLongitude());
-        //mMapController.animateTo(newCenter);
         updateMyLocationMarker(newCenter);
     }
 
@@ -378,6 +384,13 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     }
 
     /**
+     * Returns the map view.
+     */
+    public MapView getMapView() {
+        return mOpenStreetMap;
+    }
+
+    /**
      * Handles the results found by the FetchAddressService
      */
     class AddressResultReceiver extends ResultReceiver {
@@ -410,6 +423,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e, MapView mapView) {
+            InfoWindow.closeAllInfoWindowsOn(mOpenStreetMap);
             Projection mProjection = mOpenStreetMap.getProjection();
             GeoPoint geoPoint = (GeoPoint) mProjection.fromPixels((int) e.getX(), (int) e.getY());
             updatePlaceMarker(geoPoint);
@@ -419,6 +433,5 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
             return super.onSingleTapConfirmed(e, mapView);
         }
     }
-
 
 }

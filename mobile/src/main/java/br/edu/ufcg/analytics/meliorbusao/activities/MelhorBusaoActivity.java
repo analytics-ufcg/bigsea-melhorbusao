@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.res.AssetManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -57,15 +56,12 @@ import com.roughike.bottombar.OnMenuTabClickListener;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 
-import br.edu.ufcg.analytics.meliorbusao.ProviderState;
 import br.edu.ufcg.analytics.meliorbusao.db.CityDataManager;
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
@@ -88,7 +84,7 @@ import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
 public class MelhorBusaoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFinishedParseListener,
-        TopBusFragment.OnTopBusSelectedListener, NearStopsFragment.OnNearStopsSelectedListener, SearchScheduleFragment.OnTakeBusSelectedListener,
+        TopBusFragment.OnTopBusSelectedListener, NearStopsFragment.NearStopListener, SearchScheduleFragment.OnTakeBusSelectedListener,
         FragmentManager.OnBackStackChangedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     public static final String TAG = "MelhorBusaoActivity";
@@ -132,6 +128,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
         topBusFragment = TopBusFragment.getInstance();
         nearStopsFragment = NearStopsFragment.getInstance();
+        nearStopsFragment.addNearStopListener(this);
         mapRouteFragment = MapRouteFragment.getInstance();
         searchScheduleFragment = SearchScheduleFragment.getInstance();
         stopScheduleFragment = StopScheduleFragment.getInstance();
@@ -761,7 +758,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
      * Em paradas próximas, exibe as informações das rotas e das paradas
      */
     @Override
-    public void onClickStopWindowInfo(HashSet<Route> routes, String stopName) {
+    public void onInfoWindowClick(HashSet<Route> routes, String stopName) {
 
         getSupportFragmentManager().beginTransaction().replace(R.id.container_layout,
                 topBusFragment, TopBusFragment.TAG).addToBackStack(TopBusFragment.TAG).commit();
