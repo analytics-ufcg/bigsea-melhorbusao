@@ -13,6 +13,7 @@ import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,6 +45,7 @@ import br.edu.ufcg.analytics.meliorbusao.services.FetchAddressService;
 public class MapFragment extends Fragment implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final int MAP_ZOOM_LEVEL = 16;
+    private static final String TAG = "MapFragment";
 
     private MapView mOpenStreetMap;
     private MapController mMapController;
@@ -101,6 +103,9 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
                 if (mLastLocation != null) {
                     GeoPoint myLocationGeopoint = new GeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
                     mMapController.animateTo(myLocationGeopoint);
+                    if (isEnabledFetchAddressService) {
+                        startIntentService(myLocationGeopoint);
+                    }
                 }
             }
         });
@@ -150,7 +155,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         myLocationMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker, MapView mapView) {
-                return false;
+                return true;
             }
         });
     }
@@ -235,12 +240,6 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     public void onStart() {
         mGoogleApiClient.connect();
         super.onStart();
-        if (mGoogleApiClient.isConnected() && mLastLocation != null) {
-            if (isEnabledFetchAddressService) {
-                GeoPoint geoPoint = new GeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                startIntentService(geoPoint);
-            }
-        }
     }
 
     @Override
@@ -286,6 +285,9 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
             GeoPoint actualLocation = new GeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             updateMyLocationMarker(actualLocation);
             mMapController.animateTo(actualLocation);
+            if (isEnabledFetchAddressService) {
+                startIntentService(actualLocation);
+            }
             if (mMapListener != null) {
                 mMapListener.onMapLocationAvailable(mLastLocation);
             }
