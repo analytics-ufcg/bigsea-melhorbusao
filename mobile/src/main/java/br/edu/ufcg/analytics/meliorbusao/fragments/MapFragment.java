@@ -56,6 +56,7 @@ import br.edu.ufcg.analytics.meliorbusao.services.FetchAddressService;
 public class MapFragment extends Fragment implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final int MAP_ZOOM_LEVEL = 16;
+    private static MapFragment instance;
 
     private MapView mOpenStreetMap;
     private MapController mMapController;
@@ -73,6 +74,17 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     public MapFragment() {
         // Required empty public constructor
     }
+
+    public static MapFragment getInstance() {
+        if (instance == null) {
+            MapFragment fragment = new MapFragment();
+            Bundle args = new Bundle();
+            fragment.setArguments(args);
+            instance = fragment;
+        }
+        return instance;
+    }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
