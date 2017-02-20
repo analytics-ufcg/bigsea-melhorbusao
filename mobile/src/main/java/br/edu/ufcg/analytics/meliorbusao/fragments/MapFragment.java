@@ -57,6 +57,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
 
     private static final int MAP_ZOOM_LEVEL = 16;
     private static MapFragment instance;
+    private static final String TAG = "MapFragment";
 
     private MapView mOpenStreetMap;
     private MapController mMapController;
@@ -125,6 +126,9 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
                 if (mLastLocation != null) {
                     GeoPoint myLocationGeopoint = new GeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
                     mMapController.animateTo(myLocationGeopoint);
+                    if (isEnabledFetchAddressService) {
+                        startIntentService(myLocationGeopoint);
+                    }
                 }
             }
         });
@@ -174,7 +178,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         myLocationMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker, MapView mapView) {
-                return false;
+                return true;
             }
         });
     }
@@ -259,12 +263,6 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     public void onStart() {
         mGoogleApiClient.connect();
         super.onStart();
-        if (mGoogleApiClient.isConnected() && mLastLocation != null) {
-            if (isEnabledFetchAddressService) {
-                GeoPoint geoPoint = new GeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                startIntentService(geoPoint);
-            }
-        }
     }
 
     @Override
@@ -310,6 +308,9 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
             GeoPoint actualLocation = new GeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             updateMyLocationMarker(actualLocation);
             mMapController.animateTo(actualLocation);
+            if (isEnabledFetchAddressService) {
+                startIntentService(actualLocation);
+            }
             if (mMapListener != null) {
                 mMapListener.onMapLocationAvailable(mLastLocation);
             }
