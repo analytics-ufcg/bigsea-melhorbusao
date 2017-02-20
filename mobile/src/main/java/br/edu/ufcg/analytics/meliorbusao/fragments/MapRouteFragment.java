@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
@@ -19,22 +20,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FilterQueryProvider;
-import android.widget.GridView;
 import android.widget.ListAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v4.app.Fragment;
 
 import com.cocosw.bottomsheet.BottomSheet;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 
-import org.osmdroid.bonuspack.overlays.BasicInfoWindow;
-import org.osmdroid.bonuspack.overlays.InfoWindow;
-import org.osmdroid.bonuspack.overlays.Marker;
-import org.osmdroid.bonuspack.overlays.MarkerInfoWindow;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.PathOverlay;
 
 import java.util.ArrayList;
@@ -43,24 +36,21 @@ import java.util.HashSet;
 import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
-import br.edu.ufcg.analytics.meliorbusao.adapters.InfoWindowAdapter;
 import br.edu.ufcg.analytics.meliorbusao.adapters.RouteArrayAdapter;
 import br.edu.ufcg.analytics.meliorbusao.adapters.SearchRouteResultsAdapter;
-import br.edu.ufcg.analytics.meliorbusao.adapters.StopInfoAdapter;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
+import br.edu.ufcg.analytics.meliorbusao.listeners.OnMapInformationReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnMeliorBusaoQueryListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnRouteSuggestionListener;
-import br.edu.ufcg.analytics.meliorbusao.models.NearStop;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.models.RouteShape;
 import br.edu.ufcg.analytics.meliorbusao.models.Stop;
 
-import static org.osmdroid.bonuspack.overlays.InfoWindow.closeAllInfoWindowsOn;
 
 public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryListener, OnRouteSuggestionListener,
         SearchView.OnQueryTextListener, FilterQueryProvider, SearchView.OnSuggestionListener,
-        AdapterView.OnItemSelectedListener {
+        AdapterView.OnItemSelectedListener, OnMapInformationReadyListener {
 
     public static final String TAG = "MAP_ROUTE_FRAGMENT";
     private static final double DEFAULT_ZOOM_THRESHOLD = 15.0;
@@ -69,13 +59,9 @@ public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryLis
     private String routeShortName;
     private Menu mMenu;
     private SearchView mSearchView;
-    private Spinner mSpinner;
     private List<String> routeSuggestionList = new ArrayList<>();
     private ArrayAdapter<String> itemsAdapter;
-    private float previousZoomLevel;
-    private boolean isZoomingIn;
     private List<org.osmdroid.bonuspack.overlays.Marker> stopsMarkers;
-    private BitmapDescriptor mParadaBitmap;
     private MapFragment osmFragment;
 
     public MapRouteFragment() {
@@ -100,8 +86,7 @@ public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View viewMain = inflater.inflate(R.layout.fragment_map_route, container, false);
         osmFragment = MapFragment.getInstance();
-
-        //osmFragment.setOnMapInformationReadyListener(this);
+        osmFragment.setOnMapInformationReadyListener(this);
 
         getChildFragmentManager().beginTransaction().replace(R.id.melior_map_fragment, osmFragment).commit();
         itemsAdapter =
@@ -190,8 +175,7 @@ public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryLis
         }
         for (Stop parada : paradas) {
             stopMarker = osmFragment.addMarker(new GeoPoint(parada.getLatitude(), parada.getLongitude()), R.drawable.ic_bus_stop_sign);
-            stopMarker.setTitle(parada.getDescription());
-            //stopMarker.setInfoWindow(new MapRouteMarkerInfoWindow(osmFragment.getMapView(), parada));
+            stopMarker.setTitle(parada.getName());
             stopsMarkers.add(stopMarker);
         }
 
@@ -223,15 +207,7 @@ public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryLis
     @Override
     public void onResume() {
         super.onResume();
-        if (routeShortName != null) {
-            mCallback.onTitleChange(buildScreenTitle(routeShortName));
-            //TODO nao esta desenhando a rota quando vem do top busao
-            drawRoute(DBUtils.getRoute(getContext(),routeShortName));
 
-        } else {
-            mCallback.onTitleChange(getResources().getString(R.string.map_routes_title));
-            osmFragment.clearMap();
-        }
     }
 
     private String buildScreenTitle(String routeName) {
@@ -330,7 +306,6 @@ public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryLis
         Route selectedRoute = new Route(c.getString(0), c.getString(1),
                 c.getString(2), c.getString(3));
         onRouteSuggestionClick(selectedRoute);
-//        mSpinner.setSelection(((ArrayAdapter) mSpinner.getAdapter()).getPosition(selectedRoute));
 
         try {
             mMenu.findItem(R.id.action_search).collapseActionView();
@@ -348,7 +323,6 @@ public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryLis
         RouteArrayAdapter adapter = new RouteArrayAdapter(getActivity(), routes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-
         spinner.setOnItemSelectedListener(this);
     }
 
@@ -365,30 +339,27 @@ public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryLis
     }
 
 
-    /**
-     * Class representing the info window that shows up when clicking in a marker.
-     */
-    class MapRouteMarkerInfoWindow extends MarkerInfoWindow {
-
-        private Stop mStop;
-        private MapView mMapView;
-        private StopInfoAdapter stopInfo;
-
-        public MapRouteMarkerInfoWindow(MapView mapView, Stop stop) {
-            super(R.layout.near_stop_info_window, mapView);
-            this.mStop = stop;
-            this.mMapView = mapView;
-            this.stopInfo = new StopInfoAdapter();
-            stopInfo.setActivity(getActivity());
-        }
-
-        @Override
-        public void onOpen(Object item) {
-            closeAllInfoWindowsOn(mMapView);
-            TextView infoWindow = (TextView) mView.findViewById(android.R.id.text1);
-
-        }
+    @Override
+    public void onMapAddressFetched(String mapAddres) {
 
     }
+
+    @Override
+    public void onMapLocationAvailable(Location mapLocation) {
+        if (routeShortName != null) {
+            mCallback.onTitleChange(buildScreenTitle(routeShortName));
+            drawRoute(DBUtils.getRoute(getContext(),routeShortName));
+
+        } else {
+            mCallback.onTitleChange(getResources().getString(R.string.map_routes_title));
+            osmFragment.clearMap();
+        }
+    }
+
+    @Override
+    public void onMapClick(GeoPoint geoPoint) {
+
+    }
+
 
 }
