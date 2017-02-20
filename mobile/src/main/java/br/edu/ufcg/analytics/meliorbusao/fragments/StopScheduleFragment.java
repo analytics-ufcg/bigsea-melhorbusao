@@ -1,7 +1,6 @@
 package br.edu.ufcg.analytics.meliorbusao.fragments;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -27,8 +26,8 @@ import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.SchedulesProbableParser;
-import br.edu.ufcg.analytics.meliorbusao.adapters.RouteArrayAdapter;
-import br.edu.ufcg.analytics.meliorbusao.adapters.StopArrayAdapter;
+import br.edu.ufcg.analytics.meliorbusao.adapters.RoutesAdapter;
+import br.edu.ufcg.analytics.meliorbusao.adapters.StopsAdapter;
 import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnStopTimesReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.models.NearStop;
@@ -51,7 +50,7 @@ public class StopScheduleFragment extends Fragment implements OnStopTimesReadyLi
     private FragmentTitleChangeListener mCallback;
     private ListView mScheduleListView;
     private Spinner stopsSpinner;
-    private StopArrayAdapter mAdapterStop;
+    private StopsAdapter mAdapterStop;
 
     public static StopScheduleFragment getInstance() {
         if (instance == null) {
@@ -78,14 +77,14 @@ public class StopScheduleFragment extends Fragment implements OnStopTimesReadyLi
         ArrayList routeList= new ArrayList<Route>();
         routeList.add(route);
 
-        RouteArrayAdapter adapter = new RouteArrayAdapter(getActivity(), routeList);
+        RoutesAdapter adapter = new RoutesAdapter(getActivity(), routeList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         routeSpinner.setAdapter(adapter);
 
         ////////PARADA/////////
         ArrayList<StopHeadsign> listaStop = new ArrayList<StopHeadsign>();
         listaStop.add(stopHeadsign);
-        mAdapterStop = new StopArrayAdapter(getActivity(),listaStop,route);
+        mAdapterStop = new StopsAdapter(getActivity(),listaStop,route);
 
         //------StopHeadsign----//
         mScheduleListView = (ListView) mView.findViewById(R.id.schedule_list);
@@ -139,15 +138,20 @@ public class StopScheduleFragment extends Fragment implements OnStopTimesReadyLi
     }
 
 
+//    @Override
+//    public void onStopTimesReady(List<StopTime> stopTimes, ParseException e) {
+//        if (stopTimes.size() == 0) {
+//            Toast.makeText(getContext(), getString(R.string.msg_no_bus_next_hour), Toast.LENGTH_LONG).show();
+//        } else {
+//            ArrayAdapter<StopTime> routesArrayAdapter = new ArrayAdapter<StopTime>(getContext(),
+//                    R.layout.schedule_item, stopTimes);
+//            mScheduleListView.setAdapter(routesArrayAdapter);
+//        }
+//    }
+
     @Override
     public void onStopTimesReady(List<StopTime> stopTimes, ParseException e) {
-        if (stopTimes.size() == 0) {
-            Toast.makeText(getContext(), getString(R.string.msg_no_bus_next_hour), Toast.LENGTH_LONG).show();
-        } else {
-            ArrayAdapter<StopTime> routesArrayAdapter = new ArrayAdapter<StopTime>(getContext(),
-                    R.layout.schedule_item, stopTimes);
-            mScheduleListView.setAdapter(routesArrayAdapter);
-        }
+
     }
 
     @Override

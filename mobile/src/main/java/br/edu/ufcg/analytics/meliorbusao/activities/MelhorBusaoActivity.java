@@ -84,7 +84,7 @@ import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
 public class MelhorBusaoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFinishedParseListener,
-        TopBusFragment.OnTopBusSelectedListener, NearStopsFragment.NearStopListener, SearchScheduleFragment.OnTakeBusSelectedListener,
+        TopBusFragment.OnTopBusSelectedListener, NearStopsFragment.NearStopListener, SearchScheduleFragment.SearchScheduleListener,
         FragmentManager.OnBackStackChangedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     public static final String TAG = "MelhorBusaoActivity";
@@ -128,7 +128,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
         topBusFragment = TopBusFragment.getInstance();
         nearStopsFragment = NearStopsFragment.getInstance();
-        nearStopsFragment.addNearStopListener(this);
         mapRouteFragment = MapRouteFragment.getInstance();
         searchScheduleFragment = SearchScheduleFragment.getInstance();
         stopScheduleFragment = StopScheduleFragment.getInstance();
@@ -737,11 +736,12 @@ public class MelhorBusaoActivity extends AppCompatActivity
      */
     @Override
     public void onTakeBusButtonClickListener(Route routeSelected) {
+        Bundle bundle = new Bundle();
+        bundle.putString(SearchScheduleFragment.SELECTED_ROUTE_KEY, routeSelected.getShortName());
+        searchScheduleFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.container_layout,
                 searchScheduleFragment, SearchScheduleFragment.TAG).addToBackStack(SearchScheduleFragment.TAG).commit();
         changeBottomBarItem(SearchScheduleFragment.TAG);
-        searchScheduleFragment.setRoute(routeSelected);
-
     }
 
     /**

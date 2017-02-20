@@ -61,4 +61,3 @@ dependencies {
     compile 'testfairy:testfairy-android-sdk:1.+@aar'
     compile 'com.android.support:multidex:1.0.0'
 }
-

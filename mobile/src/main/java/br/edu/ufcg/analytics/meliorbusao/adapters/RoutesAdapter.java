@@ -14,24 +14,17 @@ import java.util.List;
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
 
-public class RouteArrayAdapter extends ArrayAdapter<Route> {
+public class RoutesAdapter extends ArrayAdapter<Route> {
 
-    private List<Route> items;
+    private List<Route> routes;
     private Activity activity;
 
-    public RouteArrayAdapter(Activity activity, List<Route> items) {
-        super(activity, android.R.layout.simple_list_item_1, items);
-        this.items = items;
+    public RoutesAdapter(Activity activity, List<Route> routes) {
+        super(activity, android.R.layout.simple_list_item_1, routes);
+        this.routes = routes;
         this.activity = activity;
     }
 
-    /**
-     *
-     * @param position
-     * @param convertView
-     * @param parent
-     * @return
-     */
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
         View v = getView(position, convertView, parent);
@@ -39,28 +32,15 @@ public class RouteArrayAdapter extends ArrayAdapter<Route> {
         return v;
     }
 
-    /**
-     * Seleciona a rota desejada na activity de pegar o busão
-     * @param position
-     * @return
-     */
     @Override
     public Route getItem(int position) {
-        return items.get(position);
+        return routes.get(position);
     }
 
-
-    /**
-     * Monta a interface de Pegar Busão / Proximos Horários
-     * @param position
-     * @param convertView
-     * @param parent
-     * @return
-     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
-        Route currRoute = items.get(position);
+        Route currRoute = routes.get(position);
 
         if (v == null) {
             LayoutInflater inflater = activity.getLayoutInflater();
@@ -96,4 +76,5 @@ public class RouteArrayAdapter extends ArrayAdapter<Route> {
         v.getBackground().setAlpha(0);
         return v;
     }
+
 }

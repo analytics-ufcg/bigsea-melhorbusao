@@ -1,5 +1,6 @@
 package br.edu.ufcg.analytics.meliorbusao.fragments;
 
+import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -99,12 +100,20 @@ public class NearStopsFragment extends Fragment implements SearchView.OnQueryTex
                 .setTitle(R.string.near_stops_title);
     }
 
-    public void addNearStopListener(NearStopListener callback) {
-        mCallback = callback;
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        // This makes sure that the container activity has implemented the callback interface.
+        try {
+            mCallback = (NearStopListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement NearStopListener");
+        }
     }
 
     /**
      * Add a marker in the map to each bus stop that is located within a certain diameter.
+     *
      * @param centerPoint The center of the diameter.
      */
     private void loadNearStops(GeoPoint centerPoint) {
@@ -148,6 +157,7 @@ public class NearStopsFragment extends Fragment implements SearchView.OnQueryTex
 
     /**
      * Mark a new place in the map according to the addres passed if the address exists.
+     *
      * @param query The addres for looking up.
      * @return If the address was successfully found or not.
      */
@@ -217,7 +227,7 @@ public class NearStopsFragment extends Fragment implements SearchView.OnQueryTex
             windowTitle.setText(mStop.getName());
 // // TODO: 15/02/17 continuar isso aqui 
 //            Rect rectf = new Rect();
-//            mView.requestRectangleOnScreen(rectf);
+//            mView.requestaRectangleOnScreen(rectf);
 //            MapController mapController = (MapController) mMapView.getController();
 //            int x = rectf.right + rectf.width();
 //            int y = rectf.top - (rectf.height() / 2);

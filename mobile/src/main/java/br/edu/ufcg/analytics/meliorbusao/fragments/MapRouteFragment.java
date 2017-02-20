@@ -43,7 +43,7 @@ import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.activities.MelhorBusaoActivity;
-import br.edu.ufcg.analytics.meliorbusao.adapters.RouteArrayAdapter;
+import br.edu.ufcg.analytics.meliorbusao.adapters.RoutesAdapter;
 import br.edu.ufcg.analytics.meliorbusao.adapters.SearchRouteResultsAdapter;
 import br.edu.ufcg.analytics.meliorbusao.adapters.StopInfoAdapter;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
@@ -393,7 +393,7 @@ public class MapRouteFragment extends MeliorMapFragment implements GoogleMap.OnM
     private void populateRouteSpinner(Spinner spinner) {
         List<Route> routes = new ArrayList<Route>(DBUtils.getTodasAsRotas(getActivity()));
         Collections.sort(routes);
-        RouteArrayAdapter adapter = new RouteArrayAdapter(getActivity(), routes);
+        RoutesAdapter adapter = new RoutesAdapter(getActivity(), routes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
