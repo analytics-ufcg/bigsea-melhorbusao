@@ -3,6 +3,8 @@ package br.edu.ufcg.analytics.meliorbusao.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -23,20 +25,29 @@ import android.widget.ImageButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.osmdroid.api.IGeoPoint;
+import org.osmdroid.api.Polyline;
 import org.osmdroid.bonuspack.overlays.InfoWindow;
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.Projection;
 import org.osmdroid.views.overlay.Overlay;
+import org.osmdroid.views.overlay.PathOverlay;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnMapInformationReadyListener;
+import br.edu.ufcg.analytics.meliorbusao.models.RouteShape;
 import br.edu.ufcg.analytics.meliorbusao.services.FetchAddressService;
 
 /**
@@ -45,6 +56,7 @@ import br.edu.ufcg.analytics.meliorbusao.services.FetchAddressService;
 public class MapFragment extends Fragment implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final int MAP_ZOOM_LEVEL = 16;
+    private static MapFragment instance;
     private static final String TAG = "MapFragment";
 
     private MapView mOpenStreetMap;
@@ -63,6 +75,17 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     public MapFragment() {
         // Required empty public constructor
     }
+
+    public static MapFragment getInstance() {
+        if (instance == null) {
+            MapFragment fragment = new MapFragment();
+            Bundle args = new Bundle();
+            fragment.setArguments(args);
+            instance = fragment;
+        }
+        return instance;
+    }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -333,6 +356,54 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     }
 
     /**
+     * Draw route
+     * @param pathOverlay
+     */
+
+    public void drawRoute(PathOverlay pathOverlay){
+        mOpenStreetMap.getOverlays().add(pathOverlay);
+    }
+
+    public void animateTo(GeoPoint geoPoint){
+        mMapController.animateTo(geoPoint);
+    }
+
+    //lat - Norte(N) ou  Sul(S).
+    //lng - Leste(E) ou Oeste(W).
+
+    public void animateTo(RouteShape shape){
+        LatLng[] edge = shape.edges();
+
+        //BoundingBoxE6(north, east, south, west);
+        BoundingBoxE6 bBox = new BoundingBoxE6(shape.getMaxLat(), shape.getMaxLng(), shape.getMinLat(), shape.getMinLng());
+
+        mMapController.zoomToSpan(bBox.getLatitudeSpanE6(), bBox.getLongitudeSpanE6());
+        mMapController.setCenter(bBox.getCenter());
+
+    }
+
+    public Marker addMarker(GeoPoint geoPoint, int drawable) {
+        Marker marker = new Marker(mOpenStreetMap);
+        marker.setPosition(geoPoint);
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        marker.setIcon(getResources().getDrawable(drawable));
+        mOpenStreetMap.getOverlays().add(marker);
+        mOpenStreetMap.invalidate();
+        return marker;
+    }
+
+    public static int getMapZoomLevel() {
+        return MAP_ZOOM_LEVEL;
+    }
+
+    /**
+     * Returns the map view.
+     */
+    public MapView getMapView() {
+        return mOpenStreetMap;
+    }
+
+    /**
      * Handles the results found by the FetchAddressService
      */
     class AddressResultReceiver extends ResultReceiver {
@@ -376,10 +447,4 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         }
     }
 
-    /**
-     * Returns the map view.
-     */
-    public MapView getMapView() {
-        return mOpenStreetMap;
-    }
 }

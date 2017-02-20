@@ -210,9 +210,9 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
 
         //TO check battery states
-        this.registerReceiver(this.mBroadcastReceiver,
+        /*this.registerReceiver(this.mBroadcastReceiver,
                 new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-
+*/
     }
 
     private void loadCityData() {

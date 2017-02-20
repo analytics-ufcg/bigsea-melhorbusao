@@ -12,6 +12,8 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -959,7 +961,7 @@ public class DBUtils {
         Table shapesTable = MeliorDBOpenHelper.getShapesTable();
         boolean success = true;
 
-        LatLng latLngObject;
+        GeoPoint latLngObject;
 
         for (ArrayList<RouteShape> shapeList : shapes.values()) {
             for (RouteShape shape : shapeList) {
@@ -972,8 +974,8 @@ public class DBUtils {
                     latLngObject = shape.get(i - 1);
 
                     shapeEntry.put("order_num", i);
-                    shapeEntry.put("lat", latLngObject.latitude);
-                    shapeEntry.put("lon", latLngObject.longitude);
+                    shapeEntry.put("lat", latLngObject.getLatitude());
+                    shapeEntry.put("lon", latLngObject.getLongitude());
 
                     try {
                         db.insert(shapesTable.getName(), null, shapeEntry);
@@ -1044,7 +1046,7 @@ public class DBUtils {
             double latitude = c.getDouble(latIdx);
             double longitude = c.getDouble(lonIdx);
 
-            shape.add(new LatLng(latitude, longitude));
+            shape.add(new GeoPoint(latitude, longitude));
 
             c.moveToNext();
         }

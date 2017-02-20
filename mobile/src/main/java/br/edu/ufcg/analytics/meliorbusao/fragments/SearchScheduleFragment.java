@@ -82,6 +82,8 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
     public static SearchScheduleFragment getInstance() {
         if (instance == null) {
             SearchScheduleFragment fragment = new SearchScheduleFragment();
+            Bundle bundle = new Bundle();
+            fragment.setArguments(bundle);
             instance = fragment;
         }
         return instance;

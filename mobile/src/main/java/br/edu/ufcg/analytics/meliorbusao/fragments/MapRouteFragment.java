@@ -4,9 +4,9 @@ package br.edu.ufcg.analytics.meliorbusao.fragments;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -20,21 +20,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FilterQueryProvider;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
+import android.widget.ListAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.support.v4.app.Fragment;
 
 import com.cocosw.bottomsheet.BottomSheet;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.PathOverlay;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,23 +36,21 @@ import java.util.HashSet;
 import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
-import br.edu.ufcg.analytics.meliorbusao.activities.MelhorBusaoActivity;
 import br.edu.ufcg.analytics.meliorbusao.adapters.RoutesAdapter;
 import br.edu.ufcg.analytics.meliorbusao.adapters.SearchRouteResultsAdapter;
-import br.edu.ufcg.analytics.meliorbusao.adapters.StopInfoAdapter;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
+import br.edu.ufcg.analytics.meliorbusao.listeners.OnMapInformationReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnMeliorBusaoQueryListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnRouteSuggestionListener;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.models.RouteShape;
 import br.edu.ufcg.analytics.meliorbusao.models.Stop;
-import br.edu.ufcg.analytics.meliorbusao.utils.ProgressUtils;
 
-public class MapRouteFragment extends MeliorMapFragment implements GoogleMap.OnMapLoadedCallback,
-        GoogleMap.OnMapClickListener, OnMeliorBusaoQueryListener, OnRouteSuggestionListener,
+
+public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryListener, OnRouteSuggestionListener,
         SearchView.OnQueryTextListener, FilterQueryProvider, SearchView.OnSuggestionListener,
-        AdapterView.OnItemSelectedListener, GoogleMap.OnCameraChangeListener {
+        AdapterView.OnItemSelectedListener, OnMapInformationReadyListener {
 
     public static final String TAG = "MAP_ROUTE_FRAGMENT";
     private static final double DEFAULT_ZOOM_THRESHOLD = 15.0;
@@ -67,14 +59,10 @@ public class MapRouteFragment extends MeliorMapFragment implements GoogleMap.OnM
     private String routeShortName;
     private Menu mMenu;
     private SearchView mSearchView;
-    private Spinner mSpinner;
     private List<String> routeSuggestionList = new ArrayList<>();
     private ArrayAdapter<String> itemsAdapter;
-    private float previousZoomLevel;
-    private boolean isZoomingIn;
-    private List<Marker> stopsMarkers;
-    private BitmapDescriptor mParadaBitmap;
-    private ProgressBar progressSpinner;
+    private List<org.osmdroid.bonuspack.overlays.Marker> stopsMarkers;
+    private MapFragment osmFragment;
 
     public MapRouteFragment() {
 
@@ -96,35 +84,17 @@ public class MapRouteFragment extends MeliorMapFragment implements GoogleMap.OnM
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        FrameLayout viewMain = (FrameLayout) super.onCreateView(inflater, container, savedInstanceState);
+        View viewMain = inflater.inflate(R.layout.fragment_map_route, container, false);
+        osmFragment = MapFragment.getInstance();
+        osmFragment.setOnMapInformationReadyListener(this);
 
-        progressSpinner = ProgressUtils.buildProgressBar(this.getContext());
-
-        viewMain.addView(progressSpinner);
-
-        getMap().setOnMapLoadedCallback(this);
-        getMap().setOnMapClickListener(this);
-        getMap().setOnCameraChangeListener(this);
-        getMap().setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-
-            @Override
-            public boolean onMyLocationButtonClick() {
-                if (((MelhorBusaoActivity) getActivity()).isLocationEnabled()) {
-                    requestLocationUpdates();
-                    Snackbar.make(getView(), R.string.reload_location, Snackbar.LENGTH_LONG).show();
-                } else {
-                    ((MelhorBusaoActivity) getActivity()).buildAlertMessageNoGps();
-                }
-                return true;
-            }
-        });
-
+        getChildFragmentManager().beginTransaction().replace(R.id.melior_map_fragment, osmFragment).commit();
         itemsAdapter =
                 new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, routeSuggestionList);
         //Enable Options Menu handling
         setHasOptionsMenu(true);
         if (stopsMarkers == null) {
-            stopsMarkers = new ArrayList<Marker>();
+            stopsMarkers = new ArrayList<>();
         }
 
         return viewMain;
@@ -152,19 +122,6 @@ public class MapRouteFragment extends MeliorMapFragment implements GoogleMap.OnM
         bottomSheet.show();
     }
 
-    private CameraUpdate getCameraUpdate(List<RouteShape> shapes) {
-        LatLngBounds.Builder latLngBoundsBuilder = LatLngBounds.builder();
-
-        for (RouteShape shape : shapes) {
-            LatLng[] edges = shape.edges();
-            for (LatLng edge : edges) {
-                latLngBoundsBuilder.include(edge);
-                Log.d("Edge", edge.toString());
-            }
-        }
-        return CameraUpdateFactory.newLatLngBounds(latLngBoundsBuilder.build(), 10);
-
-    }
 
     private void showRoutesLineMenu(CharSequence linhaName) {
         BottomSheet.Builder builder = new BottomSheet.Builder(getActivity());
@@ -187,50 +144,44 @@ public class MapRouteFragment extends MeliorMapFragment implements GoogleMap.OnM
     }
 
     private void setUpMap(Route r) {
-        getMap().clear();
+        osmFragment.clearMap();
         drawRoute(r);
-        StopInfoAdapter stopInfo = new StopInfoAdapter();
-        stopInfo.setActivity(getActivity());
-        getMap().setInfoWindowAdapter(stopInfo);
     }
-
 
     private void drawRoute(Route route) {
         List<RouteShape> shapes = DBUtils.getRouteShape(getContext(), route.getId());
 
         for (RouteShape shape : shapes) {
-            PolylineOptions polygonOptions = new PolylineOptions();
-            polygonOptions.visible(true);
-            Log.d("MapRouteFragment", "#" + shape.getColor());
-            polygonOptions.color(Color.parseColor("#" + shape.getColor()));
-            polygonOptions.addAll(shape);
-            getMap().addPolyline(polygonOptions);
+            PathOverlay pathOverlay = new PathOverlay(Color.parseColor("#"+ shape.getColor()), getContext());
+            pathOverlay.addPoints((ArrayList) shape);
+            osmFragment.drawRoute(pathOverlay);
+            Paint pPaint = pathOverlay.getPaint();
+            pPaint.setStrokeWidth(5);
+            pathOverlay.setPaint(pPaint);
+            osmFragment.animateTo(shape);
+
         }
         inicializarParadas(route);
-        getMap().animateCamera(getCameraUpdate(shapes));
-        progressSpinner.setVisibility(View.GONE);
+
     }
 
     private void inicializarParadas(Route rota) {
         HashSet<Stop> paradas = DBUtils.getParadasRota(getContext(), rota);
+        org.osmdroid.bonuspack.overlays.Marker stopMarker;
         if (stopsMarkers == null) {
-            stopsMarkers = new ArrayList<Marker>();
+            stopsMarkers = new ArrayList<>();
         } else {
             stopsMarkers.clear();
         }
         for (Stop parada : paradas) {
-            stopsMarkers.add(getMap().addMarker(getMarkerOptionsFromStop(parada, getStopBitmap())));
+            stopMarker = osmFragment.addMarker(new GeoPoint(parada.getLatitude(), parada.getLongitude()), R.drawable.ic_bus_stop_sign);
+            stopMarker.setTitle(parada.getName());
+            stopsMarkers.add(stopMarker);
         }
+
     }
 
-    @Override
-    public void onMeliorLocationAvaliable(Location result) {
-        super.onMeliorLocationAvaliable(result);
 
-        if (getRouteShortName() == null) {
-            getMap().animateCamera(getCameraUpdate());
-        }
-    }
 
     public void setRoute(String routeShortName) {
         this.routeShortName = routeShortName;
@@ -256,33 +207,11 @@ public class MapRouteFragment extends MeliorMapFragment implements GoogleMap.OnM
     @Override
     public void onResume() {
         super.onResume();
-        if (routeShortName != null) {
-            mCallback.onTitleChange(buildScreenTitle(routeShortName));
-        } else {
-            mCallback.onTitleChange(getResources().getString(R.string.map_routes_title));
-            getMap().clear();
-        }
-    }
 
-    @Override
-    public void onMapLoaded() {
-        if (routeShortName == null) {
-            progressSpinner.setVisibility(View.GONE);
-        } else {
-            Route route = DBUtils.getRoute(getContext(), routeShortName);
-            setUpMap(route);
-//            mSpinner.setSelection(((ArrayAdapter) mSpinner.getAdapter()).getPosition(route));
-            setRoute(null);
-        }
     }
 
     private String buildScreenTitle(String routeName) {
         return getResources().getString(R.string.map_route_screen_base_title) + routeName;
-    }
-
-    @Override
-    public void onMapClick(LatLng latLng) {
-//        search.onActionViewCollapsed();
     }
 
     @Override
@@ -309,6 +238,7 @@ public class MapRouteFragment extends MeliorMapFragment implements GoogleMap.OnM
         try {
             mCallback.onTitleChange(buildScreenTitle(selectedRoute.getShortName()));
             setUpMap(selectedRoute);
+            Log.d(TAG, selectedRoute.getShortName());
             return true;
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -343,7 +273,6 @@ public class MapRouteFragment extends MeliorMapFragment implements GoogleMap.OnM
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        progressSpinner.setVisibility(View.VISIBLE);
         try {
             Route searchRoute = DBUtils.getRoute(getContext(), query);
             mCallback.onTitleChange(buildScreenTitle(searchRoute.getShortName()));
@@ -373,12 +302,10 @@ public class MapRouteFragment extends MeliorMapFragment implements GoogleMap.OnM
 
     @Override
     public boolean onSuggestionClick(int position) {
-        progressSpinner.setVisibility(View.VISIBLE);
         Cursor c = mSearchView.getSuggestionsAdapter().getCursor();
         Route selectedRoute = new Route(c.getString(0), c.getString(1),
                 c.getString(2), c.getString(3));
         onRouteSuggestionClick(selectedRoute);
-//        mSpinner.setSelection(((ArrayAdapter) mSpinner.getAdapter()).getPosition(selectedRoute));
 
         try {
             mMenu.findItem(R.id.action_search).collapseActionView();
@@ -396,7 +323,6 @@ public class MapRouteFragment extends MeliorMapFragment implements GoogleMap.OnM
         RoutesAdapter adapter = new RoutesAdapter(getActivity(), routes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-
         spinner.setOnItemSelectedListener(this);
     }
 
@@ -412,32 +338,28 @@ public class MapRouteFragment extends MeliorMapFragment implements GoogleMap.OnM
     public void onNothingSelected(AdapterView<?> parent) {
     }
 
+
     @Override
-    public void onCameraChange(CameraPosition cameraPosition) {
-        if (previousZoomLevel != cameraPosition.zoom && stopsMarkers!=null) {
-            if (cameraPosition.zoom >= DEFAULT_ZOOM_THRESHOLD) {
-                if (!isZoomingIn) {
-                    for (Marker stopMarker : stopsMarkers) {
-                        stopMarker.setIcon(getBitmapDescriptor(R.drawable.ic_bus_stop_sign, 52, 40));
-                    }
-                }
-                isZoomingIn = true;
-            } else {
-                if (isZoomingIn) {
-                    for (Marker stopMarker : stopsMarkers) {
-                        stopMarker.setIcon(getBitmapDescriptor(R.drawable.ic_bus_stop, 5, 5));
-                    }
-                }
-                isZoomingIn = false;
-            }
-        }
-        previousZoomLevel = cameraPosition.zoom;
+    public void onMapAddressFetched(String mapAddres) {
+
     }
 
-    private BitmapDescriptor getStopBitmap() {
-        if (mParadaBitmap == null) {
-            mParadaBitmap = getBitmapDescriptor(R.drawable.ic_bus_stop, 5, 5);
+    @Override
+    public void onMapLocationAvailable(Location mapLocation) {
+        if (routeShortName != null) {
+            mCallback.onTitleChange(buildScreenTitle(routeShortName));
+            drawRoute(DBUtils.getRoute(getContext(),routeShortName));
+
+        } else {
+            mCallback.onTitleChange(getResources().getString(R.string.map_routes_title));
+            osmFragment.clearMap();
         }
-        return mParadaBitmap;
     }
+
+    @Override
+    public void onMapClick(GeoPoint geoPoint) {
+
+    }
+
+
 }
