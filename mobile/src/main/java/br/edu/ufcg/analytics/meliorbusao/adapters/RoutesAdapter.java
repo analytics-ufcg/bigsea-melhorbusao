@@ -77,4 +77,12 @@ public class RoutesAdapter extends ArrayAdapter<Route> {
         return v;
     }
 
+    public int getRouteIndexByName(String routeName) {
+        for (int i = 0; i < routes.size(); i++) {
+            if (routes.get(i).getShortName().equals(routeName)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }

@@ -83,12 +83,10 @@
     <!-- Toast notifications -->
     <string name="address_not_found_toast">Não foi possível encontrar o endereço.</string>
 
-
     <!--Labels-->
     <string name="requesting_location">Buscando Localização</string>
     <string name="wait_message">Por favor, aguarde.</string>
     <string name="fail_retrieving_location">Não foi possível obter sua localização, tente reiniciar o aplicativo.</string>
-
 
     <!--Mensagens-->
     <string name="msg_yes">Sim</string>
@@ -119,7 +117,7 @@
     <!--General-->
     <string name="bus_stop">Parada </string>
     <string name="msg_evaluate">Avalie agora!</string>
-    <string name="msg_no_bus_near">O ônibus escolhido não passa nesta área.</string>
+    <string name="msg_no_stops_for_bus">O ônibus escolhido não passa nesta área.</string>
     <string name="msg_no_stops_near">Rota não possui paradas perto do local selecionado.</string>
 
     <!-- TODO: Remove or change this placeholder text -->

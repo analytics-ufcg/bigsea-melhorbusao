@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -29,7 +28,6 @@ import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -58,7 +56,6 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
     public static final String TAG = "SearchScheduleFragment";
     public static final String SELECTED_ROUTE_KEY = "selectedRouteKey";
     private static SearchScheduleFragment instance;
-
     private ArrayList<StopHeadsign> paradasDisponiveis;
     private Button showScheduleButton;
     private LatLng mCoordinates;
@@ -82,8 +79,8 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
     public static SearchScheduleFragment getInstance() {
         if (instance == null) {
             SearchScheduleFragment fragment = new SearchScheduleFragment();
-            Bundle bundle = new Bundle();
-            fragment.setArguments(bundle);
+            Bundle args = new Bundle();
+            fragment.setArguments(args);
             instance = fragment;
         }
         return instance;
@@ -126,7 +123,6 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
                 }
             }
         });
-
         return mView;
     }
 
@@ -151,16 +147,11 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
         if (!((MelhorBusaoActivity) getActivity()).isLocationEnabled()) {
             ((MelhorBusaoActivity) getActivity()).buildAlertMessageNoGps();
         }
-        String selectedRoute = (String) this.getArguments().get(SELECTED_ROUTE_KEY);
-        if (selectedRoute != null) {
-            //// TODO: 20/02/17 continuar aqui
-        }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        // This makes sure that the container activity has implemented the callback interface.
         try {
             mCallback = (SearchScheduleListener) context;
         } catch (ClassCastException e) {
@@ -170,6 +161,8 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
 
     private void initializeRoutesSpinner(View mView) {
         routesSpinner = (Spinner) mView.findViewById(R.id.schedules_routes_spinner);
+        mRoutesAdapter = new RoutesAdapter(getActivity(), new ArrayList<Route>());
+        routesSpinner.setAdapter(mRoutesAdapter);
         routesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -188,10 +181,13 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        mRoutesAdapter = new RoutesAdapter(getActivity(), new ArrayList<Route>());
-        routesSpinner.setAdapter(mRoutesAdapter);
     }
 
+    /**
+     * Find routes that pass within a five hundred meters radius from the coordinates.
+     * @param coordinates The central point for calculating the area.
+     * @return A List with all the nearby routes.
+     */
     private List<Route> findNearbyRoutes(LatLng coordinates) {
         Set<NearStop> nearbyStops = findNearbyStops(coordinates);
         Set<Route> availableRoutes = StopRouteUtils.getRoutesFromStops(new TreeSet<>(nearbyStops));
@@ -200,6 +196,11 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
         return nearbyRoutes;
     }
 
+    /**
+     * Find bus stops located within a five hundred meters radius from the given coordinates.
+     * @param coordinates The central point for calculating the area.
+     * @return A List with all the nearby stops.
+     */
     private Set<NearStop> findNearbyStops(LatLng coordinates) {
         Set<NearStop> nearbyStops = new TreeSet<>(DBUtils.getNearStops(getContext(), coordinates.latitude,
                 coordinates.longitude, Constants.NEAR_STOPS_RADIUS, null));
@@ -214,7 +215,6 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
     public void onStopHeadsignReady(StopHeadsign stopHeadsignObj, ParseException e) {
         paradasDisponiveis.add(stopHeadsignObj);
         if (paradasDisponiveis.isEmpty()) {
-            Toast.makeText(getContext(), R.string.msg_no_bus_near, Toast.LENGTH_SHORT).show();
             stopsSpinner.setBackgroundColor(Color.parseColor("#F3F3F3"));
             showScheduleButton.setEnabled(false);
             showScheduleButton.setBackgroundColor(Color.parseColor("#DCDCDC"));
@@ -257,18 +257,25 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
                     Toast.makeText(getActivity(), R.string.msg_failed_locate_search, Toast.LENGTH_LONG).show();
                 }
             } catch (Exception e) {
-                Log.e("NearStopsFragment", e.getMessage());
+                Log.e(TAG, e.getMessage());
                 Toast.makeText(getActivity(), R.string.address_not_found_toast, Toast.LENGTH_LONG).show();
             }
         }
         return false;
     }
 
+    /**
+     * Updates the address TextView whenever a new address is available
+     * @param mapAddres The full address.
+     */
     @Override
     public void onMapAddressFetched(String mapAddres) {
         addressField.setText(mapAddres);
     }
 
+    /**
+     * Updates the list of nearby routes whenever a new location is available
+     */
     @Override
     public void onMapLocationAvailable(Location mapLocation) {
         mCoordinates = new LatLng(mapLocation.getLatitude(), mapLocation.getLongitude());
@@ -276,8 +283,23 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
         mRoutesAdapter.clear();
         mRoutesAdapter.addAll(nearbyRoutes);
         mRoutesAdapter.notifyDataSetChanged();
+
+        String selectedRouteName = (String) this.getArguments().get(SELECTED_ROUTE_KEY);
+        if (selectedRouteName != null) {
+            int index = mRoutesAdapter.getRouteIndexByName(selectedRouteName);
+            if (index < 0){
+                Toast.makeText(getContext(), R.string.msg_no_stops_for_bus, Toast.LENGTH_LONG).show();
+            } else {
+                routesSpinner.setSelection(index);
+            }
+        }
+        this.getArguments().putString(SELECTED_ROUTE_KEY, null);
     }
 
+    /**
+     * Updates the list of nearby routes accordint to the point tapped in the map.
+     * @param geoPoint The representation of the point where the map has been tapped.
+     */
     @Override
     public void onMapClick(GeoPoint geoPoint) {
         mCoordinates = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
@@ -296,5 +318,4 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
     public interface SearchScheduleListener extends FragmentTitleChangeListener {
         void onClickTakeBusButton(StopHeadsign stopHeadsign);
     }
-
 }

@@ -736,9 +736,8 @@ public class MelhorBusaoActivity extends AppCompatActivity
      */
     @Override
     public void onTakeBusButtonClickListener(Route routeSelected) {
-        Bundle bundle = new Bundle();
-        bundle.putString(SearchScheduleFragment.SELECTED_ROUTE_KEY, routeSelected.getShortName());
-        searchScheduleFragment.setArguments(bundle);
+        Bundle args = searchScheduleFragment.getArguments();
+        args.putString(searchScheduleFragment.SELECTED_ROUTE_KEY, routeSelected.getShortName());
         getSupportFragmentManager().beginTransaction().replace(R.id.container_layout,
                 searchScheduleFragment, SearchScheduleFragment.TAG).addToBackStack(SearchScheduleFragment.TAG).commit();
         changeBottomBarItem(SearchScheduleFragment.TAG);
