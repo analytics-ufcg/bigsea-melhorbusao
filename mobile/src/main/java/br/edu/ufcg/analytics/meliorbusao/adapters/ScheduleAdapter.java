@@ -1,6 +1,7 @@
 package br.edu.ufcg.analytics.meliorbusao.adapters;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +57,22 @@ public class ScheduleAdapter extends ArrayAdapter<StopTime> {
         TextView routeNameTxtView = (TextView) v.findViewById(R.id.schedule_text_view);
         routeNameTxtView.setText(stopTime.toString());
 
-        ImageView duration = (ImageView) v.findViewById(R.id.fast_bus_icon);
+        ImageView duration = (ImageView) v.findViewById(R.id.fast);
+        if (stopTime.isBestTripDuration()) {
+            duration.setBackgroundColor(Color.parseColor("#10c390"));
+        } else {
+            duration.setBackgroundColor(Color.parseColor("#eeeef4"));
+        }
+
+        ImageView empty = (ImageView) v.findViewById(R.id.empty);
+        if (stopTime.isBestNumPassengers()) {
+            empty.setBackgroundColor(Color.parseColor("#10c390"));
+        } else {
+            empty.setBackgroundColor(Color.parseColor("#eeeef4"));
+        }
+
+
+        /*ImageView duration = (ImageView) v.findViewById(R.id.fast_bus_icon);
         if (stopTime.isBestTripDuration()) {
             duration.setVisibility(View.VISIBLE);
         } else {
@@ -68,7 +84,7 @@ public class ScheduleAdapter extends ArrayAdapter<StopTime> {
             empty.setVisibility(View.VISIBLE);
         } else {
             empty.setVisibility(View.GONE);
-        }
+        }*/
 
         return v;
     }
