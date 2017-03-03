@@ -34,11 +34,10 @@
                 android:layout_marginTop="13dp"
                 android:textStyle="bold"
                 android:textSize="12sp"
-                android:textColor="@color/primary_text_color"
-                android:text="R. Endereço, numero - Bairro"/>
+                android:textColor="@color/primary_text_color" />
 
             <FrameLayout
-                android:id="@+id/melior_map_fragment"
+                android:id="@+id/melhor_map_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="175dp"
                 android:layout_marginLeft="14dp"
@@ -62,7 +61,7 @@
                 android:textColor="@color/drawer_text_color" />
 
             <Spinner
-                android:id="@+id/take_bus_routes_spinner"
+                android:id="@+id/schedules_routes_spinner"
                 style="@style/SpinnerTakeBus"
                 android:dropDownSelector="@android:drawable/arrow_down_float"
                 android:spinnerMode="dropdown"/>
@@ -82,7 +81,7 @@
                 android:textColor="@color/drawer_text_color" />
 
             <Spinner
-                android:id="@+id/take_bus_stops_spinner"
+                android:id="@+id/schedules_stops_spinner"
                 style="@style/SpinnerTakeBus"
                 android:dropDownSelector="@android:drawable/arrow_down_float"
                 android:spinnerMode="dropdown" />
@@ -98,7 +97,7 @@
             android:layerType="software"/>
 
         <Button
-            android:id="@+id/take_bus_take_bus_button"
+            android:id="@+id/show_schedule_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

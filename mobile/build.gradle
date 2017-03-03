@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
-    
+
     //sempre que gerar uma nova apk, atualizar o versionName e incrementar o targetSdkVersion
     defaultConfig {
         applicationId "br.edu.ufcg.analytics.meliorbusao"
@@ -40,28 +40,25 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:design:23.1.1'
-    compile 'com.google.android.gms:play-services:8.3.0'
-    compile 'com.google.android.gms:play-services-plus:8.3.0'
-    compile 'com.google.android.gms:play-services-identity:8.3.0'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:multidex:1.0.0'
+    compile 'testfairy:testfairy-android-sdk:1.+@aar'
+    compile project(':osmdroid-android-4.2')
+    compile project(':slf4j-android-1.6.1-RC1')
+    compile project(':osmbonuspack_v5.1')
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
+    compile 'com.google.android.gms:play-services:8.4.0'
+    compile 'com.google.android.gms:play-services-plus:8.4.0'
+    compile 'com.google.android.gms:play-services-identity:8.4.0'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.parse.bolts:bolts-android:1.+'
     compile 'com.parse:parse-android:1.+'
-    compile 'com.android.support:support-v4:23.1.1'
+    compile 'com.android.support:support-v4:23.4.0'
     compile 'com.cocosw:bottomsheet:1.+@aar'
-
-    compile 'com.android.support:recyclerview-v7:23.1.1'
+    compile 'com.android.support:recyclerview-v7:23.4.0'
     compile 'com.bignerdranch.android:expandablerecyclerview:1.0.3'
     compile 'com.roughike:bottom-bar:1.3.7'
     compile 'testfairy:testfairy-android-sdk:1.+@aar'
     compile 'com.android.support:multidex:1.0.0'
-
-    compile 'com.android.support:multidex:1.0.0'
-
-    compile 'testfairy:testfairy-android-sdk:1.+@aar'
-
 }
-apply plugin: 'com.google.gms.google-services'

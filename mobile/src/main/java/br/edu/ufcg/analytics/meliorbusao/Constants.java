@@ -84,6 +84,13 @@ public final class Constants {
     public static final int KIND_ROUTESTOP = 0;
     public static final int KIND_SHAPES = 1;
 
+//    Fetch Address Service
+    public static final int SUCCESS_RESULT = 0;
+    public static final int FAILURE_RESULT = 1;
+    public static final String RECEIVER = PACKAGE_NAME + ".RECEIVER";
+    public static final String RESULT_DATA_KEY = PACKAGE_NAME + ".RESULT_DATA_KEY";
+    public static final String GEOPOINT_DATA_EXTRA = PACKAGE_NAME + ".GEOPOINT_DATA_EXTRA";
+
     protected static final int[] MONITORED_ACTIVITIES = {
             DetectedActivity.STILL,
             DetectedActivity.ON_FOOT,
@@ -118,4 +125,6 @@ public final class Constants {
                 return resources.getString(R.string.unidentifiable_activity, detectedActivityType);
         }
     }
+
+
 }

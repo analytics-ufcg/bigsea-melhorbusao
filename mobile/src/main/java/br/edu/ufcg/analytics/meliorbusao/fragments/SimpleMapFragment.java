@@ -66,7 +66,6 @@ public class SimpleMapFragment extends MeliorMapFragment implements GoogleMap.On
         putAddressName();
         getMap().addMarker(new MarkerOptions().position(point).title(getAddress()).
                 icon(BitmapDescriptorFactory.fromResource(R.mipmap.map_marker)));
-        ((SearchScheduleFragment) getParentFragment()).setRouteAdapter();
     }
 
     private CameraUpdate getCameraUpdate(LatLng point) {
@@ -128,7 +127,6 @@ public class SimpleMapFragment extends MeliorMapFragment implements GoogleMap.On
 
     private void putAddressName() {
         setAddressName(getLat(), getLon());
-        ((SearchScheduleFragment) getParentFragment()).setAddress(getAddress());
     }
 
 }

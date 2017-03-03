@@ -1,16 +1,19 @@
 package br.edu.ufcg.analytics.meliorbusao.activities;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.res.AssetManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
+import android.os.BatteryManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.PersistableBundle;
 import android.support.annotation.IdRes;
 import android.support.design.widget.NavigationView;
@@ -51,6 +54,11 @@ import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
 
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 
@@ -76,7 +84,7 @@ import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
 public class MelhorBusaoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFinishedParseListener,
-        TopBusFragment.OnTopBusSelectedListener, NearStopsFragment.OnNearStopsSelectedListener, SearchScheduleFragment.OnTakeBusSelectedListener,
+        TopBusFragment.OnTopBusSelectedListener, NearStopsFragment.NearStopListener, SearchScheduleFragment.SearchScheduleListener,
         FragmentManager.OnBackStackChangedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     public static final String TAG = "MelhorBusaoActivity";
@@ -117,7 +125,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_melior_busao);
-
 
         topBusFragment = TopBusFragment.getInstance();
         nearStopsFragment = NearStopsFragment.getInstance();
@@ -201,6 +208,11 @@ public class MelhorBusaoActivity extends AppCompatActivity
             buildAlertMessageNoGps();
         }
 
+
+        //TO check battery states
+        /*this.registerReceiver(this.mBroadcastReceiver,
+                new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+*/
     }
 
     private void loadCityData() {
@@ -724,11 +736,11 @@ public class MelhorBusaoActivity extends AppCompatActivity
      */
     @Override
     public void onTakeBusButtonClickListener(Route routeSelected) {
+        Bundle args = searchScheduleFragment.getArguments();
+        args.putString(searchScheduleFragment.SELECTED_ROUTE_KEY, routeSelected.getShortName());
         getSupportFragmentManager().beginTransaction().replace(R.id.container_layout,
                 searchScheduleFragment, SearchScheduleFragment.TAG).addToBackStack(SearchScheduleFragment.TAG).commit();
         changeBottomBarItem(SearchScheduleFragment.TAG);
-        searchScheduleFragment.setRoute(routeSelected);
-
     }
 
     /**
@@ -745,7 +757,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
      * Em paradas próximas, exibe as informações das rotas e das paradas
      */
     @Override
-    public void onClickStopWindowInfo(HashSet<Route> routes, String stopName) {
+    public void onInfoWindowClick(HashSet<Route> routes, String stopName) {
 
         getSupportFragmentManager().beginTransaction().replace(R.id.container_layout,
                 topBusFragment, TopBusFragment.TAG).addToBackStack(TopBusFragment.TAG).commit();
@@ -938,4 +950,73 @@ public class MelhorBusaoActivity extends AppCompatActivity
         return cityName;
     }
 
+
+
+    // TO check baterry states
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            /*
+                BatteryManager
+                    The BatteryManager class contains strings and constants used for values in the
+                    ACTION_BATTERY_CHANGED Intent, and provides a method for querying battery
+                    and charging properties.
+            */
+            /*
+                public static final String EXTRA_SCALE
+                    Extra for ACTION_BATTERY_CHANGED: integer containing the maximum battery level.
+                    Constant Value: "scale"
+            */
+            // Get the battery scale
+            int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE,-1);
+            String battery_scale = String.valueOf(scale);
+
+            /*
+                public static final String EXTRA_LEVEL
+                    Extra for ACTION_BATTERY_CHANGED: integer field containing the current battery
+                    level, from 0 to EXTRA_SCALE.
+
+                    Constant Value: "level"
+            */
+            // get the battery level
+            int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL,-1);
+            String battery_lvl = String.valueOf(level);
+
+            // Calculate the battery charged percentage
+            float percentage = level/ (float) scale;
+            String current_battery_percentage = String.valueOf((int)((percentage)*100));
+
+            gravarNoArquivo(battery_scale, battery_lvl , current_battery_percentage);
+        }
+    };
+
+    // TO check baterry states
+    private void gravarNoArquivo(String battery_scale, String battery_lvl, String current_battery_percentage) {
+        File externalStorage = Environment.getExternalStorageDirectory();
+        File busMonitorPath = new File(externalStorage, Constants.LOG_PATH);
+
+        if (!busMonitorPath.exists()){
+            busMonitorPath.mkdirs();
+        }
+
+        String time = String.valueOf(Calendar.getInstance().getTimeInMillis());
+        File file = new File(busMonitorPath, "battery_status.txt");
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
+            if (!file.exists()){
+                String header = "time,battery_scale, battery_lvl,current_battery_percentage ";
+                writer.write(header);
+            }
+
+            writer.append(time+ "," + battery_scale + "," + battery_lvl + "," + current_battery_percentage);
+
+
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            Toast.makeText(this, "Não foi possível gravar o arquivo '" + file.getName() + "'", Toast.LENGTH_LONG).show();
+        }
+
+    }
 }
