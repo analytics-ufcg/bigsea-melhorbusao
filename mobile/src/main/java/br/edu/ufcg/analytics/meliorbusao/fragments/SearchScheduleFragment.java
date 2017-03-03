@@ -159,6 +159,10 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
         }
     }
 
+    /**
+     * Initialize the spinner that shows nearby routes.
+     * @param mView The container view of the spinner
+     */
     private void initializeRoutesSpinner(View mView) {
         routesSpinner = (Spinner) mView.findViewById(R.id.schedules_routes_spinner);
         mRoutesAdapter = new RoutesAdapter(getActivity(), new ArrayList<Route>());
@@ -207,7 +211,13 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
         return  nearbyStops;
     }
 
-
+    /**
+     * Executes an action every time a StopHeadSignObj is loaded from the server. The StopHeadSignObjs
+     * are loaded each one at a time for each nearby stop for the selected nearby route.
+     *
+     * @param stopHeadsignObj The object loaded by the server.
+     * @param e An exception that might have been thrown.
+     */
     @Override
     public void onStopHeadsignReady(StopHeadsign stopHeadsignObj, ParseException e) {
         paradasDisponiveis.add(stopHeadsignObj);
@@ -229,6 +239,12 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
     public void onStopTimesReady(List<StopTime> stopTimes) {
     }
 
+    /**
+     * Marks a new address in the map for the address given as a query and also load the nearby routes
+     * for the address given.
+     * @param query A string representing the address for look up.
+     * @return A boolean that indicates wether the address was found (true) or not (false).
+     */
     public boolean onQueryTextSubmit(String query) {
         if (!((MelhorBusaoActivity) getActivity()).checkInternetConnection()) {
             Toast.makeText(getContext(), R.string.msg_search_needs_internet, Toast.LENGTH_LONG).show();

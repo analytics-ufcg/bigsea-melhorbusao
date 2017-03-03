@@ -103,7 +103,6 @@ public class NearStopsFragment extends Fragment implements SearchView.OnQueryTex
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        // This makes sure that the container activity has implemented the callback interface.
         try {
             mCallback = (NearStopListener) context;
         } catch (ClassCastException e) {
@@ -113,7 +112,6 @@ public class NearStopsFragment extends Fragment implements SearchView.OnQueryTex
 
     /**
      * Add a marker in the map to each bus stop that is located within a certain diameter.
-     *
      * @param centerPoint The center of the diameter.
      */
     private void loadNearStops(GeoPoint centerPoint) {
@@ -124,6 +122,10 @@ public class NearStopsFragment extends Fragment implements SearchView.OnQueryTex
         }
     }
 
+    /**
+     * Add a marker for representing a near stop in the map.
+     * @param stop The Stop object to be represented by the marker.
+     */
     private void addNearStopMarker(NearStop stop) {
         Marker stopMarker = mMapFragment.addMarker(new GeoPoint(stop.getLatitude(), stop.getLongitude()));
         stopMarker.setIcon(getResources().getDrawable(R.drawable.ic_bus_stop_sign));
@@ -148,6 +150,10 @@ public class NearStopsFragment extends Fragment implements SearchView.OnQueryTex
         loadNearStops(new GeoPoint(mapLocation.getLatitude(), mapLocation.getLongitude()));
     }
 
+    /**
+     * Update the nearby stops when the map is tapped.
+     * @param geoPoint The Geopoint that represents the point where the map was tapped.
+     */
     @Override
     public void onMapClick(GeoPoint geoPoint) {
         mMapFragment.clearMap();
