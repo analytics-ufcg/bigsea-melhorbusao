@@ -1,12 +1,11 @@
 package br.edu.ufcg.analytics.meliorbusao.fragments;
 
 import android.content.Context;
+import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -15,21 +14,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-import android.location.Address;
-import android.widget.ProgressBar;
+import android.widget.AdapterView;
+import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+
+import org.osmdroid.bonuspack.overlays.Marker;
+import org.osmdroid.bonuspack.overlays.MarkerInfoWindow;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
 
 import java.util.HashSet;
 import java.util.List;
@@ -39,261 +34,54 @@ import java.util.TreeSet;
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.activities.MelhorBusaoActivity;
-import br.edu.ufcg.analytics.meliorbusao.adapters.StopInfoAdapter;
+import br.edu.ufcg.analytics.meliorbusao.adapters.InfoWindowAdapter;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
-import br.edu.ufcg.analytics.meliorbusao.listeners.OnMeliorBusaoQueryListener;
+import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
+import br.edu.ufcg.analytics.meliorbusao.listeners.OnMapInformationReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.models.NearStop;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
-import br.edu.ufcg.analytics.meliorbusao.utils.ProgressUtils;
 
 
-import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
+public class NearStopsFragment extends Fragment implements SearchView.OnQueryTextListener,
+        OnMapInformationReadyListener {
 
-
-public class NearStopsFragment extends MeliorMapFragment implements
-        GoogleMap.OnInfoWindowClickListener, OnMeliorBusaoQueryListener,
-        SearchView.OnQueryTextListener, GoogleMap.OnMapClickListener {
-
+    public static final String TAG = "NearStopsFragment";
+    private static final double RAIO = 500;
     private static NearStopsFragment instance;
-
-    private OnNearStopsSelectedListener mCallback;
-    private FloatingActionButton mReloadButton;
+    private MapFragment mMapFragment;
     private Menu mMenu;
+    private NearStopListener mCallback;
     private SearchView mSearchView;
 
-    private final double raio = 500;
-
-    private String address = "";
-
-    public static final String TAG = "NEAR_STOPS_FRAGMENT";
-    private BitmapDescriptor mParadaBitmap;
-    private ProgressBar progressSpinner;
-
+    public NearStopsFragment() {
+    }
 
     public static NearStopsFragment getInstance() {
         if (instance == null) {
             NearStopsFragment fragment = new NearStopsFragment();
-            Bundle args = new Bundle();
-            fragment.setArguments(args);
             instance = fragment;
         }
         return instance;
     }
 
-    public NearStopsFragment() {
-    }
-
     @Override
-    public void onInfoWindowClick(Marker marker) {
-        String[] routes = marker.getSnippet().split(",");
-        //ArrayList<SumarioRota> listSummaryRoutesThisMarker = new ArrayList<SumarioRota>();
-        HashSet<Route> hashRoute = new HashSet<Route>();
-
-        for (String route : routes) {
-            String[] routeAux = route.split(";");
-            //SumarioRota summaryRoute = DBUtils.getSumarioRota(getContext(), DBUtils.getRoute(getContext(), routeAux[0]));
-            hashRoute.add(DBUtils.getRoute(getContext(), routeAux[0]));
-            //listSummaryRoutesThisMarker.add(summaryRoute);
-        }
-
-        String stopName = marker.getTitle().substring(marker.getTitle().indexOf(" - ") + 3);
-        if (stopName.substring(0, 1).matches("[0-9]")) {
-            stopName = getString(R.string.bus_stop) + stopName;
-        }
-        mCallback.onClickStopWindowInfo(hashRoute, stopName);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mMapFragment = new MapFragment();
+        mMapFragment.setOnMapInformationReadyListener(this);
+        setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        FrameLayout viewMain = (FrameLayout) super.onCreateView(inflater, container, savedInstanceState);
-
-        progressSpinner = ProgressUtils.buildProgressBar(getContext());
-
-        getMap().setOnMapClickListener(this);
-        getMap().setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-
-            @Override
-            public boolean onMyLocationButtonClick() {
-                if (((MelhorBusaoActivity) getActivity()).isLocationEnabled()) {
-                    requestLocationUpdates();
-                    Snackbar.make(getView(), R.string.reload_location, Snackbar.LENGTH_LONG).show();
-                } else {
-                    ((MelhorBusaoActivity) getActivity()).buildAlertMessageNoGps();
-                }
-                return true;
-            }
-        });
-//        getMap().setOnMapLongClickListener(this);
-
-        //Enable Options Menu handling
-        setHasOptionsMenu(true);
-
-        return viewMain;
-    }
-
-    private void setUpMap() {
-        getMap().clear();
-        getMap().setMyLocationEnabled(true);
-        getMap().animateCamera(getCameraUpdate());
-        getMap().addCircle(getCircleOptions());
-        inicializarParadas();
-        StopInfoAdapter stopInfo = new StopInfoAdapter();
-        stopInfo.setActivity(getActivity());
-        getMap().setInfoWindowAdapter(stopInfo);
-        getMap().setOnInfoWindowClickListener(this);
-
-        progressSpinner.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onMeliorLocationAvaliable(Location result) {
-        super.onMeliorLocationAvaliable(result);
-
-        setUpMap();
-    }
-
-    private CameraUpdate getCameraUpdate(LatLng point) {
-        return CameraUpdateFactory.newLatLngZoom(new LatLng(point.latitude, point.longitude), 15.5f);
-    }
-
-    private CircleOptions getCircleOptions() {
-        CircleOptions circleOptions = new CircleOptions();
-        circleOptions.radius(raio);
-        circleOptions.fillColor(ContextCompat.getColor(getContext(), R.color.nearStopsAreaFill));
-        circleOptions.strokeColor(ContextCompat.getColor(getContext(), R.color.nearStopsAreaStroke));
-        circleOptions.strokeWidth(3);
-        circleOptions.center(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
-        return circleOptions;
-    }
-
-    private void inicializarParadas() {
-        TreeSet<NearStop> paradas = DBUtils.getNearStops(getContext(), mLastLocation.getLatitude(),
-                mLastLocation.getLongitude(), raio, null);
-        for (NearStop parada : paradas) {
-            getMap().addMarker(getMarkerOptionsFromStop(parada, getStopBitmap()));
-        }
-    }
-
-    private void inicializarParadas(LatLng point) {
-        TreeSet<NearStop> paradas = DBUtils.getNearStops(getContext(), point.latitude,
-                point.longitude, raio, null);
-        for (NearStop parada : paradas) {
-            getMap().addMarker(getMarkerOptionsFromStop(parada, getStopBitmap()));
-        }
-    }
-
-    @Override
-    public void onMapClick(LatLng latLng) {
-        progressSpinner.setVisibility(View.VISIBLE);
-        setAddressName(latLng.latitude, latLng.longitude);
-        updateNearStops(latLng);
-    }
-
-    private void setAddressName(double lat, double lon) {
-        Geocoder geocoder;
-        List<Address> addresses;
-        geocoder = new Geocoder(getContext(), Locale.getDefault());
-
-        try {
-            addresses = geocoder.getFromLocation(lat, lon, 1);
-            setAddress(addresses.get(0).getAddressLine(0));
-
-        } catch (Exception e) {
-            Log.e("Erro address", e.getMessage());
-        }
-    }
-
-    private void updateNearStops(LatLng point) {
-        getMap().clear();
-        getMap().animateCamera(getCameraUpdate(point));
-        getMap().addCircle(getCircleOptions(point));
-
-        getMap().addMarker(new MarkerOptions().position(point).title(
-                getAddress()));
-        inicializarParadas(point);
-        progressSpinner.setVisibility(View.GONE);
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    private CircleOptions getCircleOptions(LatLng point) {
-        CircleOptions circleOptions = new CircleOptions();
-        circleOptions.radius(raio);
-        circleOptions.fillColor(ContextCompat.getColor(getContext(), R.color.nearStopsAreaFill));
-        circleOptions.strokeColor(ContextCompat.getColor(getContext(), R.color.nearStopsAreaStroke));
-        circleOptions.strokeWidth(3);
-        circleOptions.center(new LatLng(point.latitude, point.longitude));
-        return circleOptions;
-    }
-
-    @Override
-    public void onMeliorBusaoQueryChange(String query) {
-
-    }
-
-    @Override
-    public boolean onMeliorBusaoQuerySubmit(String query) {
-        try {
-            address = query;
-            try {
-                Geocoder geocoder;
-                geocoder = new Geocoder(getContext(), Locale.getDefault());
-                LatLng point = new LatLng(geocoder.getFromLocationName(address + "," + Constants.CITY, 1).get(0).getLatitude(),
-                        geocoder.getFromLocationName(address + "," + Constants.CITY, 1).get(0).getLongitude());
-                List<Address> addresses;
-                addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
-                if (addresses.get(0).getLocality().compareTo(Constants.CITY) == 0) {
-                    setAddressName(point.latitude, point.longitude);
-                    updateNearStops(point);
-                    return true;
-                } else {
-                    Toast.makeText(getActivity(), getString(R.string.msg_unable_to_find_route), Toast.LENGTH_LONG).show();
-                }
-            } catch (Exception e) {
-                Log.e("NearStopsFragment", e.getMessage());
-            }
-
-        } catch (Exception e) {
-            Log.e("NearStopsFragment", "Não foi possível achar a localizacao: " + e.getMessage());
-            Toast.makeText(getActivity(), getString(R.string.msg_failed_detect_location), Toast.LENGTH_SHORT).show();
-        }
-        return false;
-    }
-
-    public interface OnNearStopsSelectedListener extends FragmentTitleChangeListener {
-        void onClickStopWindowInfo(HashSet<Route> routes, String stopName);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            mCallback = (OnNearStopsSelectedListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement OnHeadlineSelectedListener");
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mCallback.onTitleChange(getResources().getString(R.string.near_stops_title));
+        View mView = inflater.inflate(R.layout.fragment_near_stops, container, false);
+        getChildFragmentManager().beginTransaction().replace(R.id.near_stops_map_fragment, mMapFragment).commit();
+        return mView;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-
         mMenu = menu;
 
         menu.findItem(R.id.list_routes_btn).setVisible(false);
@@ -306,36 +94,100 @@ public class NearStopsFragment extends MeliorMapFragment implements
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        ((MelhorBusaoActivity) getActivity()).getSupportActionBar()
+                .setTitle(R.string.near_stops_title);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        // This makes sure that the container activity has implemented the callback interface.
+        try {
+            mCallback = (NearStopListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement NearStopListener");
+        }
+    }
+
+    /**
+     * Add a marker in the map to each bus stop that is located within a certain diameter.
+     *
+     * @param centerPoint The center of the diameter.
+     */
+    private void loadNearStops(GeoPoint centerPoint) {
+        TreeSet<NearStop> nearStops = DBUtils.getNearStops(getContext(), centerPoint.getLatitude(),
+                centerPoint.getLongitude(), RAIO, null);
+        for (NearStop stop : nearStops) {
+            addNearStopMarker(stop);
+        }
+    }
+
+    private void addNearStopMarker(NearStop stop) {
+        Marker stopMarker = mMapFragment.addMarker(new GeoPoint(stop.getLatitude(), stop.getLongitude()));
+        stopMarker.setIcon(getResources().getDrawable(R.drawable.ic_bus_stop_sign));
+        stopMarker.setInfoWindow(new NearStopMarkerInfoWindow(mMapFragment.getMapView(), stop));
+        stopMarker.setInfoWindowAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_TOP);
+        stopMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker, MapView mapView) {
+                marker.showInfoWindow();
+                return true;
+            }
+        });
+    }
+
+
+    @Override
+    public void onMapAddressFetched(String mapAddres) {
+    }
+
+    @Override
+    public void onMapLocationAvailable(Location mapLocation) {
+        loadNearStops(new GeoPoint(mapLocation.getLatitude(), mapLocation.getLongitude()));
+    }
+
+    @Override
+    public void onMapClick(GeoPoint geoPoint) {
+        mMapFragment.clearMap();
+        mMapFragment.updatePlaceMarker(geoPoint);
+        loadNearStops(geoPoint);
+    }
+
+    /**
+     * Mark a new place in the map according to the addres passed if the address exists.
+     *
+     * @param query The addres for looking up.
+     * @return If the address was successfully found or not.
+     */
+    @Override
     public boolean onQueryTextSubmit(String query) {
         if (!((MelhorBusaoActivity) getActivity()).checkInternetConnection()) {
             Toast.makeText(getContext(), getString(R.string.msg_search_needs_internet), Toast.LENGTH_LONG).show();
             return false;
-
         } else {
             try {
-                address = query;
-                try {
-                    Geocoder geocoder;
-                    geocoder = new Geocoder(getContext(), Locale.getDefault());
-                    LatLng point = new LatLng(geocoder.getFromLocationName(address + "," + Constants.CITY, 1).get(0).getLatitude(),
-                            geocoder.getFromLocationName(address + "," + Constants.CITY, 1).get(0).getLongitude());
-                    List<Address> addresses;
-                    addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
-                    if (addresses.get(0).getLocality().compareTo(Constants.CITY) == 0) {
-                        updateNearStops(point);
-                        mMenu.findItem(R.id.action_search).collapseActionView();
-                        return true;
-                    } else {
-                        Toast.makeText(getActivity(), getString(R.string.msg_failed_locate_search), Toast.LENGTH_LONG).show();
-                    }
-                } catch (Exception e) {
-                    Log.e("NearStopsFragment", e.getMessage());
+                Geocoder geocoder;
+                geocoder = new Geocoder(getContext(), Locale.getDefault());
+                LatLng point = new LatLng(geocoder.getFromLocationName(query + "," + Constants.CITY, 1).get(0).getLatitude(),
+                        geocoder.getFromLocationName(query + "," + Constants.CITY, 1).get(0).getLongitude());
+                List<Address> addresses;
+                addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
+                if (addresses.get(0).getLocality().compareTo(Constants.CITY) == 0) {
+                    GeoPoint geoPoint = new GeoPoint(point.latitude, point.longitude);
+                    mMapFragment.clearMap();
+                    mMapFragment.updatePlaceMarker(geoPoint);
+                    loadNearStops(geoPoint);
+                    mMenu.findItem(R.id.action_search).collapseActionView();
+                    return true;
+                } else {
+                    Toast.makeText(getActivity(), getString(R.string.msg_failed_locate_search), Toast.LENGTH_LONG).show();
                 }
-
             } catch (Exception e) {
-                Log.e("NearStopsFragment", "Não foi possível achar a localizacao: " + e.getMessage());
-                Toast.makeText(getActivity(), getString(R.string.msg_failed_detect_location), Toast.LENGTH_SHORT).show();
+                Log.e(TAG, e.getMessage());
             }
+
         }
         return false;
     }
@@ -345,12 +197,52 @@ public class NearStopsFragment extends MeliorMapFragment implements
         return true;
     }
 
+    /**
+     * Listener for NearStopFragment
+     */
+    public interface NearStopListener extends FragmentTitleChangeListener {
+        void onInfoWindowClick(HashSet<Route> routes, String stopName);
+    }
 
-    private BitmapDescriptor getStopBitmap() {
-        if (mParadaBitmap == null) {
-            mParadaBitmap = getBitmapDescriptor(R.drawable.ic_parada, 52, 40);
+    /**
+     * Class representing the info window that shows up when clicking in a marker.
+     */
+    class NearStopMarkerInfoWindow extends MarkerInfoWindow {
+
+        private NearStop mStop;
+        private MapView mMapView;
+
+        public NearStopMarkerInfoWindow(MapView mapView, NearStop stop) {
+            super(R.layout.near_stop_info_window, mapView);
+            this.mStop = stop;
+            this.mMapView = mapView;
         }
-        return mParadaBitmap;
+
+        @Override
+        public void onOpen(Object item) {
+            closeAllInfoWindowsOn(mMapView);
+            GridView infoWindowGrid = (GridView) mView.findViewById(R.id.info_window_grid);
+            infoWindowGrid.setAdapter(new InfoWindowAdapter(mView.getContext(), mStop.getRoutes()));
+            TextView windowTitle = (TextView) mView.findViewById(R.id.bubble_title);
+            windowTitle.setText(mStop.getName());
+// // TODO: 15/02/17 continuar isso aqui 
+//            Rect rectf = new Rect();
+//            mView.requestaRectangleOnScreen(rectf);
+//            MapController mapController = (MapController) mMapView.getController();
+//            int x = rectf.right + rectf.width();
+//            int y = rectf.top - (rectf.height() / 2);
+//            mapController.animateTo(x, y);
+
+            infoWindowGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if (mCallback != null) {
+                        mCallback.onInfoWindowClick(new HashSet<>(mStop.getRoutes()), mStop.getName());
+                    }
+                }
+            });
+        }
+
     }
 
 }

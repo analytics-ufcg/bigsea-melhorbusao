@@ -463,7 +463,7 @@ public class ParseUtils {
 
                 Collections.sort(uniquesStopTime);
 
-                listener.onStopTimesReady(uniquesStopTime, e);
+                listener.onStopTimesReady(uniquesStopTime);
             }
 
         });
@@ -473,15 +473,9 @@ public class ParseUtils {
 
     /**
      * Retorna o objeto StopTime de uma rota especifica
-     *
-     * @param context
-     * @param route
-     * @param nearStop
-     * @param listener
      */
-    public static void getStopTime(Context context, final Route route, final NearStop nearStop, final OnStopTimesReadyListener listener) {
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("StopTime");
+    public static void getStopTime(final Route route, final NearStop nearStop, final OnStopTimesReadyListener listener) {
+          ParseQuery<ParseObject> query = ParseQuery.getQuery("StopTime");
         query.whereEqualTo("routeId", route.getId());
         query.whereEqualTo("stopId", nearStop.getId());
         query.getFirstInBackground(new GetCallback<ParseObject>() {
@@ -497,14 +491,10 @@ public class ParseUtils {
                     stopHeadsignObj = new StopHeadsign(route, st, nearStop);
 
                 }
-
-
                 listener.onStopHeadsignReady(stopHeadsignObj, e);
-
             }
 
         });
-
     }
 
     public static List<StopTime> getRouteScheduleCuritiba(Context context, final String routeId, final int stopId) {

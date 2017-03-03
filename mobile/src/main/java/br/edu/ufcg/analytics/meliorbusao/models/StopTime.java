@@ -15,6 +15,10 @@ public class StopTime implements Comparable<StopTime> {
     private Date arrivalTimeBefore;
     private Date arrivalTimeAfter;
 
+    private double numberOfPassengers;
+    private double tripDuration;
+    private boolean isBestNumPassengers;
+    private boolean isBestTripDuration;
 
     public StopTime(String serviceId, String routeId, int stopId, Date arrivalTime, String stopHeadsign) {
         this.serviceId = serviceId;
@@ -45,7 +49,19 @@ public class StopTime implements Comparable<StopTime> {
 
     }
 
+    public StopTime(String routeId, int stopId, Date scheduleMean, Date scheduleBefore, Date scheduleAfter,
+                    double numberOfPassengers, double tripDuration, boolean isBestNumPassengers, boolean isBestTripDuration) {
 
+        this.routeId = routeId;
+        this.stopId = stopId;
+        this.arrivalTime = scheduleMean;
+        this.arrivalTimeBefore=scheduleBefore;
+        this.arrivalTimeAfter=scheduleAfter;
+        this.numberOfPassengers = numberOfPassengers;
+        this.tripDuration = tripDuration;
+        this.isBestNumPassengers = isBestNumPassengers;
+        this.isBestTripDuration = isBestTripDuration;
+    }
 
     /**
      *
@@ -179,6 +195,62 @@ public class StopTime implements Comparable<StopTime> {
     }
 
     /**
+     * @return Trip predicted number of passengers
+     */
+    public double getNumberOfPassengers() {
+        return numberOfPassengers;
+    }
+
+    /**
+     * Set the trip predicted number of passengers
+     */
+    public void setNumberOfPassengers(double numberOfPassengers) {
+        this.numberOfPassengers = numberOfPassengers;
+    }
+
+    /**
+     * @return Predicted trip duration
+     */
+    public double getTripDuration() {
+        return tripDuration;
+    }
+
+    /**
+     * Set the predicted trip duration
+     */
+    public void setTripDuration(double tripDuration) {
+        this.tripDuration = tripDuration;
+    }
+
+    /**
+     * @return True if this is the best trip duration
+     */
+    public boolean isBestTripDuration() {
+        return isBestTripDuration;
+    }
+
+    /**
+     * Set the best trip duration to true or false
+     */
+    public void setBestTripDuration(boolean bestTripDuration) {
+        isBestTripDuration = bestTripDuration;
+    }
+
+    /**
+     * @return True if this is the best trip number of passengers
+     */
+    public boolean isBestNumPassengers() {
+        return isBestNumPassengers;
+    }
+
+    /**
+     * Set the best trip number of passengers to true or false
+     */
+    public void setBestNumPassengers(boolean bestNumPassengers) {
+        isBestNumPassengers = bestNumPassengers;
+    }
+
+    /**
      *
      * @param another
      * @return
@@ -209,15 +281,16 @@ public class StopTime implements Comparable<StopTime> {
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        //StringBuilder sb = new StringBuilder();
 
         SimpleDateFormat sdfDate = new SimpleDateFormat("HH:mm");
 
-        sb.append(sdfDate.format(arrivalTime));
+        //sb.append(sdfDate.format(arrivalTime));
 
         String scheduleAfter = sdfDate.format(arrivalTimeAfter);
         String scheduleBefore = sdfDate.format(arrivalTimeBefore);
 
-        return  /*sb.toString() + " " + */scheduleBefore + " - " + scheduleAfter;
+        return  /*sb.toString() + " " + */ scheduleBefore + " - " + scheduleAfter;
+        //return sdfDate.format(arrivalTime);
     }
 }

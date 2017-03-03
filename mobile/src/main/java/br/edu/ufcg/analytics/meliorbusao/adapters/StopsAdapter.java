@@ -17,12 +17,12 @@ import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.models.StopHeadsign;
 
-public class StopArrayAdapter extends ArrayAdapter<StopHeadsign> {
+public class StopsAdapter extends ArrayAdapter<StopHeadsign> {
     private final Route routeSelected;
     private List<StopHeadsign> items;
     private Activity activity;
 
-    public StopArrayAdapter(Activity activity, List<StopHeadsign> items, Route routeSelected) {
+    public StopsAdapter(Activity activity, List<StopHeadsign> items, Route routeSelected) {
         super(activity, android.R.layout.simple_list_item_1, items);
         this.routeSelected = routeSelected;
         this.items = items;
@@ -31,11 +31,6 @@ public class StopArrayAdapter extends ArrayAdapter<StopHeadsign> {
 
     /**
      * Define o adapter como um componente dropdown (para que o dropdown seja possivel)
-     *
-     * @param position
-     * @param convertView
-     * @param parent
-     * @return
      */
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
@@ -46,9 +41,6 @@ public class StopArrayAdapter extends ArrayAdapter<StopHeadsign> {
 
     /**
      * Retorna o item (parada a ser escolhida) do dropdown
-     *
-     * @param position
-     * @return
      */
     @Override
     public StopHeadsign getItem(int position) {
@@ -57,11 +49,6 @@ public class StopArrayAdapter extends ArrayAdapter<StopHeadsign> {
 
     /**
      * Monta a view com informações da parada a ser escolhida
-     *
-     * @param position
-     * @param convertView
-     * @param parent
-     * @return
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {

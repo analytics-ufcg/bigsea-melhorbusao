@@ -20,6 +20,7 @@ import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnFinishedParseListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnStopTimesReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.models.StopTime;
+import br.edu.ufcg.analytics.meliorbusao.utils.BestTripRecommenderUtils;
 import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
@@ -223,7 +224,8 @@ public class SchedulesProbableParser extends AsyncTask<Void, Void, Void> {
                 break;
         }
 
-        listener.onStopTimesReady(DBUtils.getRouteSchedule(context, routeId, stopId, dayS));
+        //listener.onStopTimesReady(DBUtils.getRouteSchedule(context, routeId, stopId, dayS));
+        listener.onStopTimesReady(BestTripRecommenderUtils.getBestTripRecommenderData(routeId, stopId, context));
 
 //        final List<StopTime> stopTimes = ParseUtils.getRouteScheduleCuritiba(context, routeId, stopId);
 //        Log.d(LOG_TAG, Integer.toString(stopTimes.size()));
