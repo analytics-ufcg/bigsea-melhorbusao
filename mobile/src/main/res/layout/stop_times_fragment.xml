@@ -37,16 +37,36 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="right"
-        android:layout_marginRight="24dp">
+        android:layout_marginRight="4dp">
 
+
+        <ImageView
+            android:id="@+id/fast_bus_icon"
+            android:layout_width="85dp"
+            android:layout_height="20dp"
+            android:layout_marginRight="2dp"
+            android:scaleType="fitStart"
+            android:src="@drawable/fast_bus" />
+
+        <!--
         <TextView android:layout_height="match_parent"
             android:layout_width="wrap_content"
             android:text="Rápido"
-            android:layout_marginRight="12dp"/>
+            android:layout_marginRight="12dp"/> -->
 
-        <TextView android:layout_height="match_parent"
+        <!--<TextView android:layout_height="match_parent"
             android:layout_width="wrap_content"
-            android:text="Cheio"/>
+            android:text="Cheio"
+            android:layout_marginLeft="12dp"/> -->
+
+
+        <ImageView
+            android:id="@+id/empty_bus_icon"
+            android:layout_width="85dp"
+            android:layout_height="20dp"
+            android:scaleType="fitStart"
+            android:src="@drawable/empty_bus"
+            />
 
     </LinearLayout>
 

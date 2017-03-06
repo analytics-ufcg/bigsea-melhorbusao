@@ -20,10 +20,16 @@ public class ScheduleAdapter extends ArrayAdapter<StopTime> {
     private List<StopTime> stopTimes;
     private Activity activity;
 
+    private int secondFastest=Integer.MIN_VALUE;
+    private int secondEmptiest=Integer.MIN_VALUE;
+
+
+
     public ScheduleAdapter(Activity activity, int resource, List<StopTime> stopTimes) {
         super(activity, resource, stopTimes);
         this.stopTimes = stopTimes;
         this.activity = activity;
+        sort();
     }
 
     /**
@@ -60,16 +66,19 @@ public class ScheduleAdapter extends ArrayAdapter<StopTime> {
         ImageView duration = (ImageView) v.findViewById(R.id.fast);
         if (stopTime.isBestTripDuration()) {
             duration.setBackgroundColor(Color.parseColor("#10c390"));
-        } else {
+        } else if(!stopTime.isBestTripDuration() && stopTime.getId()!= secondFastest){
             duration.setBackgroundColor(Color.parseColor("#eeeef4"));
         }
 
         ImageView empty = (ImageView) v.findViewById(R.id.empty);
         if (stopTime.isBestNumPassengers()) {
-            empty.setBackgroundColor(Color.parseColor("#10c390"));
+            empty.setBackgroundColor(Color.parseColor("#f68d91"));
         } else {
             empty.setBackgroundColor(Color.parseColor("#eeeef4"));
         }
+
+
+
 
 
         /*ImageView duration = (ImageView) v.findViewById(R.id.fast_bus_icon);
@@ -88,4 +97,33 @@ public class ScheduleAdapter extends ArrayAdapter<StopTime> {
 
         return v;
     }
+
+    private void sort(){
+        double bestNumberOfPassengers = Integer.MAX_VALUE;
+        double bestTripDuration = Integer.MAX_VALUE;
+
+        int idBestNumberOfPassengers = 0;
+        int idBestTripDuration = 0;
+
+        for (StopTime stoptime :stopTimes) {
+            if (!stoptime.isBestNumPassengers()){
+                if (stoptime.getNumberOfPassengers() < bestNumberOfPassengers){
+                    bestNumberOfPassengers = stoptime.getNumberOfPassengers();
+                    idBestNumberOfPassengers = stoptime.getId();
+                }
+            }
+
+            if (!stoptime.isBestTripDuration()){
+                if (stoptime.getTripDuration() < bestTripDuration){
+                    bestTripDuration = stoptime.getTripDuration();
+                    idBestTripDuration = stoptime.getId();
+                }
+            }
+        }
+        secondFastest = idBestTripDuration;
+        secondEmptiest = idBestNumberOfPassengers;
+
+    }
+
+
 }
