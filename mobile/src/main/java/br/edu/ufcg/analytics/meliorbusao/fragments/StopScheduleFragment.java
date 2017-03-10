@@ -61,7 +61,7 @@ public class StopScheduleFragment extends Fragment implements OnStopTimesReadyLi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mView = inflater.inflate(R.layout.stop_times_fragment, container, false);
+        mView = inflater.inflate(R.layout.stop_schedule_fragment, container, false);
 
         Spinner routeSpinner = (Spinner) mView.findViewById(R.id.route_stop_time_frag);
         routeSpinner.setEnabled(false);
