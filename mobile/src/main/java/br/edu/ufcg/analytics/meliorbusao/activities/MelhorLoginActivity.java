@@ -42,13 +42,7 @@ public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiC
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+
             ActivityCompat.requestPermissions(
                     MelhorLoginActivity.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
@@ -62,7 +56,8 @@ public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiC
         loginBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                onSignInClicked();
+                Intent intent = new Intent(MelhorLoginActivity.this, BigseaLoginActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -107,7 +102,7 @@ public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiC
                 if (result.getSignInAccount() != null){
                     Intent intent = new Intent(getApplicationContext(), MelhorBusaoActivity.class);
                     Log.d(TAG, "connected: loading MelhorBusaoActivity");
-                    startActivity(intent);
+                    //startActivity(intent);
                 }
             }
         }

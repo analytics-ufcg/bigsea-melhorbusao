@@ -22,7 +22,6 @@
     <string name="lines">Linhas</string>
 
     <string name="action_settings">Configurações</string>
-    <string name="action_sign_in">Entrar (usando conta Google)&#8230;</string>
     <string name="action_sign_out">Sair&#8230;</string>
     <string name="action_show_notification_single">Exibir notificação (1 rota)</string>
     <string name="action_show_notification">Exibir notificação (3 rotas)</string>
@@ -121,6 +120,25 @@
     <string name="msg_no_stops_near">Rota não possui paradas perto do local selecionado.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_bigsea_login">Informe os dados</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Senha</string>
+    <string name="action_sign_in">Entrar</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">Endereço de email inválido</string>
+    <string name="error_invalid_password">A senha está muito curta</string>
+    <string name="error_incorrect_password">Senha incorreta</string>
+    <string name="error_field_required">Campo Obrigatório</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+
+    <!--String related to sign up-->
+    <string name="prompt_first_name">Nome</string>
+    <string name="prompt_last_name">Sobrenome</string>
+    <string name="prompt_username">Nome de usuário</string>
+    <string name="prompt_password_confirmation">Confirme a senha</string>
 
 </resources>

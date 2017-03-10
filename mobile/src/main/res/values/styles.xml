@@ -10,9 +10,10 @@
         <item name="android:actionBarStyle">@style/ActionBarWidgetTheme</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Light">
-        
+    <style name="AppTheme.Form" parent="Base.Theme.AppCompat">
+        <item name="colorControlNormal">@color/dividerColorDark</item>
     </style>
+
 
     <!-- Action bar style-->
     <style name="ActionBarWidgetTheme" parent="@android:style/Theme.Holo">
@@ -53,6 +54,10 @@
 
     <style name="bottom_bar_text">
         <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="FlatButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/colorAccent</item>
     </style>
 
 </resources>
