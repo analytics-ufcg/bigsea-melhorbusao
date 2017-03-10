@@ -28,7 +28,8 @@ public class BestTripRecommenderUtils {
         Date currDate = new Date();
 
         // This is a temporary solution!! It'll be resolved when correct the prediction data file!!!
-        if (( (MelhorBusaoActivity) context).getCityName().equals("Campina Grande") && route.length() == 3) {
+        //if (( (MelhorBusaoActivity) context).getCityName().equals("Campina Grande") && route.length() == 3) {
+        if (route.length() == 3) { //colocar o de cima
             route = "0" + route;
         }
 
