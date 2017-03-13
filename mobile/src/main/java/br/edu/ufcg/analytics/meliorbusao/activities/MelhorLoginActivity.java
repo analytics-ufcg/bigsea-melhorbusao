@@ -25,6 +25,7 @@ public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiC
     public static final String TAG = "MelhorLoginActivity";
 
     private Button loginBtn;
+    private Button signupBtn;
 
     /* Request code used to invoke sign in user interactions. */
     private static final int RC_SIGN_IN = 0;
@@ -52,11 +53,19 @@ public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiC
 
 
         loginBtn = (Button) findViewById(R.id.login_button);
-
         loginBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MelhorLoginActivity.this, BigseaLoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        signupBtn = (Button) findViewById(R.id.show_sign_up_form_button);
+        signupBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MelhorLoginActivity.this, SignUpActivity.class);
                 startActivity(intent);
             }
         });
