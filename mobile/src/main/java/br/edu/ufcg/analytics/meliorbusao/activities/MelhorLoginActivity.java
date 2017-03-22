@@ -56,7 +56,7 @@ public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiC
         loginBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MelhorLoginActivity.this, BigseaLoginActivity.class);
+                Intent intent = new Intent(MelhorLoginActivity.this, WebActivity.class);
                 startActivity(intent);
             }
         });
