@@ -14,6 +14,7 @@ import android.widget.Button;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 
@@ -26,6 +27,7 @@ public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiC
 
     private Button loginBtn;
     private Button signupBtn;
+    private SignInButton googleSignInButton;
 
     /* Request code used to invoke sign in user interactions. */
     private static final int RC_SIGN_IN = 0;
@@ -75,6 +77,13 @@ public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiC
         mGoogleApiClient.registerConnectionCallbacks(this);
         mGoogleApiClient.registerConnectionFailedListener(this);
 
+        googleSignInButton = (SignInButton) findViewById(R.id.google_sign_in_button);
+        googleSignInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                googleSignIn();
+            }
+        });
     }
 
 
@@ -129,13 +138,13 @@ public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiC
      * Serviço de login do Google
      */
 
-    private void onSignInClicked(){
+    private void googleSignIn(){
         // User clicked the sign-in button, so begin the sign-in process and automatically
         // attempt to resolve any errors that occur.
 
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
-        Log.d(TAG, "onSignInClicked");
+        Log.d(TAG, "googleSignIn");
     }
 
     @Override
