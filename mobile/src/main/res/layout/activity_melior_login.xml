@@ -9,8 +9,8 @@
     tools:context=".activities.MelhorLoginActivity">
 
     <ImageView android:id="@+id/meliorBusaoLogo"
-        android:layout_width="100dp"
-        android:layout_height="240dp"
+        android:layout_width="83dp"
+        android:layout_height="200dp"
         android:src="@drawable/meliorlogo"
         android:adjustViewBounds="true"
         android:layout_marginTop="10dp"
@@ -39,8 +39,14 @@
         android:textColor="#fff"
         android:textSize="16sp"
         android:text="FAZER LOGIN"
+        android:layout_marginBottom="16dp"
         style="?android:attr/borderlessButtonStyle"
         />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/google_sign_in_button"
+        android:layout_width="165dp"
+        android:layout_height="40dp" />
 
     <TextView
         android:layout_width="wrap_content"
