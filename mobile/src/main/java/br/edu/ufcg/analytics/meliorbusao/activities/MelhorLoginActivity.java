@@ -10,8 +10,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
@@ -20,22 +22,17 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 
 import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.R;
+import br.edu.ufcg.analytics.meliorbusao.fragments.TopBusFragment;
 
-public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
+public class MelhorLoginActivity extends AppCompatActivity {
 
     public static final String TAG = "MelhorLoginActivity";
-
+    private static final int PERMISSION_ALL = 12345;
+    private static final int RC_SIGN_IN = 0;
     private Button loginBtn;
     private Button signupBtn;
     private SignInButton googleSignInButton;
-
-    /* Request code used to invoke sign in user interactions. */
-    private static final int RC_SIGN_IN = 0;
-    /* Client used to interact with Google APIs. */
     private GoogleApiClient mGoogleApiClient;
-
-    private static final int PERMISSION_ALL = 12345;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +50,8 @@ public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiC
             );
         }
 
-
         loginBtn = (Button) findViewById(R.id.login_button);
+
         loginBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -72,11 +69,6 @@ public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiC
             }
         });
 
-        mGoogleApiClient = ((MeliorBusaoApplication) getApplication()).getGoogleApiClientInstance(this);
-
-        mGoogleApiClient.registerConnectionCallbacks(this);
-        mGoogleApiClient.registerConnectionFailedListener(this);
-
         googleSignInButton = (SignInButton) findViewById(R.id.google_sign_in_button);
         googleSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +76,8 @@ public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiC
                 googleSignIn();
             }
         });
+
+        mGoogleApiClient = ((MeliorBusaoApplication) getApplication()).getGoogleApiClientInstance(this);
     }
 
 
@@ -91,60 +85,28 @@ public class MelhorLoginActivity extends AppCompatActivity implements GoogleApiC
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult:" + requestCode + ":" + resultCode + ":" + data);
-
         if (requestCode == RC_SIGN_IN) {
-            mGoogleApiClient.connect();
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
         }
-    }
-
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        // Could not connect to Google Play Services.  The user needs to select an account,
-        // grant permissions or resolve an error in order to sign in. Refer to the javadoc for
-        // ConnectionResult to see possible error codes.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
-    }
-
-    @Override
-    public void onConnected(Bundle bundle){
-        // onConnected indicates that an account was selected on the device, that the selected
-        // account has granted any requested permissions to our app and that we were able to
-        // establish a service connection to Google Play services.
-        Log.d(TAG, "onConnected:" + bundle);
-
-        if (mGoogleApiClient.isConnected()){
-            OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-            if (opr.isDone()){
-                GoogleSignInResult result = opr.get();
-                if (result.getSignInAccount() != null){
-                    Intent intent = new Intent(getApplicationContext(), MelhorBusaoActivity.class);
-                    Log.d(TAG, "connected: loading MelhorBusaoActivity");
-                    //startActivity(intent);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        // The connection to Google Play services was lost. The GoogleApiClient will automatically
-        // attempt to re-connect. Any UI elements that depend on connection to Google APIs should
-        // be hidden or disabled until onConnected is called again.
-        Log.w(TAG, "onConnectionSuspended:" + i);
     }
 
     /**
-     * Serviço de login do Google
+     * Shows a dialog for signing in with Google account.
      */
-
     private void googleSignIn(){
-        // User clicked the sign-in button, so begin the sign-in process and automatically
-        // attempt to resolve any errors that occur.
-
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
-        Log.d(TAG, "googleSignIn");
+    }
+
+    private void handleSignInResult(GoogleSignInResult result) {
+        if (result.isSuccess()) {
+            GoogleSignInAccount acct = result.getSignInAccount();
+            Intent intent = new Intent(MelhorLoginActivity.this, MelhorBusaoActivity.class);
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, )
+        }
     }
 
     @Override
