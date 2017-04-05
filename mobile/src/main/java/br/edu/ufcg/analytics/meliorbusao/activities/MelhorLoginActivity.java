@@ -64,8 +64,8 @@ public class MelhorLoginActivity extends AppCompatActivity {
         signupBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MelhorLoginActivity.this, SignUpActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(MelhorLoginActivity.this, SignUpActivity.class);
+//                startActivity(intent);
             }
         });
 
@@ -105,7 +105,7 @@ public class MelhorLoginActivity extends AppCompatActivity {
             Intent intent = new Intent(MelhorLoginActivity.this, MelhorBusaoActivity.class);
             startActivity(intent);
         } else {
-            Toast.makeText(this, )
+            Toast.makeText(this, "Erro ao fazer login", Toast.LENGTH_SHORT).show();
         }
     }
 
