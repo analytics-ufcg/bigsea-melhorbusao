@@ -105,7 +105,7 @@ public class MelhorLoginActivity extends AppCompatActivity {
             Intent intent = new Intent(MelhorLoginActivity.this, MelhorBusaoActivity.class);
             startActivity(intent);
         } else {
-            Toast.makeText(this, )
+            Toast.makeText(this, "Invalid username or password" , Toast.LENGTH_LONG).show();
         }
     }
 
