@@ -207,12 +207,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
         } else {
             buildAlertMessageNoGps();
         }
-
-
-        //TO check battery states
-        /*this.registerReceiver(this.mBroadcastReceiver,
-                new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-*/
     }
 
     private void loadCityData() {
@@ -249,7 +243,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
             Log.d("status start", String.valueOf(mGoogleApiClient.isConnected()));
         }
         initializeBottomNavigation();
-
     }
 
     /**
@@ -524,7 +517,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
     public void onConnected(Bundle bundle) {
         Log.d(TAG, "onConnected:" + bundle);
         mShouldResolve = false;
-
         try {
             showSignedInUI();
         } catch (NullPointerException e) { // Caso a view ainda não esteja criada
@@ -579,26 +571,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
     }
 
-   /* @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            // If the error resolution was not successful we should not resolve further.
-            if (resultCode != RESULT_OK) {
-                mShouldResolve = false;
-            }
-            mIsResolving = false;
-            mGoogleApiClient.connect();
-
-        }
-
-    }*/
-
-    /**
-     * Serviços de login / logout do Google
-     *
-     * @return
-     */
     private NavigationView getNavigationView() {
         return (NavigationView) findViewById(R.id.nav_view);
     }
@@ -687,23 +659,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
             }
         });
     }
-
-
-
-
-    /*private void onSignOutClicked() {
-        // Clear the default account so that GoogleApiClient will not automatically connect in the future.
-        if (mGoogleApiClient.isConnected()) {
-            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-            mGoogleApiClient.disconnect();
-        }
-        Intent intent = new Intent(getApplicationContext(), MelhorLoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        showSignedOutUI();
-        onStop();
-        finish();
-    } */
 
     @Override
     public void finishedParse(int kind) {
@@ -844,6 +799,9 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
     private void stopRequestLocationUpdates() {
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, getLocationCallback());
+        if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
+            requestingLocationDialog.dismiss();
+        }
     }
 
     private LocationCallback getLocationCallback() {
@@ -855,7 +813,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
                     onMeliorLocationAvaliable(result.getLastLocation());
                     identifyUserCity(result.getLastLocation());
                     stopRequestLocationUpdates();
-
                 }
 
                 @Override
@@ -864,7 +821,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
                     if (!locationAvailability.isLocationAvailable()) {
                         if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
                             requestingLocationDialog.dismiss();
-                            Log.d(TAG, "ProgressDialog (location) showing - getLocationCallback()");
                         }
 
                         //colocar msg d erro, e pedir pra tentar novamente... abrir e tal sei la :(
