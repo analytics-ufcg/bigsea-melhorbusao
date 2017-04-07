@@ -55,7 +55,7 @@ public class MelhorLoginActivity extends AppCompatActivity {
         loginBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MelhorLoginActivity.this, WebActivity.class);
+                Intent intent = new Intent(MelhorLoginActivity.this, BigseaLoginActivity.class);
                 startActivity(intent);
             }
         });
@@ -64,8 +64,8 @@ public class MelhorLoginActivity extends AppCompatActivity {
         signupBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(MelhorLoginActivity.this, SignUpActivity.class);
-//                startActivity(intent);
+                Intent intent = new Intent(MelhorLoginActivity.this, SignUpActivity.class);
+                startActivity(intent);
             }
         });
 

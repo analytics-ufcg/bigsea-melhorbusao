@@ -84,7 +84,12 @@
             android:name=".activities.MelhorLoginActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activities.WebActivity"></activity>
+        <activity android:name=".activities.WebActivity" />
+        <activity
+            android:name=".activities.BigseaLoginActivity"
+            android:label="@string/title_activity_bigsea_login"
+            android:theme="@style/Theme.AppCompat.Dialog"></activity>
+        <activity android:name=".activities.SignUpActivity" />
     </application>
 
 </manifest>
