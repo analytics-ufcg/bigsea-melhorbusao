@@ -30,8 +30,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +64,9 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+
+    public static final String TAG = "BIGSEA_LOGIN_ACTIVITY";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +99,7 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
     }
 
     private void populateAutoComplete() {
@@ -118,31 +126,30 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
-        View focusView = null;
+
+        // There was an error; don't attempt login and focus the first
+        // form field with an error.
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
+        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
+            mPasswordView.setError(getString(R.string.error_incorrect_password));
+            mPasswordView.requestFocus();
             cancel = true;
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
             mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+            mEmailView.requestFocus();
             cancel = true;
-        } else if (!isEmailValid(email)) {
+        } /*else if (!isEmailValid(email)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+            mEmailView.requestFocus();
             cancel = true;
-        }
+        }*/
 
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
+
+         if(!cancel) {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
@@ -257,12 +264,14 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
+        private final String userName;
         private final String mPassword;
+        private String responseMessage;
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
+        UserLoginTask(String userName, String password) {
+            this.userName = userName;
+            this.mPassword = password;
+
         }
 
         @Override
@@ -278,7 +287,7 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
 
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
+                if (pieces[0].equals(userName)) {
                     // Account exists, return true if the password matches.
                     return pieces[1].equals(mPassword);
                 }
@@ -289,11 +298,13 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(Boolean success) {
             mAuthTask = null;
             showProgress(false);
 
             if (success) {
+
+                Log.d(TAG, responseMessage);
 
                 final Intent i = new Intent(BigseaLoginActivity.this, MelhorBusaoActivity.class);
                 startActivity(i);
