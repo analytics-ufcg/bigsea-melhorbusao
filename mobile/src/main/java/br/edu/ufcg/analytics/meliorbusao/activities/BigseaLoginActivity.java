@@ -31,15 +31,25 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
 
@@ -268,7 +278,8 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
 
         private final String userName;
         private final String mPassword;
-        private String responseMessage;
+        private String responseMessage = "";
+        private boolean login;
 
         UserLoginTask(String userName, String password) {
             this.userName = userName;
@@ -285,10 +296,40 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
                 url = new URL("https://eubrabigsea.dei.uc.pt/engine/api/checkin_data");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
-                conn.addRequestProperty("user", userName);
-                conn.addRequestProperty("pwd", mPassword);
+                //conn.addRequestProperty("user", userName);
+                //conn.addRequestProperty("pwd", mPassword);
+
+                String parameters = "user=" + userName + "&pwd=" +mPassword;
+
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(parameters);
+                writer.flush();
+                writer.close();
+                os.close();
+
                 conn.connect();
-                responseMessage = conn.getResponseMessage();
+                int responseCode=conn.getResponseCode();
+
+                if (responseCode == HttpsURLConnection.HTTP_OK) {
+                    String line = "";
+                    BufferedReader br=new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    while ((line=br.readLine()) != null) {
+                        responseMessage+=line;
+                    }
+                    if (responseMessage.contains("error")){
+                        login = false;
+                    } else {
+                        login = true;
+                    }
+                }
+
+                else {
+                    responseMessage="";
+                    login = false;
+                }
 
 
             } catch (MalformedURLException e) {
@@ -297,6 +338,7 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
                 e.printStackTrace();
             }
 
+            /*
             try {
                 // Simulate network access.
                 Thread.sleep(2000);
@@ -310,7 +352,7 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
                     // Account exists, return true if the password matches.
                     return pieces[1].equals(mPassword);
                 }
-            }
+            }*/
 
             // TODO: register the new account here.
             return true;
@@ -321,9 +363,7 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
-
-                Log.d(TAG, responseMessage);
+            if (login) {
 
                 final Intent i = new Intent(BigseaLoginActivity.this, MelhorBusaoActivity.class);
                 startActivity(i);
@@ -337,6 +377,9 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             }
+
+            Log.d(TAG, responseMessage);
+
         }
 
         @Override
