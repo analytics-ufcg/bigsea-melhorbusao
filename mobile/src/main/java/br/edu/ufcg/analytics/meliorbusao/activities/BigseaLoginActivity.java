@@ -31,7 +31,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -277,6 +279,23 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
+
+            URL url = null;
+            try {
+                url = new URL("https://eubrabigsea.dei.uc.pt/engine/api/checkin_data");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.addRequestProperty("user", userName);
+                conn.addRequestProperty("pwd", mPassword);
+                conn.connect();
+                responseMessage = conn.getResponseMessage();
+
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             try {
                 // Simulate network access.
