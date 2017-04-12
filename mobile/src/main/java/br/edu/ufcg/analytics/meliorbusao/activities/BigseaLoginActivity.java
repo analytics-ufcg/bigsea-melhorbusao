@@ -51,7 +51,9 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
+import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
 
 /**
@@ -280,6 +282,8 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
         private final String mPassword;
         private String responseMessage = "";
         private boolean login;
+        private String token;
+        private String loginServiceType;
 
         UserLoginTask(String userName, String password) {
             this.userName = userName;
@@ -319,6 +323,10 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
                     JSONObject jsonObject = new JSONObject(responseMessage);
                     if (jsonObject.getBoolean("success")){
                         login = true;
+
+                        JSONObject userInfo = new JSONObject(jsonObject.getString("user_info"));
+                        token = userInfo.getString("user_token");
+                        loginServiceType = Constants.BIG_SEA_SERVICE;
                     } else {
                         login = false;
                     }
@@ -349,6 +357,8 @@ public class BigseaLoginActivity extends AppCompatActivity implements LoaderCall
             showProgress(false);
 
             if (login) {
+
+                SharedPreferencesUtils.setUserToken(getApplicationContext(), loginServiceType, token);
 
                 final Intent i = new Intent(BigseaLoginActivity.this, MelhorBusaoActivity.class);
                 startActivity(i);
