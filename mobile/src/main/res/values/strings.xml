@@ -137,10 +137,11 @@
     <string name="prompt_password">Senha</string>
     <string name="action_sign_in">Entrar</string>
     <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">Endereço de email inválido</string>
+    <string name="error_invalid_username">Nome de usuário inválido</string>
     <string name="error_invalid_password">A senha está muito curta</string>
-    <string name="error_incorrect_password">Senha incorreta</string>
+    <string name="error_incorrect_password">Senha inválida</string>
     <string name="error_field_required">Campo Obrigatório</string>
+    <string name="error_unsuccessful_login">Erro ao fazer login. Verifique se o usuário e senha estão corretos.</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
