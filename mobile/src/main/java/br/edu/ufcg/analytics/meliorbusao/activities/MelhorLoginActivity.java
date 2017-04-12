@@ -20,9 +20,11 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 
+import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.fragments.TopBusFragment;
+import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
 public class MelhorLoginActivity extends AppCompatActivity {
 
@@ -101,6 +103,7 @@ public class MelhorLoginActivity extends AppCompatActivity {
 
     private void handleSignInResult(GoogleSignInResult result) {
         if (result.isSuccess()) {
+            SharedPreferencesUtils.setUserToken(getApplicationContext(), Constants.GOOGLE_SERVICE, "");
             GoogleSignInAccount acct = result.getSignInAccount();
             Intent intent = new Intent(MelhorLoginActivity.this, MelhorBusaoActivity.class);
             startActivity(intent);
