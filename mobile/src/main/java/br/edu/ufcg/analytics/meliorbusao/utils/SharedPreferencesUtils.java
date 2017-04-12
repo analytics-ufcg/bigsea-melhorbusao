@@ -158,4 +158,23 @@ public class SharedPreferencesUtils {
 
         editor.apply();
     }
+
+    public static void setUserToken(Context context, String serviceType, String userToken) {
+        SharedPreferences settings = context.getSharedPreferences(Constants.USER_PREFERENCE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(Constants.USER_SERVICE_PREFERENCE, serviceType);
+        editor.putString(Constants.USER_TOKEN_PREFERENCE, userToken);
+
+        editor.apply();
+    }
+
+    public static String getUserService(Context context) {
+        SharedPreferences settings = context.getSharedPreferences(Constants.USER_PREFERENCE, Context.MODE_PRIVATE);
+        return settings.getString(Constants.USER_SERVICE_PREFERENCE, Constants.GOOGLE_SERVICE);
+    }
+
+    public static String getUserToken(Context context) {
+        SharedPreferences settings = context.getSharedPreferences(Constants.USER_PREFERENCE, Context.MODE_PRIVATE);
+        return settings.getString(Constants.USER_TOKEN_PREFERENCE, "");
+    }
 }

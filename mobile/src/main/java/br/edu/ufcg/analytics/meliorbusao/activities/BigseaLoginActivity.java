@@ -34,7 +34,9 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
+import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
 
 /**
@@ -184,6 +186,8 @@ public class BigseaLoginActivity extends AppCompatActivity {
         private final String password;
         private String responseMessage = "";
         private boolean isSuccessfulLogin;
+        private String token;
+        private String loginServiceType;
 
         UserLoginTask(String username, String password) {
             this.username = username;
@@ -218,9 +222,12 @@ public class BigseaLoginActivity extends AppCompatActivity {
                     }
                     JSONObject jsonObject = new JSONObject(responseMessage);
                     isSuccessfulLogin = jsonObject.getBoolean("success");
-                } else {
-                    responseMessage = "";
-                    isSuccessfulLogin = false;
+
+                    if (isSuccessfulLogin){
+                        JSONObject userInfo = new JSONObject(jsonObject.getString("user_info"));
+                        token = userInfo.getString("user_token");
+                        loginServiceType = Constants.BIG_SEA_SERVICE;
+                    }
                 }
 
             } catch (MalformedURLException e) {
@@ -239,6 +246,7 @@ public class BigseaLoginActivity extends AppCompatActivity {
             showProgress(false);
 
             if (isSuccessfulLogin) {
+                SharedPreferencesUtils.setUserToken(getApplicationContext(), loginServiceType, token);
                 final Intent i = new Intent(BigseaLoginActivity.this, MelhorBusaoActivity.class);
                 startActivity(i);
                 View view = getCurrentFocus();

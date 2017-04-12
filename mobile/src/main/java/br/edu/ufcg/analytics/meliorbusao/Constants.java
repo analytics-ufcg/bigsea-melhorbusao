@@ -20,6 +20,12 @@ public final class Constants {
 
     public static final String STOPS_ON_DB_PREFERENCE = "stops_on_db";
 
+    public static final String USER_PREFERENCE = "user_preference";
+    public static final String USER_TOKEN_PREFERENCE = "user_token";
+    public static final String USER_SERVICE_PREFERENCE = "user_service";
+    public static final String BIG_SEA_SERVICE = "big_sea_service";
+    public static final String GOOGLE_SERVICE = "google_service";
+
     public static final String SHAPES_ON_DB_PREFERENCE = "shapes_on_db";
     public static final String SCHEDULE_ON_DB_PREFERENCE = "schedule_on_db";
     public static final String CITY_ON_DB_PREFERENCE = "city_on_db";
