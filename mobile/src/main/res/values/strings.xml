@@ -127,7 +127,7 @@
 
     <!--String related to sign up-->
     <string name="prompt_first_name">Nome</string>
-    <string name="prompt_last_name">Sobrenome (opcional)</string>
+    <string name="prompt_last_name">Sobrenome</string>
     <string name="prompt_username">Nome de usuário</string>
     <string name="prompt_password_confirmation">Confirme a senha</string>
     <string name="action_sign_up">CADASTRAR</string>
@@ -145,5 +145,11 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="password_error">A senha deve conter entre 5 e 25 caracteres. Sensível a maiúsculas e minúsculas.</string>
+    <string name="name_restriction">deve conter entre 3 e 15 caracteres</string>
+    <string name="password_restriction">Senha deve conter números e caracteres maiúsculos e minúsculos</string>
+    <string name="name_restriction_no_number">não deve conter números</string>
+    <string name="email_restriction">Email deve conter @</string>
+    <string name="userName_restriction">Nome de usuário deve conter entre 3 e 15 caracteres. Sensível a maiúsculas e minúsculas</string>
 
 </resources>
