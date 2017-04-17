@@ -168,13 +168,28 @@ public class SharedPreferencesUtils {
         editor.apply();
     }
 
+    public static void setUserToken(Context context, String username, String serviceType, String userToken) {
+        SharedPreferences authPreferences = context.getSharedPreferences(Constants.AUTH_FILE_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = authPreferences.edit();
+        editor.putString(Constants.USERNAME_KEY, username);
+        editor.putString(Constants.AUTH_SERVICE_KEY, serviceType);
+        editor.putString(Constants.USER_TOKEN_KEY, userToken);
+
+        editor.apply();
+    }
+
     public static String getAuthService(Context context) {
-        SharedPreferences settings = context.getSharedPreferences(Constants.AUTH_FILE_KEY, Context.MODE_PRIVATE);
-        return settings.getString(Constants.AUTH_SERVICE_KEY, Constants.GOOGLE_SERVICE);
+        SharedPreferences authPreferences = context.getSharedPreferences(Constants.AUTH_FILE_KEY, Context.MODE_PRIVATE);
+        return authPreferences.getString(Constants.AUTH_SERVICE_KEY, Constants.GOOGLE_SERVICE);
     }
 
     public static String getUserToken(Context context) {
-        SharedPreferences settings = context.getSharedPreferences(Constants.AUTH_FILE_KEY, Context.MODE_PRIVATE);
-        return settings.getString(Constants.USER_TOKEN_KEY, "");
+        SharedPreferences authPreferences = context.getSharedPreferences(Constants.AUTH_FILE_KEY, Context.MODE_PRIVATE);
+        return authPreferences.getString(Constants.USER_TOKEN_KEY, "");
+    }
+
+    public static String getUsername(Context context) {
+        SharedPreferences authPreferences = context.getSharedPreferences(Constants.AUTH_FILE_KEY, Context.MODE_PRIVATE);
+        return authPreferences.getString(Constants.USERNAME_KEY, "");
     }
 }

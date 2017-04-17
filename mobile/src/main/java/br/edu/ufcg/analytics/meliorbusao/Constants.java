@@ -22,6 +22,7 @@ public final class Constants {
 
     // Regarding to Authentication
     public static final String AUTH_FILE_KEY = PACKAGE_NAME + ".AUTH_FILE_KEY";
+    public static final String USERNAME_KEY = "username_key";
     public static final String USER_TOKEN_KEY = "user_token_key";
     public static final String AUTH_SERVICE_KEY = "user_service";
     public static final String BIG_SEA_SERVICE = "big_sea_service";

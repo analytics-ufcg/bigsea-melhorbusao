@@ -246,7 +246,7 @@ public class BigseaLoginActivity extends AppCompatActivity {
             showProgress(false);
 
             if (isSuccessfulLogin) {
-                SharedPreferencesUtils.setUserToken(getApplicationContext(), loginServiceType, token);
+                SharedPreferencesUtils.setUserToken(getApplicationContext(), username, loginServiceType, token);
                 final Intent i = new Intent(BigseaLoginActivity.this, MelhorBusaoActivity.class);
                 startActivity(i);
                 View view = getCurrentFocus();

@@ -54,7 +54,6 @@ public class MelhorSplashActivity extends AppCompatActivity {
                 if (result.getSignInAccount() != null){
                     activityToLaunch = MelhorBusaoActivity.class;
                 }
-
             }
         }
         return activityToLaunch;
