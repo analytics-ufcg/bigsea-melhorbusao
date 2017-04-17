@@ -103,8 +103,9 @@ public class MelhorLoginActivity extends AppCompatActivity {
 
     private void handleSignInResult(GoogleSignInResult result) {
         if (result.isSuccess()) {
-            SharedPreferencesUtils.setUserToken(getApplicationContext(), Constants.GOOGLE_SERVICE, "");
-            GoogleSignInAccount acct = result.getSignInAccount();
+            GoogleSignInAccount googleAccount = result.getSignInAccount();
+            String googleToken = googleAccount.getIdToken();
+            SharedPreferencesUtils.setUserToken(getApplicationContext(), Constants.GOOGLE_SERVICE, googleToken);
             Intent intent = new Intent(MelhorLoginActivity.this, MelhorBusaoActivity.class);
             startActivity(intent);
         } else {
