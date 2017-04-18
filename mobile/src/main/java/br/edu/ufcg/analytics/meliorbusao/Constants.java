@@ -20,9 +20,11 @@ public final class Constants {
 
     public static final String STOPS_ON_DB_PREFERENCE = "stops_on_db";
 
-    public static final String USER_PREFERENCE = "user_preference";
-    public static final String USER_TOKEN_PREFERENCE = "user_token";
-    public static final String USER_SERVICE_PREFERENCE = "user_service";
+    // Regarding to Authentication
+    public static final String AUTH_FILE_KEY = PACKAGE_NAME + ".AUTH_FILE_KEY";
+    public static final String USERNAME_KEY = "username_key";
+    public static final String USER_TOKEN_KEY = "user_token_key";
+    public static final String AUTH_SERVICE_KEY = "user_service";
     public static final String BIG_SEA_SERVICE = "big_sea_service";
     public static final String GOOGLE_SERVICE = "google_service";
 
@@ -45,8 +47,6 @@ public final class Constants {
     public static final String TIMER_MONITORING = "0" ;
     public static final long DEACTIVATED_TIME = 1000 * 7200; //2h
     public static final String DETECTION = "detecting" ;
-
-
 
     public static final String BROADCAST_ACTION = PACKAGE_NAME + ".BROADCAST_ACTION";
 
