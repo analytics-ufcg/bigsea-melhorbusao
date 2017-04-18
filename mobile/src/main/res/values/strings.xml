@@ -152,5 +152,8 @@
     <string name="name_restriction_no_number">não deve conter números</string>
     <string name="email_restriction">Email deve conter @</string>
     <string name="userName_restriction">Nome de usuário deve conter entre 3 e 15 caracteres. Sensível a maiúsculas e minúsculas</string>
+    <string name="password_must_match">Senhas devem ser iguais</string>
+    <string name="usersigned_up_with_success">Usuário registrado com sucesso!</string>
+    <string name="username_already_exists">Usuário já existe. Por favor escolha um diferente</string>
 
 </resources>
