@@ -145,6 +145,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="error_could_not_signout">Ocorreu um erro. Não foi possível sair do aplicativo.</string>
     <string name="password_error">A senha deve conter entre 5 e 25 caracteres. Sensível a maiúsculas e minúsculas.</string>
     <string name="name_restriction">deve conter entre 3 e 15 caracteres</string>
     <string name="password_restriction">Senha deve conter números e caracteres maiúsculos e minúsculos</string>

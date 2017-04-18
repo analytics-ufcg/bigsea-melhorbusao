@@ -121,10 +121,10 @@ public class BigseaLoginActivity extends AppCompatActivity {
 
         if (!cancel) {
             // Show a progress spinner, and kick off a background task to
-            // perform the user isSuccessfulLogin attempt.
+            // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(username, password);
-            mAuthTask.execute((Void) null);
+            mAuthTask.execute();
         }
     }
 

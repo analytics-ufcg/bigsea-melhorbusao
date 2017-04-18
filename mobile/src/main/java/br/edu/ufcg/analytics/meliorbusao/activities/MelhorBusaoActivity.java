@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.PersistableBundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -614,8 +615,8 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
                     String personPhoto = String.valueOf(result.getSignInAccount().getPhotoUrl());
                     ImageView userImageView = (ImageView) getNavigationView().findViewById(R.id.userImageView);
-                    ProfileImageLoader loader = new ProfileImageLoader(userImageView);
-                    loader.execute(personPhoto);
+                   // ProfileImageLoader loader = new ProfileImageLoader(userImageView);
+                  //  loader.execute(personPhoto);
                 }
             }
         }
@@ -646,7 +647,30 @@ public class MelhorBusaoActivity extends AppCompatActivity
     /**
      * Logouts the user from de application
      */
-    private void onSignOutClicked(){
+    private void onSignOutClicked() {
+        if (mGoogleApiClient.isConnected()) {
+            signOutWithGoogle();
+        } else {
+            mGoogleApiClient.connect();
+            mGoogleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                @Override
+                public void onConnected(@Nullable Bundle bundle) {
+                    signOutWithGoogle();
+                }
+
+                @Override
+                public void onConnectionSuspended(int i) {
+                    Log.d(TAG, "onConnectionSuspended: It was not possible to sign out");
+                    Toast.makeText(MelhorBusaoActivity.this, getString(R.string.error_could_not_signout), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    /**
+     * Sign outs  the user from the application using Google Sign In API and goes to the sign in screen.
+     */
+    private void signOutWithGoogle() {
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(Status status) {
@@ -654,9 +678,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
                     Intent intent = new Intent(getApplicationContext(), MelhorLoginActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                    showSignedOutUI();
-                    onStop();
-                    finish();
                 }
             }
         });
