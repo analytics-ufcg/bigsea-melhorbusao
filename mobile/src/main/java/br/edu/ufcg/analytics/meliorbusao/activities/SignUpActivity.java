@@ -65,7 +65,7 @@ public class SignUpActivity extends AppCompatActivity {
         mSignupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptRegister();
             }
         });
 
@@ -80,11 +80,11 @@ public class SignUpActivity extends AppCompatActivity {
      * errors are presented and no actual isSuccessfulRegister attempt is made.
      */
 
-    private void attemptLogin() {
-
+    private void attemptRegister() {
+/*
         if (mAuthTask != null) {
             return;
-        }
+        } */
 
         // Reset errors.
         mFirstNameView.setError(null);
@@ -99,9 +99,20 @@ public class SignUpActivity extends AppCompatActivity {
 
         // There was an error; don't attempt isSuccessfulRegister and focus the first
         // form field with an error.
-        cancel = isNameInvalid(mFirstNameView) && isNameInvalid(mLastNameView) &&
-                isEmailInValid(mEmailView) && isNameInvalid(mUserNameView) && isPasswordInvalid(mPasswordView);
+        if (isNameInvalid(mFirstNameView)){
+            cancel = true;
+        } else if(isNameInvalid(mLastNameView)){
+            cancel = true;
+        } else if (isNameInvalid(mLastNameView)){
+            cancel = true;
+        } else if (isEmailInValid(mEmailView)){
+            cancel = true;
+        } else if(isPasswordInvalid(mUserNameView, mPasswordView)){
+            cancel = true;
+        }
 
+
+        Log.d(TAG, String.valueOf(cancel));
 
             if (!cancel) {
                 // Show a progress spinner, and kick off a background task to
@@ -116,19 +127,27 @@ public class SignUpActivity extends AppCompatActivity {
     private boolean isNameInvalid(AutoCompleteTextView name) {
         boolean invalid = false;
 
-        if (name==null || name.getText().equals("")) {
-            name.setError(getString(R.string.error_field_required));
-            invalid = true;
-        } else if (name.getText().length() < 3 || name.getText().length() > 15) {
-            if (mUserNameView!= null && name.getHint().equals(mUserNameView.getHint())){
-                name.setError(getString(R.string.userName_restriction));
+        if (name==null || name.getText().toString().equals("")) {
+            if (mUserNameView!= null && name.equals(mUserNameView)){
+                name.setError(getString(R.string.error_field_required)+". " +getString(R.string.userName_restriction));
             } else {
-                name.setError(name.getHint() + " " + getString(R.string.name_restriction));
+                name.setError(getString(R.string.error_field_required));
             }
             invalid = true;
-        }else if (!name.getText().toString().matches(".*\\d.*")){
-            name.setError(name.getHint() + " " + getString(R.string.name_restriction_no_number));
-            invalid= true;
+        } else if (name.getText().toString().length() < 3 || name.getText().toString().length() > 15) {
+            if (mUserNameView!= null && name.equals(mUserNameView)){
+                name.setError(getString(R.string.userName_restriction));
+            } else {
+                name.setError(name.getHint().toString() + " " + getString(R.string.name_restriction));
+            }
+            invalid = true;
+        }
+        //contain number
+        else if (name.getText().toString().matches(".*\\d.*")){
+            if (mUserNameView!= null && !name.equals(mUserNameView)) {
+                name.setError(name.getHint().toString() + " " + getString(R.string.name_restriction_no_number));
+                invalid = true;
+            }
         }
 
         if (invalid){
@@ -160,7 +179,7 @@ public class SignUpActivity extends AppCompatActivity {
 
 
 
-    private boolean isPasswordInvalid(AutoCompleteTextView password){
+    private boolean isPasswordInvalid(AutoCompleteTextView password, AutoCompleteTextView passwordConfirmation){
         boolean invalid = false;
 
         if (password==null || password.equals("")) {
@@ -170,8 +189,14 @@ public class SignUpActivity extends AppCompatActivity {
             mPasswordView.setError(getString(R.string.password_error));
             //Passwords must match. Needs to be between 5 and 25 characters. Case sensitive. No special characters allowed.
             invalid = true;
-        } else if (!password.getText().toString().matches(".*\\d.*")){
+        }
+        //contain number - bigSea API restriction
+        /*else if (!password.getText().toString().matches(".*\\d.*")){
             mPasswordView.setError(getString(R.string.password_restriction));
+            invalid= true;
+        } */else if (!password.getText().toString().equals(passwordConfirmation.getText().toString())){
+            passwordConfirmation.setError(getString(R.string.password_must_match));
+            passwordConfirmation.requestFocus();
             invalid= true;
         }
 
