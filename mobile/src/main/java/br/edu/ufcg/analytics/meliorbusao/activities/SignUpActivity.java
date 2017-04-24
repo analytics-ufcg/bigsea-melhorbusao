@@ -109,7 +109,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         if (!cancel) {
             // Show a progress spinner, and kick off a background task to
-            // perform the user isSuccessfulRegister attempt.
+            // perform the user register attempt.
             mAuthTask = new UserRegisterTask(mFirstNameView.getText().toString(), mLastNameView.getText().toString(),
                     mEmailView.getText().toString(), mUserNameView.getText().toString(), mPasswordView.getText().toString());
 
@@ -263,12 +263,7 @@ public class SignUpActivity extends AppCompatActivity {
                         }
                     }
 
-
-                    if (isSuccessfulRegister){
-                        Toast.makeText(SignUpActivity.this, R.string.usersigned_up_with_success, Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(SignUpActivity.this, R.string.username_already_exists, Toast.LENGTH_LONG);
-                    }
+                    conn.disconnect();
                 }
 
             } catch (MalformedURLException e) {
@@ -286,6 +281,7 @@ public class SignUpActivity extends AppCompatActivity {
             mAuthTask = null;
 
             if (isSuccessfulRegister) {
+                Toast.makeText(SignUpActivity.this.getBaseContext(), R.string.usersigned_up_with_success, Toast.LENGTH_LONG).show();
                 final Intent i = new Intent(SignUpActivity.this, MelhorBusaoActivity.class);
                 startActivity(i);
                 View view = getCurrentFocus();
@@ -293,6 +289,9 @@ public class SignUpActivity extends AppCompatActivity {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 finish();
+            } else{
+                Toast.makeText(SignUpActivity.this.getBaseContext(), R.string.username_already_exists, Toast.LENGTH_LONG).show();
+
             }
             Log.d(TAG, responseMessage);
 
