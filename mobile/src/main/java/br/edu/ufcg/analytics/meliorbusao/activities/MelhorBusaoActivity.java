@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -473,6 +474,14 @@ public class MelhorBusaoActivity extends AppCompatActivity
                 onSignInClicked();
                 break;
 
+            case R.id.nav_about:
+                Toast.makeText(getBaseContext(), "Desculpe, ainda não está pronto :(", Toast.LENGTH_LONG).show();
+                break;
+
+            case R.id.nav_favorites:
+                Toast.makeText(getBaseContext(), "Desculpe, ainda não está pronto :(", Toast.LENGTH_LONG).show();
+                break;
+
             case R.id.nav_top_bus:
                 topBusFragment.resetTopBusList();
                 nextFrag = topBusFragment;
@@ -664,6 +673,9 @@ public class MelhorBusaoActivity extends AppCompatActivity
                     Toast.makeText(MelhorBusaoActivity.this, getString(R.string.error_could_not_signout), Toast.LENGTH_SHORT).show();
                 }
             });
+        }
+        if(SharedPreferencesUtils.getUserToken(MelhorBusaoActivity.this.getBaseContext())!=""){
+            SharedPreferencesUtils.setUserToken(getApplicationContext(),SharedPreferencesUtils.getUsername(getApplicationContext()) ,Constants.BIG_SEA_SERVICE,"");
         }
     }
 

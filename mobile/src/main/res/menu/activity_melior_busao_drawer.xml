@@ -10,7 +10,8 @@
             android:id="@+id/nav_favorites"
             android:enabled="false"
             android:icon="@drawable/ic_favorites"
-            android:title="@string/favorites_title" />
+            android:title="@string/favorites_title"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_top_bus"
             android:icon="@drawable/ic_topbus"
@@ -38,11 +39,6 @@
             android:title="@string/login_title"
             android:visible="false" />
         <item
-            android:id="@+id/nav_sign_out"
-            android:icon="@drawable/logout"
-            android:title="@string/logout_title"
-            android:visible="false" />
-        <item
             android:title="Detecção automática"
             android:id="@+id/nav_bus_monitoring"
             android:icon="@drawable/ic_automatic_detection"
@@ -51,7 +47,13 @@
         <item
             android:id="@+id/nav_about"
             android:icon="@drawable/information"
-            android:title="@string/about_title" />
+            android:title="@string/about_title"
+            android:visible="false"/>
+        <item
+            android:id="@+id/nav_sign_out"
+            android:icon="@drawable/logout"
+            android:title="@string/logout_title"
+            android:visible="false" />
 
     </group>
 

@@ -13,7 +13,7 @@
     <string name="more_title">Mais&#8230;</string>
     <string name="about_title">Sobre</string>
     <string name="login_title">Login com Google</string>
-    <string name="logout_title">Desvincular conta Google</string>
+    <string name="logout_title">Sair</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="saudation_message">Olá,&#160;</string>  <!-- &#160 é a referência para o espaço simples " "-->
@@ -142,9 +142,7 @@
     <string name="error_incorrect_password">Senha inválida</string>
     <string name="error_field_required">Campo Obrigatório</string>
     <string name="error_unsuccessful_login">Erro ao fazer login. Verifique se o usuário e senha estão corretos.</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
     <string name="error_could_not_signout">Ocorreu um erro. Não foi possível sair do aplicativo.</string>
     <string name="password_error">A senha deve conter entre 5 e 25 caracteres. Sensível a maiúsculas e minúsculas.</string>
     <string name="name_restriction">deve conter entre 3 e 15 caracteres</string>
