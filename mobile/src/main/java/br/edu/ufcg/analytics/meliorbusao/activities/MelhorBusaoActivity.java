@@ -198,7 +198,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
         mBottomBar.setDefaultTabPosition(0);
 
 
-        if (isLocationEnabled() && mGoogleApiClient.isConnected()) {
+        if (isLocationEnabled()) {
             try {
                 requestingLocationDialog = ProgressDialog.show(MelhorBusaoActivity.this, getString(R.string.requesting_location),
                         getString(R.string.wait_message), true);
