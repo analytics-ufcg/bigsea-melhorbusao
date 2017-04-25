@@ -380,8 +380,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
             FragmentManager fm = getSupportFragmentManager();
             if (fm.getBackStackEntryCount() > 0) {
                 fm.popBackStack();
-            } else {
-                super.onBackPressed();
             }
         }
     }

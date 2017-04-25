@@ -254,6 +254,7 @@ public class BigseaLoginActivity extends AppCompatActivity {
             if (isSuccessfulLogin) {
                 SharedPreferencesUtils.setUserToken(getApplicationContext(), username, loginServiceType, token);
                 final Intent i = new Intent(BigseaLoginActivity.this, MelhorBusaoActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
             } else {
                 mUsernameView.setError(getString(R.string.error_unsuccessful_login));

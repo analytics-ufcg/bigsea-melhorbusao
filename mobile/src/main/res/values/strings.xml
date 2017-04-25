@@ -142,6 +142,7 @@
     <string name="error_incorrect_password">Senha inválida</string>
     <string name="error_field_required">Campo Obrigatório</string>
     <string name="error_unsuccessful_login">Erro ao fazer login. Verifique se o usuário e senha estão corretos.</string>
+    <string name="error_unaccomplished_login">Não foi possível fazer login</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
     <string name="error_could_not_signout">Ocorreu um erro. Não foi possível sair do aplicativo.</string>
     <string name="password_error">A senha deve conter entre 5 e 25 caracteres. Sensível a maiúsculas e minúsculas.</string>

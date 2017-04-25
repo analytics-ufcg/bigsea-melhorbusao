@@ -72,6 +72,7 @@ public class MelhorSplashActivity extends AppCompatActivity implements
 
     private void launchActivity(Class activity) {
         Intent i = new Intent(MelhorSplashActivity.this, activity);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
         finish();
     }
