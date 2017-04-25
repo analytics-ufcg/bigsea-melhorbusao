@@ -13,7 +13,7 @@
     <string name="more_title">Mais&#8230;</string>
     <string name="about_title">Sobre</string>
     <string name="login_title">Login com Google</string>
-    <string name="logout_title">Desvincular conta Google</string>
+    <string name="logout_title">Sair</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="saudation_message">Olá,&#160;</string>  <!-- &#160 é a referência para o espaço simples " "-->
@@ -123,23 +123,36 @@
     <string name="title_activity_bigsea_login">Informe os dados</string>
 
     <!-- Strings related to login -->
+
+
+    <!--String related to sign up-->
+    <string name="prompt_first_name">Nome</string>
+    <string name="prompt_last_name">Sobrenome</string>
+    <string name="prompt_username">Nome de usuário</string>
+    <string name="prompt_password_confirmation">Confirme a senha</string>
+    <string name="action_sign_up">CADASTRAR</string>
+
+    <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Senha</string>
     <string name="action_sign_in">Entrar</string>
     <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">Endereço de email inválido</string>
+    <string name="error_invalid_username">Nome de usuário inválido</string>
     <string name="error_invalid_password">A senha está muito curta</string>
-    <string name="error_incorrect_password">Senha incorreta</string>
+    <string name="error_incorrect_password">Senha inválida</string>
     <string name="error_field_required">Campo Obrigatório</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
-
-    <!--String related to sign up-->
-    <string name="prompt_first_name">Nome</string>
-    <string name="prompt_last_name">Sobrenome (opcional)</string>
-    <string name="prompt_username">Nome de usuário</string>
-    <string name="prompt_password_confirmation">Confirme a senha</string>
-    <string name="action_sign_up">CADASTRAR</string>
+    <string name="error_unsuccessful_login">Erro ao fazer login. Verifique se o usuário e senha estão corretos.</string>
+    <string name="error_unaccomplished_login">Não foi possível fazer login</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
+    <string name="error_could_not_signout">Ocorreu um erro. Não foi possível sair do aplicativo.</string>
+    <string name="password_error">A senha deve conter entre 5 e 25 caracteres. Sensível a maiúsculas e minúsculas.</string>
+    <string name="name_restriction">deve conter entre 3 e 15 caracteres</string>
+    <string name="password_restriction">Senha deve conter números e caracteres maiúsculos e minúsculos</string>
+    <string name="name_restriction_no_number">não deve conter números</string>
+    <string name="email_restriction">Email deve conter @</string>
+    <string name="userName_restriction">Nome de usuário deve conter entre 3 e 15 caracteres. Sensível a maiúsculas e minúsculas</string>
+    <string name="password_must_match">Senhas devem ser iguais</string>
+    <string name="usersigned_up_with_success">Usuário registrado com sucesso!</string>
+    <string name="username_already_exists">Usuário já existe. Por favor escolha um diferente</string>
 
 </resources>

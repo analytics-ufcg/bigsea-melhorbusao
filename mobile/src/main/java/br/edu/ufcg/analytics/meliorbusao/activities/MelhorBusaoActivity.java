@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.PersistableBundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -196,7 +198,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
         mBottomBar.setDefaultTabPosition(0);
 
 
-        if (isLocationEnabled() && mGoogleApiClient.isConnected()) {
+        if (isLocationEnabled()) {
             try {
                 requestingLocationDialog = ProgressDialog.show(MelhorBusaoActivity.this, getString(R.string.requesting_location),
                         getString(R.string.wait_message), true);
@@ -207,12 +209,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
         } else {
             buildAlertMessageNoGps();
         }
-
-
-        //TO check battery states
-        /*this.registerReceiver(this.mBroadcastReceiver,
-                new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-*/
     }
 
     private void loadCityData() {
@@ -249,7 +245,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
             Log.d("status start", String.valueOf(mGoogleApiClient.isConnected()));
         }
         initializeBottomNavigation();
-
     }
 
     /**
@@ -385,8 +380,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
             FragmentManager fm = getSupportFragmentManager();
             if (fm.getBackStackEntryCount() > 0) {
                 fm.popBackStack();
-            } else {
-                super.onBackPressed();
             }
         }
     }
@@ -479,6 +472,14 @@ public class MelhorBusaoActivity extends AppCompatActivity
                 onSignInClicked();
                 break;
 
+            case R.id.nav_about:
+                Toast.makeText(getBaseContext(), "Desculpe, ainda não está pronto :(", Toast.LENGTH_LONG).show();
+                break;
+
+            case R.id.nav_favorites:
+                Toast.makeText(getBaseContext(), "Desculpe, ainda não está pronto :(", Toast.LENGTH_LONG).show();
+                break;
+
             case R.id.nav_top_bus:
                 topBusFragment.resetTopBusList();
                 nextFrag = topBusFragment;
@@ -524,7 +525,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
     public void onConnected(Bundle bundle) {
         Log.d(TAG, "onConnected:" + bundle);
         mShouldResolve = false;
-
         try {
             showSignedInUI();
         } catch (NullPointerException e) { // Caso a view ainda não esteja criada
@@ -579,26 +579,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
     }
 
-   /* @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            // If the error resolution was not successful we should not resolve further.
-            if (resultCode != RESULT_OK) {
-                mShouldResolve = false;
-            }
-            mIsResolving = false;
-            mGoogleApiClient.connect();
-
-        }
-
-    }*/
-
-    /**
-     * Serviços de login / logout do Google
-     *
-     * @return
-     */
     private NavigationView getNavigationView() {
         return (NavigationView) findViewById(R.id.nav_view);
     }
@@ -642,8 +622,8 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
                     String personPhoto = String.valueOf(result.getSignInAccount().getPhotoUrl());
                     ImageView userImageView = (ImageView) getNavigationView().findViewById(R.id.userImageView);
-                    ProfileImageLoader loader = new ProfileImageLoader(userImageView);
-                    loader.execute(personPhoto);
+                   // ProfileImageLoader loader = new ProfileImageLoader(userImageView);
+                  //  loader.execute(personPhoto);
                 }
             }
         }
@@ -674,36 +654,44 @@ public class MelhorBusaoActivity extends AppCompatActivity
     /**
      * Logouts the user from de application
      */
-    private void onSignOutClicked(){
+    private void onSignOutClicked() {
+        if (mGoogleApiClient.isConnected()) {
+            signOutWithGoogle();
+        } else {
+            mGoogleApiClient.connect();
+            mGoogleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                @Override
+                public void onConnected(@Nullable Bundle bundle) {
+                    signOutWithGoogle();
+                }
+
+                @Override
+                public void onConnectionSuspended(int i) {
+                    Log.d(TAG, "onConnectionSuspended: It was not possible to sign out");
+                    Toast.makeText(MelhorBusaoActivity.this, getString(R.string.error_could_not_signout), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        if(SharedPreferencesUtils.getUserToken(MelhorBusaoActivity.this.getBaseContext())!=""){
+            SharedPreferencesUtils.setUserToken(getApplicationContext(),SharedPreferencesUtils.getUsername(getApplicationContext()) ,Constants.BIG_SEA_SERVICE,"");
+        }
+    }
+
+    /**
+     * Sign outs  the user from the application using Google Sign In API and goes to the sign in screen.
+     */
+    private void signOutWithGoogle() {
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(Status status) {
-                Intent intent = new Intent(getApplicationContext(), MelhorLoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                showSignedOutUI();
-                onStop();
-                finish();
+                if (status.isSuccess()) {
+                    Intent intent = new Intent(getApplicationContext(), MelhorLoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
             }
         });
     }
-
-
-
-
-    /*private void onSignOutClicked() {
-        // Clear the default account so that GoogleApiClient will not automatically connect in the future.
-        if (mGoogleApiClient.isConnected()) {
-            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-            mGoogleApiClient.disconnect();
-        }
-        Intent intent = new Intent(getApplicationContext(), MelhorLoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        showSignedOutUI();
-        onStop();
-        finish();
-    } */
 
     @Override
     public void finishedParse(int kind) {
@@ -844,6 +832,9 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
     private void stopRequestLocationUpdates() {
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, getLocationCallback());
+        if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
+            requestingLocationDialog.dismiss();
+        }
     }
 
     private LocationCallback getLocationCallback() {
@@ -855,7 +846,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
                     onMeliorLocationAvaliable(result.getLastLocation());
                     identifyUserCity(result.getLastLocation());
                     stopRequestLocationUpdates();
-
                 }
 
                 @Override
@@ -864,7 +854,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
                     if (!locationAvailability.isLocationAvailable()) {
                         if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
                             requestingLocationDialog.dismiss();
-                            Log.d(TAG, "ProgressDialog (location) showing - getLocationCallback()");
                         }
 
                         //colocar msg d erro, e pedir pra tentar novamente... abrir e tal sei la :(

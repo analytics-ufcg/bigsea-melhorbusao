@@ -3,10 +3,10 @@ package br.edu.ufcg.analytics.meliorbusao.activities;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,14 +15,13 @@ import android.widget.Toast;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
 
+import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.R;
-import br.edu.ufcg.analytics.meliorbusao.fragments.TopBusFragment;
+import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
 public class MelhorLoginActivity extends AppCompatActivity {
 
@@ -52,16 +51,16 @@ public class MelhorLoginActivity extends AppCompatActivity {
 
         loginBtn = (Button) findViewById(R.id.login_button);
 
-        loginBtn.setOnClickListener(new View.OnClickListener(){
+        loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MelhorLoginActivity.this, WebActivity.class);
+                Intent intent = new Intent(MelhorLoginActivity.this, BigseaLoginActivity.class);
                 startActivity(intent);
             }
         });
 
         signupBtn = (Button) findViewById(R.id.show_sign_up_form_button);
-        signupBtn.setOnClickListener(new View.OnClickListener(){
+        signupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MelhorLoginActivity.this, SignUpActivity.class);
@@ -94,18 +93,21 @@ public class MelhorLoginActivity extends AppCompatActivity {
     /**
      * Shows a dialog for signing in with Google account.
      */
-    private void googleSignIn(){
+    private void googleSignIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
         if (result.isSuccess()) {
-            GoogleSignInAccount acct = result.getSignInAccount();
+            GoogleSignInAccount googleAccount = result.getSignInAccount();
+            String googleToken = googleAccount.getIdToken();
+            SharedPreferencesUtils.setUserToken(getApplicationContext(), Constants.GOOGLE_SERVICE, googleToken);
             Intent intent = new Intent(MelhorLoginActivity.this, MelhorBusaoActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         } else {
-            Toast.makeText(this, "Invalid username or password" , Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.error_unaccomplished_login), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -132,5 +134,4 @@ public class MelhorLoginActivity extends AppCompatActivity {
             }
         }
     }
-
 }
