@@ -109,7 +109,7 @@ public class MelhorLoginActivity extends AppCompatActivity {
             Intent intent = new Intent(MelhorLoginActivity.this, MelhorBusaoActivity.class);
             startActivity(intent);
         } else {
-            Toast.makeText(this, "Erro ao fazer login", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Não foi possível entrar no aplicativo", Toast.LENGTH_SHORT).show();
         }
     }
 

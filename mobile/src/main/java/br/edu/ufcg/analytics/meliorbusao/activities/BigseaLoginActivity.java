@@ -75,6 +75,12 @@ public class BigseaLoginActivity extends AppCompatActivity {
         mProgressView = findViewById(R.id.login_progress);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        finish();
+    }
+
     /**
      * Attempts to sign in or register the account specified by the isSuccessfulLogin form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -249,10 +255,6 @@ public class BigseaLoginActivity extends AppCompatActivity {
                 SharedPreferencesUtils.setUserToken(getApplicationContext(), username, loginServiceType, token);
                 final Intent i = new Intent(BigseaLoginActivity.this, MelhorBusaoActivity.class);
                 startActivity(i);
-                View view = getCurrentFocus();
-                InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                finish();
             } else {
                 mUsernameView.setError(getString(R.string.error_unsuccessful_login));
                 mUsernameView.requestFocus();

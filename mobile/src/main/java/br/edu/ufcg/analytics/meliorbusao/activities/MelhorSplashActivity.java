@@ -40,7 +40,7 @@ public class MelhorSplashActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "MelhorSplashActivity";
-    private static final int SPLASH_TIME_OUT = 2000;
+    private static final int GOOGLE_SIGN_IN_RC = 1;
     private GoogleApiClient mGoogleApiClient;
 
     @Override
@@ -68,19 +68,7 @@ public class MelhorSplashActivity extends AppCompatActivity implements
         } else {
             launchActivity(MelhorLoginActivity.class);
         }
-
-
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                final Intent i = new Intent(MelhorSplashActivity.this,
-//                        getLaunchingActivity());
-//                startActivity(i);
-//                finish();
-//            }
-//        }, SPLASH_TIME_OUT);
     }
-
 
     private void launchActivity(Class activity) {
         Intent i = new Intent(MelhorSplashActivity.this, activity);
@@ -91,7 +79,7 @@ public class MelhorSplashActivity extends AppCompatActivity implements
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-        opr.setResultCallback(new ResolvingResultCallbacks<GoogleSignInResult>(this, 1) {
+        opr.setResultCallback(new ResolvingResultCallbacks<GoogleSignInResult>(this, GOOGLE_SIGN_IN_RC) {
             @Override
             public void onSuccess(@NonNull GoogleSignInResult googleSignInResult) {
                 launchActivity(MelhorBusaoActivity.class);
@@ -167,7 +155,7 @@ public class MelhorSplashActivity extends AppCompatActivity implements
 
         @Override
         protected void onPostExecute(String response) {
-            if (response.equals(username)) {
+            if (username.equals(response)) {
                 launchActivity(MelhorBusaoActivity.class);
             } else {
                 launchActivity(MelhorLoginActivity.class);
