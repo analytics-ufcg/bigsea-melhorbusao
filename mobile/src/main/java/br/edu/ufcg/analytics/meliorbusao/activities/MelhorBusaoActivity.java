@@ -597,6 +597,12 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
         updateSignInOutMenus();
 
+        if (SharedPreferencesUtils.getUsername(getBaseContext())!= ""){
+            TextView nameTextView = (TextView) getNavigationView().findViewById(R.id.nameTextView);
+            nameTextView.setText(getResources().getString(R.string.saudation_message) + SharedPreferencesUtils.getUsername(getBaseContext()) + " :-)");
+
+        }
+
 
         if (mGoogleApiClient.isConnected()){
             OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
@@ -659,7 +665,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
             });
         }
         if(SharedPreferencesUtils.getUserToken(MelhorBusaoActivity.this.getBaseContext())!=""){
-            SharedPreferencesUtils.setUserToken(getApplicationContext(),SharedPreferencesUtils.getUsername(getApplicationContext()) ,Constants.BIG_SEA_SERVICE,"");
+            SharedPreferencesUtils.setUserToken(getApplicationContext(),"" ,Constants.BIG_SEA_SERVICE,"");
         }
     }
 
