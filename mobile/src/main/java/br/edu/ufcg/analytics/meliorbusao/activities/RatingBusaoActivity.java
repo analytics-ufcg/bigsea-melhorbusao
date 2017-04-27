@@ -130,7 +130,7 @@ public class RatingBusaoActivity extends AppCompatActivity implements
     }
 
     /**
-     * Após a realizaçã da avaliação, salva os dados fornecidos pelo usuário
+     * Após a realização da avaliação, salva os dados fornecidos pelo usuário
      * @param bundle
      * @throws ParseException
      */

@@ -2,10 +2,17 @@ package br.edu.ufcg.analytics.meliorbusao.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 
 public class SharedPreferencesUtils {
+    public static final String TAG = "SHARED_PREFERENCES";
 
     protected SharedPreferencesUtils() {}
 
@@ -192,4 +199,40 @@ public class SharedPreferencesUtils {
         SharedPreferences authPreferences = context.getSharedPreferences(Constants.AUTH_FILE_KEY, Context.MODE_PRIVATE);
         return authPreferences.getString(Constants.USERNAME_KEY, "");
     }
+
+    private static void setUnfinishedEvaluations(Context context, Set<String> evaluationsUnfinished) {
+        SharedPreferences settings = context.getSharedPreferences(Constants.EVALUATION_UNFINISHED,Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putStringSet(Constants.EVALUATION_UNFINISHED,evaluationsUnfinished);
+        editor.commit();
+        Log.d(TAG, "setEvaluationsUnfinished");
+    }
+
+    public static Set<String> getUnfinishedEvaluations(Context context, HashSet<String> evaluationUnfinished) {
+        SharedPreferences authPreferences = context.getSharedPreferences(Constants.EVALUATION_UNFINISHED, Context.MODE_PRIVATE);
+        return authPreferences.getStringSet(Constants.EVALUATION_UNFINISHED, evaluationUnfinished);
+    }
+
+    public static void addUnfinishedEvaluation(Context context, String evaluation){
+        SharedPreferences authPreferences = context.getSharedPreferences(Constants.EVALUATION_UNFINISHED, Context.MODE_PRIVATE);
+        HashSet<String> list = (HashSet<String>) authPreferences.getStringSet(Constants.EVALUATION_UNFINISHED, new HashSet<String>());
+        list.add(evaluation);
+        setUnfinishedEvaluations(context, list);
+        Log.d(TAG, "addEvaluationUnfinished - "+ evaluation);
+
+    }
+
+    public static void excludUnfinishedEvaluation(Context context, String evaluation){
+        SharedPreferences authPreferences = context.getSharedPreferences(Constants.EVALUATION_UNFINISHED, Context.MODE_PRIVATE);
+        HashSet<String> list = (HashSet<String>) authPreferences.getStringSet(Constants.EVALUATION_UNFINISHED, new HashSet<String>());
+        if (list.contains(evaluation)){
+            Log.d(TAG, "excludEvaluationUnfinished? " + String.valueOf(list.remove(evaluation)));
+        }
+        setUnfinishedEvaluations(context, list);
+        Log.d(TAG, "excludEvaluationUnfinished - "+ evaluation);
+
+    }
+
+
+
 }

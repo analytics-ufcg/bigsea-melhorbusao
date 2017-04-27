@@ -209,6 +209,22 @@ public class MelhorBusaoActivity extends AppCompatActivity
         } else {
             buildAlertMessageNoGps();
         }
+
+        /*
+        SharedPreferencesUtils.addUnfinishedEvaluation(getBaseContext(),"teste3");
+
+        SharedPreferencesUtils.addUnfinishedEvaluation(getBaseContext(),"teste1");
+
+        for (String str : SharedPreferencesUtils.getUnfinishedEvaluations(getBaseContext(), new HashSet<String>())) {
+            Log.d(TAG , "Unfinished Evaluation 1: " + str);
+        }
+
+        SharedPreferencesUtils.excludUnfinishedEvaluation(getBaseContext(), "teste2");
+
+
+        for (String str : SharedPreferencesUtils.getUnfinishedEvaluations(getBaseContext(), new HashSet<String>())) {
+            Log.d(TAG, "Unfinished Evaluation 2: " + str);
+        } */
     }
 
     private void loadCityData() {

@@ -6,6 +6,8 @@ import android.content.res.Resources;
 import com.google.android.gms.location.DetectedActivity;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class Constants {
     public static final String PACKAGE_NAME = "br.edu.ufcg.analytics.meliorbusao";
@@ -27,6 +29,7 @@ public final class Constants {
     public static final String AUTH_SERVICE_KEY = "user_service";
     public static final String BIG_SEA_SERVICE = "big_sea_service";
     public static final String GOOGLE_SERVICE = "google_service";
+    public static final String EVALUATION_UNFINISHED = "unfinished";
 
     public static final String SHAPES_ON_DB_PREFERENCE = "shapes_on_db";
     public static final String SCHEDULE_ON_DB_PREFERENCE = "schedule_on_db";
