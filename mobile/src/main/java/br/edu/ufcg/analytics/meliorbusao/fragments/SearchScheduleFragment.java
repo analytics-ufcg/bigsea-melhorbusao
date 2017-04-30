@@ -1,10 +1,16 @@
 package br.edu.ufcg.analytics.meliorbusao.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -24,14 +30,28 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseException;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.osmdroid.util.GeoPoint;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
@@ -68,6 +88,9 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
     private Spinner stopsSpinner;
     private StopsAdapter mStopsAdapter;
     private TextView addressField;
+
+    private RoutingTask mAuthTask = null;
+    /*private View mProgressView;*/
 
     public SearchScheduleFragment() {
     }
@@ -109,20 +132,27 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
 
         addressField = (TextView) mView.findViewById(R.id.address_field);
 
+        /*mProgressView = getActivity().findViewById(R.id.login_progress);*/
+
         showScheduleButton = (Button) mView.findViewById(R.id.show_schedule_button);
         showScheduleButton.setEnabled(false);
         showScheduleButton.setBackgroundColor(getResources().getColor(R.color.inactiveIconColorDark));
         showScheduleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
+                /*showProgress(true);*/
+                mAuthTask = new RoutingTask(-25.39211,-49.22613,-25.45102,-49.28381);
+                mAuthTask.execute();
+                /*try {
                     StopHeadsign stop = ((StopHeadsign) stopsSpinner.getSelectedItem());
                     mCallback.onClickTakeBusButton(stop);
                 } catch (Exception e) {
                     Toast.makeText(getActivity(), R.string.msg_no_stops_near, Toast.LENGTH_LONG).show();
-                }
+                }*/
+
             }
         });
+
         return mView;
     }
 
@@ -331,4 +361,109 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
     public interface SearchScheduleListener extends FragmentTitleChangeListener {
         void onClickTakeBusButton(StopHeadsign stopHeadsign);
     }
+
+    public class RoutingTask extends AsyncTask<Void, Void, String> {
+
+        private static final String ENDPOINT_ADDRESS = "http://150.165.85.4:10402/otp/routers/default/plan?";
+        private final String fromPlace;
+        private final String toPlace;
+        private String responseMessage = "";
+
+        RoutingTask(double fromPlaceLat, double fromPlaceLong, double toPlaceLat, double toPlaceLong) {
+            this.fromPlace = String.valueOf(fromPlaceLat) + "," + String.valueOf(fromPlaceLong);
+            this.toPlace = String.valueOf(toPlaceLat) + "," + String.valueOf(toPlaceLong);
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            URL url;
+            try {
+                StringBuilder parameters = new StringBuilder();
+                parameters.append("fromPlace=");
+                parameters.append(fromPlace);
+                parameters.append("&toPlace=");
+                parameters.append(toPlace);
+                parameters.append("&mode=TRANSIT,WALK");
+                parameters.append("&date=04/03/2017");
+                parameters.append("&time=16:20:00");
+
+                Log.d("SearchScheduleFragment", parameters.toString());
+
+                url = new URL(ENDPOINT_ADDRESS + parameters.toString());
+
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setRequestProperty("Content-Type", "application/json");
+
+                /*OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(parameters.toString());
+                writer.flush();
+                writer.close();
+                os.close();*/
+
+                conn.connect();
+                int responseCode = conn.getResponseCode();
+
+                Log.d("SearchScheduleFragment", "Response Code: " + String.valueOf(responseCode));
+
+                if (responseCode == HttpsURLConnection.HTTP_OK) {
+                    String line = "";
+                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    while ((line = br.readLine()) != null) {
+                        responseMessage += line;
+                    }
+                    JSONObject response = new JSONObject(responseMessage);
+                    JSONObject plan = response.getJSONObject("plan");
+                    JSONArray itinerariesJson = plan.getJSONArray("itineraries");
+
+                    Log.d("SearchScheduleFragment", "Number of itineraries: " + String.valueOf(itinerariesJson.length()));
+                    Log.d("SearchScheduleFragment", "First Itinerary: " + itinerariesJson.getJSONObject(1).toString());
+                } else {
+                    BufferedReader br1 = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                    String line = "", error = "";
+                    while ((line = br1.readLine()) != null) {
+                        error += line;
+                    }
+
+                    Log.d("SearchScheduleFragment", error);
+                }
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return responseMessage;
+        }
+    }
+
+    /**
+     * Shows the progress UI and hides the isSuccessfulLogin form.
+     */
+    /*@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+    }*/
 }
