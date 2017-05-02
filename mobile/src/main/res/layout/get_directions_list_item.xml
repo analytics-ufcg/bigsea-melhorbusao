@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/background_light"
+    android:paddingTop="2dp"
+    android:paddingLeft="8dp"
+    android:gravity="center_horizontal">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/directions_bus_icon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/bus_grey"
+                android:layout_gravity="center_vertical" />
+
+            <TextView
+                android:id="@+id/directions_bus_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="303,505"
+                android:textStyle="bold"
+                android:textColor="@color/primary_text_color"
+                android:background="@android:color/transparent"
+                android:layout_gravity="center_vertical"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_alignParentRight="true"
+            android:paddingRight="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:text="33 min"
+                android:textStyle="bold"
+                android:textColor="@color/primary_text_color"
+                android:background="@android:color/transparent"
+                android:layout_gravity="center_vertical"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/itinerary_list_item_st_end_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="16:28 - 17:01"
+            android:textStyle="bold"
+            android:textColor="@color/primary_text_color"
+            android:background="@android:color/transparent"
+            android:layout_gravity="center_vertical"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/itinerary_list_item_start_bus_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="Comendador Fontana, 204 - Centro"
+            android:textColor="@color/bb_inActiveBottomBarItemColor"
+            android:background="@android:color/transparent"
+            android:layout_gravity="center_vertical"/>
+    </LinearLayout>
+
+</LinearLayout>
