@@ -34,7 +34,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -116,7 +118,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
             @Override
             public void onClick(View v) {
                 /*showProgress(true);*/
-                mAuthTask = new RoutingTask(mCurrLocation, mDestLocation);
+                mAuthTask = new RoutingTask(mCurrLocation, mDestLocation, new Date());
                 mAuthTask.execute();
             }
         });
@@ -240,11 +242,18 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
         private static final String ENDPOINT_ADDRESS = "http://150.165.85.4:10402/otp/routers/default/plan?";
         private final String fromPlace;
         private final String toPlace;
+        private final String date;
+        private final String time;
         private String responseMessage = "";
 
-        RoutingTask(LatLng origCoords, LatLng destCoords) {
+        RoutingTask(LatLng origCoords, LatLng destCoords, Date date) {
             this.fromPlace = String.valueOf(origCoords.latitude) + "," + String.valueOf(origCoords.longitude);
             this.toPlace = String.valueOf(destCoords.latitude) + "," + String.valueOf(destCoords.longitude);
+            SimpleDateFormat sdf = new SimpleDateFormat();
+            sdf.applyPattern("dd/MM/yyyy");
+            this.date = sdf.format(date);
+            sdf.applyPattern("HH:mm:ss");
+            this.time = sdf.format(date);
         }
 
         @Override
@@ -257,8 +266,10 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
                 parameters.append("&toPlace=");
                 parameters.append(toPlace);
                 parameters.append("&mode=TRANSIT,WALK");
-                parameters.append("&date=04/03/2017");
-                parameters.append("&time=16:20:00");
+                parameters.append("&date=");
+                parameters.append(date);
+                parameters.append("&time=");
+                parameters.append(time);
 
                 Log.d("SearchScheduleFragment", parameters.toString());
 
