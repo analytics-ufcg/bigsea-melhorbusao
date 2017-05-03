@@ -244,7 +244,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
 
     public class RoutingTask extends AsyncTask<Void, Void, List<Itinerary>> {
 
-        private static final String ENDPOINT_ADDRESS = "http://150.165.85.4:10402/otp/routers/default/plan?";
+        private final String ENDPOINT_ADDRESS = getString(R.string.OPEN_TRIP_PLANNER_URL) + "/otp/routers/default/plan?";
         private final String fromPlace;
         private final String toPlace;
         private final String date;

@@ -36,6 +36,7 @@ android {
         it.resValue 'string', 'PARSE_SERVER_CLIENT_KEY', ParseServerClientKey
         it.resValue 'string', 'PARSE_SERVER_URL', ParseServerUrl
         it.resValue 'string', 'BEST_TRIP_RECOMMENDER_URL', BestTripRecommenderUrl
+        it.resValue 'string', 'OPEN_TRIP_PLANNER_URL', OpenTripPlannerUrl
     }
 }
 
