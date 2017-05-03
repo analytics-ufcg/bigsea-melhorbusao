@@ -29,33 +29,34 @@ public class Itinerary {
     }
 
     public static Itinerary fromJson(JSONObject itineraryJson) {
-        Itinerary itinerary;
+        Itinerary itinerary = null;
 
         try {
             List<String> busRoutes = new ArrayList<String>();
             JSONArray legsJson = itineraryJson.getJSONArray("legs");
+            JSONObject firstBusLeg = null;
 
             for (int i = 0; i < legsJson.length(); i++) {
                 JSONObject legJson = legsJson.getJSONObject(i);
                 String mode = legJson.getString("mode");
-                if (mode == "BUS") {
+                if (mode.equals("BUS")) {
+                    if (firstBusLeg == null) firstBusLeg = legJson;
                     String route = legJson.getString("route");
                     busRoutes.add(route);
                 }
             }
-            String depBusStop = legsJson.getJSONObject(0).getJSONObject("from").getString("name");
-            Date startTime = new Date(itineraryJson.getLong("startTime")/1000);
-            Date endTime = new Date(itineraryJson.getLong("endTime")/1000);
+            String depBusStop = firstBusLeg.getJSONObject("from").getString("name");
+            Date startTime = new Date(itineraryJson.getLong("startTime"));
+            Date endTime = new Date(itineraryJson.getLong("endTime"));
             int duration = itineraryJson.getInt("duration");
 
             itinerary = new Itinerary(busRoutes,depBusStop,startTime,endTime,duration);
-            return itinerary;
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return itinerary;
     }
 
     @Override

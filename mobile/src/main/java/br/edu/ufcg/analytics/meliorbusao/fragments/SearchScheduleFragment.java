@@ -251,7 +251,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
             this.fromPlace = String.valueOf(origCoords.latitude) + "," + String.valueOf(origCoords.longitude);
             this.toPlace = String.valueOf(destCoords.latitude) + "," + String.valueOf(destCoords.longitude);
             SimpleDateFormat sdf = new SimpleDateFormat();
-            sdf.applyPattern("dd/MM/yyyy");
+            sdf.applyPattern("MM/dd/yyyy");
             this.date = sdf.format(date);
             sdf.applyPattern("HH:mm:ss");
             this.time = sdf.format(date);
