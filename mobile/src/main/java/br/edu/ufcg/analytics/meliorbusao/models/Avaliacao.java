@@ -96,13 +96,12 @@ public class Avaliacao {
 
     /**
      * Transforma um objeto Avaliação em um objeto do parse e escreve no bd
-     * @param tripId
      * @return Um objeto do parse
      */
-    public ParseObject toParseObject(String tripId) {
+    public ParseObject toParseObject() {
         ParseObject parseRatingObject = new ParseObject("Rating");
         parseRatingObject.put("rota", rota);
-        parseRatingObject.put("tripId", tripId);
+        parseRatingObject.put("tripId", String.valueOf(timestamp));
 
         for (Resposta r : respostas) {
             int valor = r.getValor();

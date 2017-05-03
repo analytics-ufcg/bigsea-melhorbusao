@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import br.edu.ufcg.analytics.meliorbusao.models.LocationHolder;
@@ -97,10 +98,9 @@ public class ParseUtils {
      * Transforma a avaliação num objeto do parse e insere no bd
      *
      * @param avaliacao
-     * @param tripId
      */
-    public static void insereAvaliacao(Avaliacao avaliacao, String tripId) {
-        avaliacao.toParseObject(tripId).saveEventually();
+    public static void insereAvaliacao(Avaliacao avaliacao) {
+        avaliacao.toParseObject().saveEventually();
     }
 
     /**
@@ -575,4 +575,20 @@ public class ParseUtils {
     }
 
 
+    public static void saveRatings(Context context, Avaliacao avaliacao){
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("token", SharedPreferencesUtils.getUserToken(context));
+        params.put("username", SharedPreferencesUtils.getUsername(context));
+        params.put("rating", avaliacao.toParseObject());
+
+        ParseCloud.callFunctionInBackground("insertRating", params, new FunctionCallback<Object>() {
+            public void done(Object response, ParseException e) {
+                if (e == null) {
+                    Log.d(response.toString(), "ParseUtils");
+                } else {
+                    Log.d(e.toString(), "ParseUtils");
+                }
+            }
+        });
+    }
 }

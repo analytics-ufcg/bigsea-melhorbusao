@@ -36,6 +36,8 @@ import javax.net.ssl.HttpsURLConnection;
 
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
+import br.edu.ufcg.analytics.meliorbusao.models.Avaliacao;
+import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
 
