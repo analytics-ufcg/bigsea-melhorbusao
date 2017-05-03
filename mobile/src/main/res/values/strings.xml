@@ -65,6 +65,7 @@
     <string name="map_route_screen_base_title">"Mapa - Rota "</string>
     <string name="top_bus_screen_base_title">"Rota - "</string>
     <string name="stop_time_title">Próximos horários</string>
+    <string name="itineraries_list_title">Itinerários</string>
 
     <!--Search Hints-->
     <string name="search_hint_top_bus">Digite uma rota</string>

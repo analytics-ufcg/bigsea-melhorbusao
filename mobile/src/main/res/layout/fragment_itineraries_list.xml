@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/primary_background"
+    android:id="@+id/stop_time_fragment_container">
+
+    <ListView
+        style="@style/SpinnerStopTime"
+        android:id="@+id/itineraries_list"
+        android:divider="@drawable/dash"
+        android:dividerHeight="4dp"
+        android:layerType="software"/>
+
+
+</LinearLayout>

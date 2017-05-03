@@ -39,7 +39,7 @@
             <FrameLayout
                 android:id="@+id/get_directions_map_fragment"
                 android:layout_width="match_parent"
-                android:layout_height="350dp"
+                android:layout_height="300dp"
                 android:layout_marginLeft="14dp"
                 android:layout_marginBottom="14dp"
                 android:layout_marginRight="14dp"

@@ -28,6 +28,46 @@ public class Itinerary {
         this.durationInSecs = durationInSecs;
     }
 
+    public List<String> getBusRoutes() {
+        return busRoutes;
+    }
+
+    public void setBusRoutes(List<String> busRoutes) {
+        this.busRoutes = busRoutes;
+    }
+
+    public String getDepartureBusStop() {
+        return departureBusStop;
+    }
+
+    public void setDepartureBusStop(String departureBusStop) {
+        this.departureBusStop = departureBusStop;
+    }
+
+    public Date getDepartureTime() {
+        return departureTime;
+    }
+
+    public void setDepartureTime(Date departureTime) {
+        this.departureTime = departureTime;
+    }
+
+    public Date getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public void setArrivalTime(Date arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
+    public int getDurationInSecs() {
+        return durationInSecs;
+    }
+
+    public void setDurationInSecs(int durationInSecs) {
+        this.durationInSecs = durationInSecs;
+    }
+
     public static Itinerary fromJson(JSONObject itineraryJson) {
         Itinerary itinerary = null;
 

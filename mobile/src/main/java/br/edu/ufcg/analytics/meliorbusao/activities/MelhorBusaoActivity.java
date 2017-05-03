@@ -70,6 +70,7 @@ import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.NotificationTrigger;
 import br.edu.ufcg.analytics.meliorbusao.db.MeliorDBOpenHelper;
 import br.edu.ufcg.analytics.meliorbusao.exceptions.NoDataForCityException;
+import br.edu.ufcg.analytics.meliorbusao.fragments.ItinerariesListFragment;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnFinishedParseListener;
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.fragments.MapRouteFragment;
@@ -79,6 +80,7 @@ import br.edu.ufcg.analytics.meliorbusao.fragments.SearchScheduleFragment;
 import br.edu.ufcg.analytics.meliorbusao.fragments.TopBusFragment;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.models.StopHeadsign;
+import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
 import br.edu.ufcg.analytics.meliorbusao.services.LocationService;
 import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
 import br.edu.ufcg.analytics.meliorbusao.utils.ProfileImageLoader;
@@ -87,7 +89,8 @@ import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 public class MelhorBusaoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFinishedParseListener,
         TopBusFragment.OnTopBusSelectedListener, NearStopsFragment.NearStopListener, SearchScheduleFragment.SearchScheduleListener,
-        FragmentManager.OnBackStackChangedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        FragmentManager.OnBackStackChangedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        SearchScheduleFragment.GetDirectionsListener {
 
     public static final String TAG = "MelhorBusaoActivity";
     private static final int RC_SIGN_IN = 0;
@@ -98,6 +101,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
     private MapRouteFragment mapRouteFragment;
     private SearchScheduleFragment searchScheduleFragment;
     private StopScheduleFragment stopScheduleFragment;
+    private ItinerariesListFragment itinerariesListFragment;
 
     /* Client used to interact with Google APIs. */
     private GoogleApiClient mGoogleApiClient;
@@ -133,6 +137,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
         mapRouteFragment = MapRouteFragment.getInstance();
         searchScheduleFragment = SearchScheduleFragment.getInstance();
         stopScheduleFragment = StopScheduleFragment.getInstance();
+        itinerariesListFragment = ItinerariesListFragment.getInstance();
 
         mGoogleApiClient = ((MeliorBusaoApplication) getApplication()).getGoogleApiClientInstance(this);
         mGoogleApiClient.registerConnectionCallbacks(this);
@@ -1007,5 +1012,13 @@ public class MelhorBusaoActivity extends AppCompatActivity
             Toast.makeText(this, "Não foi possível gravar o arquivo '" + file.getName() + "'", Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    @Override
+    public void onGetDirectionsButtonClick(List<Itinerary> itineraries) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.container_layout,
+                itinerariesListFragment, itinerariesListFragment.TAG).addToBackStack(itinerariesListFragment.TAG).commit();
+        changeBottomBarItem(itinerariesListFragment.TAG);
+        itinerariesListFragment.setItinerariesList(itineraries);
     }
 }

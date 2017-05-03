@@ -67,7 +67,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
     private MapFragment mMapFragment;
     private Menu mMenu;
     private RoutesAdapter mRoutesAdapter;
-    private SearchScheduleListener mCallback;
+    private GetDirectionsListener mCallback;
     private SearchView mSearchView;
     private Spinner routesSpinner;
     private Spinner stopsSpinner;
@@ -154,7 +154,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mCallback = (SearchScheduleListener) context;
+            mCallback = (GetDirectionsListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement SearchScheduleListener");
         }
@@ -238,7 +238,11 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
         void onClickTakeBusButton(StopHeadsign stopHeadsign);
     }
 
-    public class RoutingTask extends AsyncTask<Void, Void, String> {
+    public interface GetDirectionsListener extends FragmentTitleChangeListener {
+        void onGetDirectionsButtonClick(List<Itinerary> itineraries);
+    }
+
+    public class RoutingTask extends AsyncTask<Void, Void, List<Itinerary>> {
 
         private static final String ENDPOINT_ADDRESS = "http://150.165.85.4:10402/otp/routers/default/plan?";
         private final String fromPlace;
@@ -246,6 +250,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
         private final String date;
         private final String time;
         private String responseMessage = "";
+        private List<Itinerary> itineraries;
 
         RoutingTask(LatLng origCoords, LatLng destCoords, Date date) {
             this.fromPlace = String.valueOf(origCoords.latitude) + "," + String.valueOf(origCoords.longitude);
@@ -255,10 +260,11 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
             this.date = sdf.format(date);
             sdf.applyPattern("HH:mm:ss");
             this.time = sdf.format(date);
+            itineraries = new ArrayList<Itinerary>();
         }
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected List<Itinerary> doInBackground(Void... params) {
             URL url;
             try {
                 StringBuilder parameters = new StringBuilder();
@@ -303,6 +309,10 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
                     JSONObject plan = response.getJSONObject("plan");
                     JSONArray itinerariesJson = plan.getJSONArray("itineraries");
 
+                    for (int i = 0; i < itinerariesJson.length(); i++) {
+                        itineraries.add(Itinerary.fromJson(itinerariesJson.getJSONObject(i)));
+                    }
+
                     Log.d("SearchScheduleFragment", "Number of itineraries: " + String.valueOf(itinerariesJson.length()));
                     Log.d("SearchScheduleFragment", "First Itinerary: " + Itinerary.fromJson(itinerariesJson.getJSONObject(1)));
                 } else {
@@ -321,7 +331,12 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return responseMessage;
+            return itineraries;
+        }
+
+        @Override
+        protected void onPostExecute(List<Itinerary> itineraries) {
+            mCallback.onGetDirectionsButtonClick(itineraries);
         }
     }
 }
