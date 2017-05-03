@@ -86,7 +86,7 @@ public class ItinerariesListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        mCallback.onTitleChange(getResources().getString(R.string.stop_time_title));
+        mCallback.onTitleChange(getResources().getString(R.string.itineraries_list_title));
         //updateListView();
     }
 

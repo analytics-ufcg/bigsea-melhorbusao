@@ -314,7 +314,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
                     }
 
                     Log.d("SearchScheduleFragment", "Number of itineraries: " + String.valueOf(itinerariesJson.length()));
-                    Log.d("SearchScheduleFragment", "First Itinerary: " + Itinerary.fromJson(itinerariesJson.getJSONObject(1)));
+//                    Log.d("SearchScheduleFragment", "First Itinerary: " + Itinerary.fromJson(itinerariesJson.getJSONObject(1)));
                 } else {
                     BufferedReader br1 = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
                     String line = "", error = "";

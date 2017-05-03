@@ -65,13 +65,7 @@ public class ItinerariesAdapter extends ArrayAdapter<Itinerary> {
         TextView stBusStopTextView = (TextView) v.findViewById(R.id.itinerary_list_item_start_bus_stop);
 
         try {
-            StringBuilder busRoutesSB = new StringBuilder();
-            for (int i = 0; i < currItinerary.getBusRoutes().size(); i++) {
-                if (i != 0) busRoutesSB.append(",");
-                busRoutesSB.append(currItinerary.getBusRoutes().get(i));
-            }
-
-            busCodesTextView.setText(busRoutesSB.toString());
+            busCodesTextView.setText(StringUtils.getStringListConcat(currItinerary.getBusRoutes()));
 
             int durationInMins = currItinerary.getDurationInSecs()/60;
             durationTextView.setText(String.valueOf(durationInMins) + " min");
