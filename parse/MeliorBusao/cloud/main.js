@@ -97,3 +97,51 @@ Parse.Cloud.define("sumarios", function(request, response) {
         }
     });
 });
+
+Parse.Cloud.define("verifyBigSeaToken", function(request, response) {
+	var bigSeatoken = request.params.token;
+	var username = request.params.username;
+
+	Parse.Cloud.httpRequest({
+	  method: 'POST',
+	  url: 'https://eubrabigsea.dei.uc.pt/engine/api/verify_token',
+	  params: {
+		token : bigSeatoken
+	  }
+	}).then(function(httpResponse) {
+		if (httpResponse.data.response == username) {
+			response.success(true);
+			console.log(httpResponse.data.response);
+		} else {
+			response.error('invalid token');
+			console.error('Token does not belong to user');
+		}
+		response.success(httpResponse.data.response == username);
+	}, function(httpResponse) {
+		console.error('Request failed with response code ' + httpResponse.status);
+		response.error(httpResponse.status);
+	});
+});
+
+Parse.Cloud.define("insertRating", function(request, response) {
+    var bigSeatoken = request.params.token;
+    var username = request.params.username;
+    var rating = JSON.parse(request.params.rating);
+
+    var Rating = Parse.Object.extend("Rating");
+
+    var ratingTable = new Rating();
+
+    ratingTable.save(rating, {
+        success: function(ratingTable) {
+            // The object was saved successfully.
+            response.success("ok");
+        },
+        error: function(ratingTable, error) {
+            // The save failed.
+            // error is a Parse.Error with an error code and message.
+            response.error(error);
+        }
+    });
+});
+
