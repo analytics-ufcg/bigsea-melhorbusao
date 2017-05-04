@@ -24,13 +24,17 @@ import br.edu.ufcg.analytics.meliorbusao.models.CategoriaResposta;
 import br.edu.ufcg.analytics.meliorbusao.models.Resposta;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
+import br.edu.ufcg.analytics.meliorbusao.utils.VerifyBigSeaTokenTask;
 
 public class RatingBusaoActivity extends AppCompatActivity implements
-        RouteSelectionFragment.OnRouteSelectedListener, RatingFragment.OnFragmentInteractionListener, ViewPager.OnPageChangeListener {
+        RouteSelectionFragment.OnRouteSelectedListener,
+        RatingFragment.OnFragmentInteractionListener, ViewPager.OnPageChangeListener,
+        VerifyBigSeaTokenTask.VerifyBigSeaTokenInterface {
 
     private static final int NONE_ROUTE = 0;
     private static final int ONLY_ONE_ROUTE = 1;
     private static final int MANY_ROUTES = 2;
+    private static final String TAG = "RatingBusaoActivity";
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
@@ -42,6 +46,7 @@ public class RatingBusaoActivity extends AppCompatActivity implements
 
     private Route[] mRoutes;
     private long mTimestamp;
+    private Avaliacao avaliacao;
 
     /**
      * Método para iniciar os fragments,a própria a aplicação
@@ -142,7 +147,7 @@ public class RatingBusaoActivity extends AppCompatActivity implements
         int noteTrip = 0; //TODO Decide whether or not to use the trip rating
         boolean condition = bundle.getBoolean(RatingFragment.CONDITION);
 
-        Avaliacao avaliacao = new Avaliacao(mTimestamp, routeId)
+        avaliacao = new Avaliacao(mTimestamp, routeId)
                 .addResposta(new Resposta(CategoriaResposta.MOTORISTA.idCategoria, driver ? 1 : 0))
                 .addResposta(new Resposta(CategoriaResposta.LOTACAO.idCategoria, crowded ? 1 : 0))
                 .addResposta(new Resposta(CategoriaResposta.VIAGEM.idCategoria, noteTrip))
@@ -151,14 +156,8 @@ public class RatingBusaoActivity extends AppCompatActivity implements
         Log.d("RatingBusaoActivity", String.valueOf(bundle));
 
         if (DBUtils.fillRating(this, avaliacao)) {
-            try {
-                ParseUtils.saveRatings(getApplicationContext(), avaliacao);
-                ParseUtils.insereAvaliacao(avaliacao);
-
-                Toast.makeText(RatingBusaoActivity.this, getString(R.string.msg_thanks_answer), Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                Toast.makeText(RatingBusaoActivity.this, getString(R.string.msg_error_rating), Toast.LENGTH_SHORT).show();
-            }
+            VerifyBigSeaTokenTask verifyBigSeaTokenTask = new VerifyBigSeaTokenTask(this, this);
+            verifyBigSeaTokenTask.execute();
         } else {
             Toast.makeText(RatingBusaoActivity.this, getString(R.string.msg_error_rating), Toast.LENGTH_SHORT).show();
         }
@@ -245,5 +244,24 @@ public class RatingBusaoActivity extends AppCompatActivity implements
     private void showSingleRouteUI() {
         mSectionsPagerAdapter.getRatingFragment().setRoute(mRoutes[0]);
         mViewPager.setCurrentItem(SectionsPagerAdapter.ROUTE_RATING_FRAGMENT_INDEX, false);
+    }
+
+    @Override
+    public void onValidationDone(Boolean isTokenValid) {
+        if (isTokenValid) {
+            //ParseUtils.insereAvaliacao(avaliacao);
+
+            if (ParseUtils.saveRatings(getApplicationContext(), avaliacao)) {
+                Log.d(TAG, "Saved successfully");
+            } else {
+                Log.d(TAG, "Invalid JSON");
+                // TODO
+                // Save rating locally
+            }
+
+            Toast.makeText(RatingBusaoActivity.this, getString(R.string.msg_thanks_answer), Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(TAG, "Invalid Token");
+        }
     }
 }

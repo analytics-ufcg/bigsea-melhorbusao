@@ -34,10 +34,12 @@ import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
+import br.edu.ufcg.analytics.meliorbusao.utils.VerifyBigSeaTokenTask;
 
 
 public class MelhorSplashActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        VerifyBigSeaTokenTask.VerifyBigSeaTokenInterface {
 
     private static final String TAG = "MelhorSplashActivity";
     private static final int GOOGLE_SIGN_IN_RC = 1;
@@ -63,7 +65,7 @@ public class MelhorSplashActivity extends AppCompatActivity implements
         } else if (authService.equals(Constants.BIG_SEA_SERVICE)) {
             String token = SharedPreferencesUtils.getUserToken(this);
             String username = SharedPreferencesUtils.getUsername(this);
-            VerifyBigSeaTokenTask task = new VerifyBigSeaTokenTask(username, token);
+            VerifyBigSeaTokenTask task = new VerifyBigSeaTokenTask(this, this);
             task.execute();
         } else {
             launchActivity(MelhorLoginActivity.class);
@@ -103,66 +105,12 @@ public class MelhorSplashActivity extends AppCompatActivity implements
         launchActivity(MelhorLoginActivity.class);
     }
 
-    private class VerifyBigSeaTokenTask extends AsyncTask<Void, Void, String> {
-
-        private static final String ENDPOINT_ADDRESS = "https://eubrabigsea.dei.uc.pt/engine/api/verify_token";
-        private String username;
-        private String token;
-        private String responseMessage = "";
-
-        public VerifyBigSeaTokenTask(String username, String token) {
-            this.username = username;
-            this.token = token;
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            try {
-                String parameters = "token=" + token;
-                URL url = new URL(ENDPOINT_ADDRESS);
-
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                writer.write(parameters);
-                writer.flush();
-                writer.close();
-                os.close();
-
-                conn.connect();
-                int responseCode = conn.getResponseCode();
-
-                if (responseCode == HttpsURLConnection.HTTP_OK) {
-                    String line;
-                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                    while ((line = br.readLine()) != null) {
-                        responseMessage += line;
-                    }
-                    JSONObject responseJSON = new JSONObject(responseMessage);
-                    String response = responseJSON.getString("response");
-                    return response;
-                }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String response) {
-            if (username.equals(response)) {
-                launchActivity(MelhorBusaoActivity.class);
-            } else {
-                launchActivity(MelhorLoginActivity.class);
-            }
+    @Override
+    public void onValidationDone(Boolean isTokenValid) {
+        if (isTokenValid) {
+            launchActivity(MelhorBusaoActivity.class);
+        } else {
+            launchActivity(MelhorLoginActivity.class);
         }
     }
-
-
 }
