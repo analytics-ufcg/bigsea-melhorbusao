@@ -577,20 +577,26 @@ public class ParseUtils {
     }
 
 
-    public static void saveRatings(Context context, Avaliacao avaliacao) throws JSONException{
-        HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("token", SharedPreferencesUtils.getUserToken(context));
-        params.put("username", SharedPreferencesUtils.getUsername(context));
-        params.put("rating", avaliacao.toJSON());
+    public static boolean saveRatings(Context context, Avaliacao avaliacao) {
+        try {
+            HashMap<String, Object> params = new HashMap<String, Object>();
+            params.put("token", SharedPreferencesUtils.getUserToken(context));
+            params.put("username", SharedPreferencesUtils.getUsername(context));
+            params.put("rating", avaliacao.toJSON());
 
-        ParseCloud.callFunctionInBackground("insertRating", params, new FunctionCallback<Object>() {
-            public void done(Object response, ParseException e) {
-                if (e == null) {
-                    Log.d(response.toString(), "ParseUtils");
-                } else {
-                    Log.d(e.toString(), "ParseUtils");
+            ParseCloud.callFunctionInBackground("insertRating", params, new FunctionCallback<Object>() {
+                public void done(Object response, ParseException e) {
+                    if (e == null) {
+                        Log.d(TAG, response.toString());
+                    } else {
+                        Log.d(TAG, e.toString());
+                    }
                 }
-            }
-        });
+            });
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+            return false;
+        }
+        return true;
     }
 }
