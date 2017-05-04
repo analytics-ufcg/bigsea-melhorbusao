@@ -3,7 +3,12 @@ package br.edu.ufcg.analytics.meliorbusao.models;
 
 import com.parse.ParseObject;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 public class Avaliacao {
     private ArrayList<Resposta> respostas;
@@ -124,5 +129,33 @@ public class Avaliacao {
 
         return parseRatingObject;
     }
+
+    public String toJSON() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("tripId", String.valueOf(timestamp));
+        json.put("rota", rota);
+
+        for (Resposta r : respostas) {
+            int valor = r.getValor();
+
+            switch (r.getCategoria()) {
+                case CategoriaResposta.ID_CATEGORIA_MOTORISTA:
+                    json.put("motorista", valor == 1);
+                    break;
+                case CategoriaResposta.ID_CATEGORIA_LOTACAO:
+                    json.put("lotacao", valor == 1);
+                    break;
+                case CategoriaResposta.ID_CATEGORIA_VIAGEM:
+                    json.put("nota", valor);
+                    break;
+                case CategoriaResposta.ID_CATEGORY_CONDITION:
+                    json.put("condition", valor == 1);
+                    break;
+            }
+        }
+
+        return json.toString();
+    }
 }
+
 

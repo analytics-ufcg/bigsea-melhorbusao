@@ -151,10 +151,14 @@ public class RatingBusaoActivity extends AppCompatActivity implements
         Log.d("RatingBusaoActivity", String.valueOf(bundle));
 
         if (DBUtils.fillRating(this, avaliacao)) {
-            ParseUtils.saveRatings(getApplicationContext(), avaliacao);
-            ParseUtils.insereAvaliacao(avaliacao);
+            try {
+                ParseUtils.saveRatings(getApplicationContext(), avaliacao);
+                ParseUtils.insereAvaliacao(avaliacao);
 
-            Toast.makeText(RatingBusaoActivity.this, getString(R.string.msg_thanks_answer), Toast.LENGTH_SHORT).show();
+                Toast.makeText(RatingBusaoActivity.this, getString(R.string.msg_thanks_answer), Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(RatingBusaoActivity.this, getString(R.string.msg_error_rating), Toast.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(RatingBusaoActivity.this, getString(R.string.msg_error_rating), Toast.LENGTH_SHORT).show();
         }

@@ -1,6 +1,6 @@
 package br.edu.ufcg.analytics.meliorbusao.utils;
 
-import android.content.Context;
+    import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
@@ -12,7 +12,9 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
-import java.text.SimpleDateFormat;
+    import org.json.JSONException;
+
+    import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -575,11 +577,11 @@ public class ParseUtils {
     }
 
 
-    public static void saveRatings(Context context, Avaliacao avaliacao){
+    public static void saveRatings(Context context, Avaliacao avaliacao) throws JSONException{
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("token", SharedPreferencesUtils.getUserToken(context));
         params.put("username", SharedPreferencesUtils.getUsername(context));
-        params.put("rating", avaliacao.toParseObject());
+        params.put("rating", avaliacao.toJSON());
 
         ParseCloud.callFunctionInBackground("insertRating", params, new FunctionCallback<Object>() {
             public void done(Object response, ParseException e) {
