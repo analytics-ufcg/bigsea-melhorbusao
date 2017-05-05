@@ -104,7 +104,7 @@ Parse.Cloud.define("verifyBigSeaToken", function(request, response) {
 
 	Parse.Cloud.httpRequest({
 	  method: 'POST',
-	  url: 'https://eubrabigsea.dei.uc.pt/engine/api/verify_token',
+	  url: 'xxxxxxxxxxxxxxxxxxxxxxxxx',
 	  params: {
 		token : bigSeatoken
 	  }
@@ -124,7 +124,7 @@ Parse.Cloud.define("verifyBigSeaToken", function(request, response) {
 });
 
 Parse.Cloud.define("insertRating", function(request, response) {
-    var bigSeatoken = request.params.token;
+    var bigSeaToken = request.params.token;
     var username = request.params.username;
     var rating = JSON.parse(request.params.rating);
 
@@ -132,16 +132,22 @@ Parse.Cloud.define("insertRating", function(request, response) {
 
     var ratingTable = new Rating();
 
-    ratingTable.save(rating, {
-        success: function(ratingTable) {
-            // The object was saved successfully.
-            response.success("ok");
-        },
-        error: function(ratingTable, error) {
-            // The save failed.
-            // error is a Parse.Error with an error code and message.
-            response.error(error);
-        }
-    });
+    Parse.Cloud.run("verifyBigSeaToken", {token: bigSeaToken, username: username})     
+    .then(function(tokenValidationResponse) {
+			ratingTable.save(rating, {
+				success: function(ratingTable) {
+					console.log("The object was saved successfully.");
+					response.success("done");
+				},
+				error: function(ratingTable, error) {
+					console.error("The save failed.");
+					response.error(error);
+		    	}
+    		});
+		}, function(tokenValidationResponse) {
+			console.error("The save failed: " + tokenValidationResponse.message);
+			response.error("The save failed: " + tokenValidationResponse.message);
+		}   
+	);
 });
 
