@@ -235,6 +235,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
             mGoogleApiClient.connect();
             Log.d("status con", String.valueOf(mGoogleApiClient.isConnected()));
         }
+        Log.d(TAG, SharedPreferencesUtils.getUserToken(this));
         initializeBottomNavigation();
     }
 

@@ -1,4 +1,4 @@
-package br.edu.ufcg.analytics.meliorbusao.utils;
+package br.edu.ufcg.analytics.meliorbusao.authentication;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -19,6 +19,7 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
+import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
 public class VerifyBigSeaTokenTask extends AsyncTask<Void, Void, String> {
 

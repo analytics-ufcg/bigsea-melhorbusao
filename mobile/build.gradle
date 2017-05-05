@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
+    useLibrary 'org.apache.http.legacy'
 
     //sempre que gerar uma nova apk, atualizar o versionName e incrementar o targetSdkVersion
     defaultConfig {
@@ -37,6 +38,7 @@ android {
         it.resValue 'string', 'BIG_SEA_AUTH_VERIFY_TOKEN_ENDPOINT', BigSeaAuthVerifyTokenEndpoint
         it.resValue 'string', 'BIG_SEA_AUTH_CHECKIN_DATA_ENDPOINT', BigSeaAuthCheckinDataEndpoint
         it.resValue 'string', 'BIG_SEA_AUTH_SIGNUP_DATA_ENDPOINT', BigSeaAuthSignupDataEndpoint
+        it.resValue 'string', 'GOOGLE_OAUTH_SERVER_CLIENT_ID', GoogleOAuthServerClientId
     }
 }
 
@@ -49,9 +51,10 @@ dependencies {
     compile project(':osmbonuspack_v5.1')
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'
-    compile 'com.google.android.gms:play-services:8.4.0'
-    compile 'com.google.android.gms:play-services-plus:8.4.0'
-    compile 'com.google.android.gms:play-services-identity:8.4.0'
+    compile 'com.google.android.gms:play-services:9.8.0'
+    compile 'com.google.android.gms:play-services-plus:9.8.0'
+    compile 'com.google.android.gms:play-services-identity:9.8.0'
+    compile 'com.google.android.gms:play-services-auth:9.8.0'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.parse.bolts:bolts-android:1.+'
     compile 'com.parse:parse-android:1.+'

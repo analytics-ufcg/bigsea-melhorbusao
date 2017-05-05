@@ -24,7 +24,7 @@ import br.edu.ufcg.analytics.meliorbusao.models.CategoriaResposta;
 import br.edu.ufcg.analytics.meliorbusao.models.Resposta;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
-import br.edu.ufcg.analytics.meliorbusao.utils.VerifyBigSeaTokenTask;
+import br.edu.ufcg.analytics.meliorbusao.authentication.VerifyBigSeaTokenTask;
 
 public class RatingBusaoActivity extends AppCompatActivity implements
         RouteSelectionFragment.OnRouteSelectedListener,
