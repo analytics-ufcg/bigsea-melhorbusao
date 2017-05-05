@@ -18,12 +18,11 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import br.edu.ufcg.analytics.meliorbusao.activities.MelhorBusaoActivity;
-import br.edu.ufcg.analytics.meliorbusao.activities.MelhorLoginActivity;
+import br.edu.ufcg.analytics.meliorbusao.R;
 
 public class VerifyBigSeaTokenTask extends AsyncTask<Void, Void, String> {
 
-    private static final String ENDPOINT_ADDRESS = "https://eubrabigsea.dei.uc.pt/engine/api/verify_token";
+    private String endpoint_address;
     private String username;
     private String token;
     private String responseMessage = "";
@@ -33,13 +32,16 @@ public class VerifyBigSeaTokenTask extends AsyncTask<Void, Void, String> {
         this.username = SharedPreferencesUtils.getUsername(context);
         this.token = SharedPreferencesUtils.getUserToken(context);
         this.verifyBigSeaTokenInterface = verifyBigSeaTokenInterface;
+        if (context !=  null) {
+            endpoint_address = context.getResources().getString(R.string.BIG_SEA_AUTH_VERIFY_TOKEN_ENDPOINT);
+        }
     }
 
     @Override
     protected String doInBackground(Void... params) {
         try {
             String parameters = "token=" + token;
-            URL url = new URL(ENDPOINT_ADDRESS);
+            URL url = new URL(endpoint_address);
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");

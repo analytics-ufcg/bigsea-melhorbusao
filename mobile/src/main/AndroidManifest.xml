@@ -29,12 +29,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GOOGLE_SERVICES_API_KEY" />
         <meta-data
-            android:name="com.parse.APPLICATION_ID"
-            android:value="@string/PARSE_APPLICATION_ID" />
-        <meta-data
-            android:name="com.parse.CLIENT_KEY"
-            android:value="@string/PARSE_CLIENT_KEY" />
-        <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
