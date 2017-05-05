@@ -21,6 +21,7 @@ public class MeliorDBOpenHelper extends SQLiteOpenHelper {
     private static Table routeStopTable = null;
     private static Table shapesTable = null;
     private static Table horariosProvaveisTable = null;
+    private static Table nonPublishedRatingsTable = null;
 
 
     //
@@ -54,6 +55,7 @@ public class MeliorDBOpenHelper extends SQLiteOpenHelper {
         db.execSQL(getShapesTable().toSQL());
 
         db.execSQL(getHorariosProvaveisTable().toSQL());
+        db.execSQL(getNonPublishedRatingsTable().toSQL());
     }
 
     @Override
@@ -268,5 +270,23 @@ public class MeliorDBOpenHelper extends SQLiteOpenHelper {
         }
 
         return shapesTable;
+    }
+
+
+    /**
+     * Returns the NonPublishedRatings table object (creates if it doesn't exist)
+     *  - timestamp column (primary key and foreign key - avaliacao)
+     *
+     * @return
+     */
+    public static Table getNonPublishedRatingsTable() {
+        if (nonPublishedRatingsTable == null) {
+            nonPublishedRatingsTable = new Table("non_published_ratings")
+                    .addColumn(new Column("id_rating", "INTEGER", true))
+                    .addForeignKey(new ForeignKey(getAvaliacaoTable().getName())
+                        .addReference("id_rating", "timestamp"));
+        }
+
+        return nonPublishedRatingsTable;
     }
 }

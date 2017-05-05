@@ -47,6 +47,7 @@ public class ParseUtils {
     public static final String RATINGS_TABLE = "Rating";
     private static List<ParseObject> allRatings = new ArrayList<>();
     private static final int QUERY_MAX_LIMIT = 1000;
+    private static boolean savedSuccessFully;
 
     private static void getAllRatingsFromServer() {
         final ParseQuery ratingQuery = new ParseQuery(RATINGS_TABLE);
@@ -578,6 +579,7 @@ public class ParseUtils {
 
 
     public static boolean saveRatings(Context context, Avaliacao avaliacao) {
+        savedSuccessFully = false;
         try {
             HashMap<String, Object> params = new HashMap<String, Object>();
             params.put("token", SharedPreferencesUtils.getUserToken(context));
@@ -588,6 +590,7 @@ public class ParseUtils {
                 public void done(Object response, ParseException e) {
                     if (e == null) {
                         Log.d(TAG, response.toString());
+                        savedSuccessFully = true;
                     } else {
                         Log.d(TAG, e.toString());
                     }
@@ -595,8 +598,7 @@ public class ParseUtils {
             });
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
-            return false;
         }
-        return true;
+        return savedSuccessFully;
     }
 }

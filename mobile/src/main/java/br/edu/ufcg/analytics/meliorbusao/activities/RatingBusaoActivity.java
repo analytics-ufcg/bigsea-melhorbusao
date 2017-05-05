@@ -252,11 +252,10 @@ public class RatingBusaoActivity extends AppCompatActivity implements
             //ParseUtils.insereAvaliacao(avaliacao);
 
             if (ParseUtils.saveRatings(getApplicationContext(), avaliacao)) {
-                Log.d(TAG, "Saved successfully");
+                Log.d(TAG, "Saved successfully!");
             } else {
-                Log.d(TAG, "Invalid JSON");
-                // TODO
-                // Save rating locally
+                Log.d(TAG, "Rating not saved successfully!");
+                DBUtils.addNonPublishedRating(getApplicationContext(), avaliacao);
             }
 
             Toast.makeText(RatingBusaoActivity.this, getString(R.string.msg_thanks_answer), Toast.LENGTH_SHORT).show();
