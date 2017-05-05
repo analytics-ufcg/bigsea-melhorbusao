@@ -74,3 +74,8 @@ CREATE TABLE IF NOT EXISTS shapes (
   lon REAL,
   sub TEXT
 );
+
+CREATE TABLE IF NOT EXISTS non_published_ratings (
+  id_rating INTEGER PRIMARY KEY,
+  FOREIGN KEY(id_rating) REFERENCES avaliacao(timestamp)
+);

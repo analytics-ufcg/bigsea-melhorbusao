@@ -1181,10 +1181,10 @@ public class DBUtils {
      * @param context
      * @return non published ratings
      */
-    public static HashSet<Avaliacao> getNonPublishedRatings(Context context) {
+    public static ArrayList<Avaliacao> getNonPublishedRatings(Context context) {
         SQLiteDatabase db = getReadableDatabase(context);
 
-        HashSet<Avaliacao> nonPublishedRatings = new HashSet<Avaliacao>();
+        ArrayList<Avaliacao> nonPublishedRatings = new ArrayList<>();
 
         String query = "SELECT * FROM non_published_ratings npr, avaliacao av, resposta res " +
                 "WHERE av.timestamp = npr.id_rating AND av.timestamp = res.timestamp " +
@@ -1209,6 +1209,7 @@ public class DBUtils {
 
             avaliacao.addResposta(new Resposta(c.getInt(categoriaIdx), c.getInt(valorIdx)));
 
+            prevTimestamp = c.getString(timestampIdx);
             c.moveToNext();
         }
         nonPublishedRatings.add(avaliacao);
