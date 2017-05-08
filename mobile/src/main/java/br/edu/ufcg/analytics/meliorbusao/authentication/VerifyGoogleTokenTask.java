@@ -2,89 +2,97 @@ package br.edu.ufcg.analytics.meliorbusao.authentication;
 
 import android.content.Context;
 import android.os.AsyncTask;
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
+/**
+ * Class that represents the task (run in background) of verifying if a Google Token is valid.
+ */
 public class VerifyGoogleTokenTask extends AsyncTask<Void, Void, String> {
 
+    public static final String TAG = "VerifyGoogleTokenTask";
     private static final String ENDPOINT = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=";
     private String token;
-    private String responseMessage = "";
-    private VerifyGoogleTokenListener mListener;
+    private TokenValidationListener mListener;
 
-    public VerifyGoogleTokenTask( Context context, VerifyGoogleTokenListener listener) {
+    public VerifyGoogleTokenTask(Context context, TokenValidationListener listener) {
         token = SharedPreferencesUtils.getUserToken(context);
         mListener = listener;
     }
 
     @Override
     protected String doInBackground(Void... params) {
-        HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost(ENDPOINT + token);
-        //TODO: the methods above are deprecated. use HttpURlConnectionInstead
-//        try {
-//
-//            HttpClient httpClient = new DefaultHttpClient();
-//            HttpPost httpPost = new HttpPost("https://yourbackend.example.com/tokensignin");
-//
-//            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//            conn.setRequestMethod("POST");
-//
-//            OutputStream os = conn.getOutputStream();
-//            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-//            writer.write(parameters);
-//            writer.flush();
-//            writer.close();
-//            os.close();
-//
-//            conn.connect();
-//            int responseCode = conn.getResponseCode();
-//
-//            if (responseCode == HttpsURLConnection.HTTP_OK) {
-//                String line;
-//                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//                while ((line = br.readLine()) != null) {
-//                    responseMessage += line;
-//                }
-//                JSONObject responseJSON = new JSONObject(responseMessage);
-//                String response = responseJSON.getString("response");
-//                return response;
-//            }
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-        return null;
+        InputStream stream = null;
+        HttpsURLConnection connection = null;
+        String result = null;
+
+        try {
+            URL url = new URL(ENDPOINT + token);
+            connection = (HttpsURLConnection) url.openConnection();
+
+            connection.setReadTimeout(5000);
+            connection.setConnectTimeout(5000);
+            connection.setRequestMethod("POST");
+            connection.setDoInput(true);
+            connection.connect();
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode != HttpsURLConnection.HTTP_OK) {
+                Log.e(TAG, "HTTP error code: " + responseCode);
+                return null;
+            }
+
+            stream = connection.getInputStream();
+            if (stream != null) {
+                result = readStream(stream);
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "doInBackground: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    Log.d(TAG, "doInBackground: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return result;
     }
 
     @Override
     protected void onPostExecute(String response) {
-
+        if (response != null) {
+            mListener.OnValidationCompleted(true);
+        } else {
+            mListener.OnValidationCompleted(false);
+        }
     }
 
-    public interface VerifyGoogleTokenListener {
-        void onValidationComplete(Boolean isTokenValid);
+    /**
+     * Converts the contents of an InputStream to a String.
+     */
+    private String readStream(InputStream stream) throws IOException {
+        String line;
+        String responseMessage = "";
+        BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+        while ((line = br.readLine()) != null) {
+            responseMessage += line;
+        }
+        return responseMessage;
     }
 }

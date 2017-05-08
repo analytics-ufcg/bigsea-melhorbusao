@@ -17,13 +17,14 @@ import com.google.android.gms.common.api.Status;
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.R;
+import br.edu.ufcg.analytics.meliorbusao.authentication.TokenValidationListener;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 import br.edu.ufcg.analytics.meliorbusao.authentication.VerifyBigSeaTokenTask;
 
 
 public class MelhorSplashActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        VerifyBigSeaTokenTask.VerifyBigSeaTokenInterface {
+        TokenValidationListener {
 
     private static final String TAG = "MelhorSplashActivity";
     private static final int GOOGLE_SIGN_IN_RC = 1;
@@ -47,8 +48,6 @@ public class MelhorSplashActivity extends AppCompatActivity implements
             mGoogleApiClient.registerConnectionFailedListener(this);
             mGoogleApiClient.connect();
         } else if (authService.equals(Constants.BIG_SEA_SERVICE)) {
-            String token = SharedPreferencesUtils.getUserToken(this);
-            String username = SharedPreferencesUtils.getUsername(this);
             VerifyBigSeaTokenTask task = new VerifyBigSeaTokenTask(this, this);
             task.execute();
         } else {
@@ -90,7 +89,7 @@ public class MelhorSplashActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onValidationDone(Boolean isTokenValid) {
+    public void OnValidationCompleted(boolean isTokenValid) {
         if (isTokenValid) {
             launchActivity(MelhorBusaoActivity.class);
         } else {

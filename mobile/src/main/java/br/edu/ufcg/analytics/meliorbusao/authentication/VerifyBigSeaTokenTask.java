@@ -21,18 +21,21 @@ import javax.net.ssl.HttpsURLConnection;
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
+/**
+ * Class that represents the task (run in background) of verifying if a BigSea Token is valid.
+ */
 public class VerifyBigSeaTokenTask extends AsyncTask<Void, Void, String> {
 
     private String endpoint_address;
     private String username;
     private String token;
     private String responseMessage = "";
-    private VerifyBigSeaTokenInterface verifyBigSeaTokenInterface;
+    private TokenValidationListener mListener;
 
-    public VerifyBigSeaTokenTask(VerifyBigSeaTokenInterface verifyBigSeaTokenInterface, Context context) {
-        this.username = SharedPreferencesUtils.getUsername(context);
-        this.token = SharedPreferencesUtils.getUserToken(context);
-        this.verifyBigSeaTokenInterface = verifyBigSeaTokenInterface;
+    public VerifyBigSeaTokenTask(Context context, TokenValidationListener listener) {
+        username = SharedPreferencesUtils.getUsername(context);
+        token = SharedPreferencesUtils.getUserToken(context);
+        mListener = listener;
         if (context !=  null) {
             endpoint_address = context.getResources().getString(R.string.BIG_SEA_AUTH_VERIFY_TOKEN_ENDPOINT);
         }
@@ -79,16 +82,12 @@ public class VerifyBigSeaTokenTask extends AsyncTask<Void, Void, String> {
 
     @Override
     protected void onPostExecute(String response) {
-        if (verifyBigSeaTokenInterface != null) {
+        if (mListener != null) {
             if (username != null && username.equals(response)) {
-                verifyBigSeaTokenInterface.onValidationDone(true);
+                mListener.OnValidationCompleted(true);
             } else {
-                verifyBigSeaTokenInterface.onValidationDone(false);
+                mListener.OnValidationCompleted(false);
             }
         }
-    }
-
-    public interface VerifyBigSeaTokenInterface {
-        void onValidationDone(Boolean isTokenValid);
     }
 }
