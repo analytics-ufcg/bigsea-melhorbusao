@@ -1,7 +1,6 @@
 package br.edu.ufcg.analytics.meliorbusao.activities;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,31 +14,17 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResolvingResultCallbacks;
 import com.google.android.gms.common.api.Status;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import javax.net.ssl.HttpsURLConnection;
-
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.R;
+import br.edu.ufcg.analytics.meliorbusao.authentication.TokenValidationListener;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
-import br.edu.ufcg.analytics.meliorbusao.utils.VerifyBigSeaTokenTask;
+import br.edu.ufcg.analytics.meliorbusao.authentication.VerifyBigSeaTokenTask;
 
 
 public class MelhorSplashActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        VerifyBigSeaTokenTask.VerifyBigSeaTokenInterface {
+        TokenValidationListener {
 
     private static final String TAG = "MelhorSplashActivity";
     private static final int GOOGLE_SIGN_IN_RC = 1;
@@ -63,8 +48,6 @@ public class MelhorSplashActivity extends AppCompatActivity implements
             mGoogleApiClient.registerConnectionFailedListener(this);
             mGoogleApiClient.connect();
         } else if (authService.equals(Constants.BIG_SEA_SERVICE)) {
-            String token = SharedPreferencesUtils.getUserToken(this);
-            String username = SharedPreferencesUtils.getUsername(this);
             VerifyBigSeaTokenTask task = new VerifyBigSeaTokenTask(this, this);
             task.execute();
         } else {
@@ -106,7 +89,7 @@ public class MelhorSplashActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onValidationDone(Boolean isTokenValid) {
+    public void OnValidationCompleted(boolean isTokenValid) {
         if (isTokenValid) {
             launchActivity(MelhorBusaoActivity.class);
         } else {

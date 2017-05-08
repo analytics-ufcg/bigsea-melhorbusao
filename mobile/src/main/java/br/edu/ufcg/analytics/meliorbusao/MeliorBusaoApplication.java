@@ -49,6 +49,7 @@ public class MeliorBusaoApplication extends MultiDexApplication implements Googl
     private synchronized void buildGoogleApiClient(FragmentActivity fragmentActivity) {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                .requestIdToken(getString(R.string.GOOGLE_OAUTH_SERVER_CLIENT_ID))
                 .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)

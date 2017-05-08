@@ -16,6 +16,8 @@ import java.util.Arrays;
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.adapters.SectionsPagerAdapter;
+import br.edu.ufcg.analytics.meliorbusao.authentication.TokenValidationListener;
+import br.edu.ufcg.analytics.meliorbusao.authentication.VerifyGoogleTokenTask;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.fragments.RatingFragment;
 import br.edu.ufcg.analytics.meliorbusao.fragments.RouteSelectionFragment;
@@ -24,12 +26,13 @@ import br.edu.ufcg.analytics.meliorbusao.models.CategoriaResposta;
 import br.edu.ufcg.analytics.meliorbusao.models.Resposta;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
-import br.edu.ufcg.analytics.meliorbusao.utils.VerifyBigSeaTokenTask;
+import br.edu.ufcg.analytics.meliorbusao.authentication.VerifyBigSeaTokenTask;
+import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
 public class RatingBusaoActivity extends AppCompatActivity implements
         RouteSelectionFragment.OnRouteSelectedListener,
         RatingFragment.OnFragmentInteractionListener, ViewPager.OnPageChangeListener,
-        VerifyBigSeaTokenTask.VerifyBigSeaTokenInterface {
+        TokenValidationListener{
 
     private static final int NONE_ROUTE = 0;
     private static final int ONLY_ONE_ROUTE = 1;
@@ -156,8 +159,18 @@ public class RatingBusaoActivity extends AppCompatActivity implements
         Log.d("RatingBusaoActivity", String.valueOf(bundle));
 
         if (DBUtils.fillRating(this, avaliacao)) {
-            VerifyBigSeaTokenTask verifyBigSeaTokenTask = new VerifyBigSeaTokenTask(this, this);
-            verifyBigSeaTokenTask.execute();
+            String AuthenticationProvider = SharedPreferencesUtils.getAuthService(this);
+            switch(AuthenticationProvider) {
+                case Constants.GOOGLE_SERVICE:
+                    VerifyGoogleTokenTask googleTask = new VerifyGoogleTokenTask(this, this);
+                    googleTask.execute();
+                    break;
+
+                case Constants.BIG_SEA_SERVICE:
+                    VerifyBigSeaTokenTask bigseaTask = new VerifyBigSeaTokenTask(this, this);
+                    bigseaTask.execute();
+                    break;
+            }
         } else {
             Toast.makeText(RatingBusaoActivity.this, getString(R.string.msg_error_rating), Toast.LENGTH_SHORT).show();
         }
@@ -247,7 +260,7 @@ public class RatingBusaoActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onValidationDone(Boolean isTokenValid) {
+    public void OnValidationCompleted(boolean isTokenValid) {
         if (isTokenValid) {
             //ParseUtils.insereAvaliacao(avaliacao);
 

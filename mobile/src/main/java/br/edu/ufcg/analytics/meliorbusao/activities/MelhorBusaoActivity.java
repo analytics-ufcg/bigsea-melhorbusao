@@ -129,10 +129,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
         mGoogleApiClient = ((MeliorBusaoApplication) getApplication()).getGoogleApiClientInstance(this);
         mGoogleApiClient.registerConnectionCallbacks(this);
         mGoogleApiClient.registerConnectionFailedListener(this);
-        if (!mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.connect();
-            Log.d("status con", String.valueOf(mGoogleApiClient.isConnected()));
-        }
 
         startService(new Intent(this, LocationService.class));
 
@@ -235,7 +231,11 @@ public class MelhorBusaoActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+        if (!mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.connect();
+            Log.d("status con", String.valueOf(mGoogleApiClient.isConnected()));
+        }
+        Log.d(TAG, SharedPreferencesUtils.getUserToken(this));
         initializeBottomNavigation();
     }
 
@@ -697,6 +697,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
                     Intent intent = new Intent(getApplicationContext(), MelhorLoginActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
+                    finish();
                 }
             }
         });

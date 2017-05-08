@@ -205,7 +205,7 @@ public class SignUpActivity extends AppCompatActivity {
      */
     public class UserRegisterTask extends AsyncTask<Void, Void, Boolean> {
 
-        private static final String ENDPOINT_ADDRESS = "https://eubrabigsea.dei.uc.pt/engine/api/signup_data ";
+        private final String ENDPOINT_ADDRESS = getResources().getString(R.string.BIG_SEA_AUTH_SIGNUP_DATA_ENDPOINT);
         private final String firstName;
         private final String lastName;
         private final String email;
