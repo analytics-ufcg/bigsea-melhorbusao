@@ -29,8 +29,6 @@ android {
     }
     buildTypes.each {
         it.resValue 'string', 'TEST_FAIRY_API_KEY', TestFairyAPIKey
-        it.resValue 'string', 'PARSE_CLIENT_KEY', ParseClientKey
-        it.resValue 'string', 'PARSE_APPLICATION_ID', ParseApplicationID
         it.resValue 'string', 'GOOGLE_SERVICES_API_KEY', GoogleServicesAPIKey
         it.resValue 'string', 'PARSE_SERVER_APPLICATION_ID', ParseServerApplicationID
         it.resValue 'string', 'PARSE_SERVER_CLIENT_KEY', ParseServerClientKey
