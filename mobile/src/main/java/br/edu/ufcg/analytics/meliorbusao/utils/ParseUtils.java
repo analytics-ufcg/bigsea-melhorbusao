@@ -584,6 +584,7 @@ public class ParseUtils {
             HashMap<String, Object> params = new HashMap<String, Object>();
             params.put("token", SharedPreferencesUtils.getUserToken(context));
             params.put("username", SharedPreferencesUtils.getUsername(context));
+            params.put("authenticationProvider", SharedPreferencesUtils.getAuthService(context));
             params.put("rating", avaliacao.toJSON());
 
             ParseCloud.callFunctionInBackground("insertRating", params, new FunctionCallback<Object>() {

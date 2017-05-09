@@ -951,7 +951,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
     }
 
     public void buildAlertMessageNoGps() {
-        final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MelhorBusaoActivity.this);
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MelhorBusaoActivity.this);
         builder.setMessage(getString(R.string.msg_gps_disabled))
                 .setCancelable(false)
                 .setPositiveButton(getString(R.string.msg_yes), new DialogInterface.OnClickListener() {
@@ -964,7 +964,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
                         dialog.cancel();
                     }
                 });
-        final android.app.AlertDialog alert = builder.create();
+        android.app.AlertDialog alert = builder.create();
         alert.show();
     }
 
