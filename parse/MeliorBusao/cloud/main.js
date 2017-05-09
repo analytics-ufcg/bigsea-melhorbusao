@@ -110,13 +110,12 @@ Parse.Cloud.define("verifyBigSeaToken", function(request, response) {
 	  }
 	}).then(function(httpResponse) {
 		if (httpResponse.data.response == username) {
-			response.success(true);
 			console.log(httpResponse.data.response);
+			response.success(true);
 		} else {
-			response.error('invalid token');
 			console.error('Token does not belong to user');
+			response.error('invalid token');
 		}
-		response.success(httpResponse.data.response == username);
 	}, function(httpResponse) {
 		console.error('Request failed with response code ' + httpResponse.status);
 		response.error(httpResponse.status);
@@ -124,15 +123,17 @@ Parse.Cloud.define("verifyBigSeaToken", function(request, response) {
 });
 
 Parse.Cloud.define("insertRating", function(request, response) {
-    var bigSeaToken = request.params.token;
+    var token = request.params.token;
     var username = request.params.username;
+	var authenticationProvider = request.params.authenticationProvider;
     var rating = JSON.parse(request.params.rating);
 
     var Rating = Parse.Object.extend("Rating");
-
     var ratingTable = new Rating();
 
-    Parse.Cloud.run("verifyBigSeaToken", {token: bigSeaToken, username: username})     
+	var functionToCall = "verify" + authenticationProvider + "Token";
+
+    Parse.Cloud.run(functionToCall, {token: token, username: username})     
     .then(function(tokenValidationResponse) {
 			ratingTable.save(rating, {
 				success: function(ratingTable) {
@@ -150,4 +151,25 @@ Parse.Cloud.define("insertRating", function(request, response) {
 		}   
 	);
 });
+
+Parse.Cloud.define("verifyGoogleToken", function(request, response) {
+	var token = request.params.token;
+	
+	Parse.Cloud.httpRequest({
+	  method: 'POST',
+	  url: 'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=' + token,
+	}).then(function(httpResponse) {
+		console.log(httpResponse.text);
+		response.success(true);	
+	}, function(httpResponse) {
+		console.error('Request failed with response code ' + httpResponse.status);
+		response.error('invalid token');
+	});
+
+});
+
+
+
+
+
 
