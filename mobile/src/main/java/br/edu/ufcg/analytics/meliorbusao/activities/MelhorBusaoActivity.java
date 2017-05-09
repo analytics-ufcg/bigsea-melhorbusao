@@ -95,7 +95,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
     public static final String TAG = "MelhorBusaoActivity";
     private static final int RC_SIGN_IN = 0;
 
-    // Fragments
     private TopBusFragment topBusFragment;
     private NearStopsFragment nearStopsFragment;
     private MapRouteFragment mapRouteFragment;
@@ -113,8 +112,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
     private LocationCallback locationCalback;
     protected Location mLastLocation;
 
-
-    // Navigation menus
     private BottomBar mBottomBar;
     private NavigationView mDrawerNav;
     private DrawerLayout mDrawerLayout;
@@ -125,10 +122,8 @@ public class MelhorBusaoActivity extends AppCompatActivity
     private String cityName;
     private static ProgressDialog requestingLocationDialog;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_melior_busao);
 
@@ -142,13 +137,9 @@ public class MelhorBusaoActivity extends AppCompatActivity
         mGoogleApiClient = ((MeliorBusaoApplication) getApplication()).getGoogleApiClientInstance(this);
         mGoogleApiClient.registerConnectionCallbacks(this);
         mGoogleApiClient.registerConnectionFailedListener(this);
-        if (!mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.connect();
-            Log.d("status con", String.valueOf(mGoogleApiClient.isConnected()));
-        }
+        mGoogleApiClient.connect();
 
         startService(new Intent(this, LocationService.class));
-
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitleTextColor(getResources().getColor(R.color.toolbar_text_color));
@@ -202,18 +193,33 @@ public class MelhorBusaoActivity extends AppCompatActivity
         mBottomBar.setTextAppearance(R.style.bottom_bar_text);
         mBottomBar.setDefaultTabPosition(0);
 
-
-        if (isLocationEnabled()) {
+        /*if (isLocationEnabled()) {
             try {
                 requestingLocationDialog = ProgressDialog.show(MelhorBusaoActivity.this, getString(R.string.requesting_location),
                         getString(R.string.wait_message), true);
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
             }
-            requestLocationUpdates();
+            startLocationUpdates();
         } else {
             buildAlertMessageNoGps();
+        }*/
+
+        /*
+        SharedPreferencesUtils.addUnfinishedEvaluation(getBaseContext(),"teste3");
+
+        SharedPreferencesUtils.addUnfinishedEvaluation(getBaseContext(),"teste1");
+
+        for (String str : SharedPreferencesUtils.getUnfinishedEvaluations(getBaseContext(), new HashSet<String>())) {
+            Log.d(TAG , "Unfinished Evaluation 1: " + str);
         }
+
+        SharedPreferencesUtils.excludUnfinishedEvaluation(getBaseContext(), "teste2");
+
+
+        for (String str : SharedPreferencesUtils.getUnfinishedEvaluations(getBaseContext(), new HashSet<String>())) {
+            Log.d(TAG, "Unfinished Evaluation 2: " + str);
+        } */
     }
 
     private void loadCityData() {
@@ -247,8 +253,9 @@ public class MelhorBusaoActivity extends AppCompatActivity
         super.onStart();
         if (!mGoogleApiClient.isConnected()) {
             mGoogleApiClient.connect();
-            Log.d("status start", String.valueOf(mGoogleApiClient.isConnected()));
+            Log.d("status con", String.valueOf(mGoogleApiClient.isConnected()));
         }
+        Log.d(TAG, SharedPreferencesUtils.getUserToken(this));
         initializeBottomNavigation();
     }
 
@@ -528,12 +535,23 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.d(TAG, "onConnected:" + bundle);
         mShouldResolve = false;
         try {
             showSignedInUI();
-        } catch (NullPointerException e) { // Caso a view ainda não esteja criada
-            Log.d(TAG, "onConnected: " + e.getMessage());
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        if (isLocationEnabled()) {
+            try {
+                requestingLocationDialog = ProgressDialog.show(MelhorBusaoActivity.this, getString(R.string.requesting_location),
+                        getString(R.string.wait_message), true);
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+            }
+            startLocationUpdates();
+        } else {
+            buildAlertMessageNoGps();
         }
     }
 
@@ -616,6 +634,12 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
         updateSignInOutMenus();
 
+        if (SharedPreferencesUtils.getUsername(getBaseContext())!= ""){
+            TextView nameTextView = (TextView) getNavigationView().findViewById(R.id.nameTextView);
+            nameTextView.setText(getResources().getString(R.string.saudation_message) + SharedPreferencesUtils.getUsername(getBaseContext()) + " :-)");
+
+        }
+
 
         if (mGoogleApiClient.isConnected()){
             OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
@@ -678,7 +702,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
             });
         }
         if(SharedPreferencesUtils.getUserToken(MelhorBusaoActivity.this.getBaseContext())!=""){
-            SharedPreferencesUtils.setUserToken(getApplicationContext(),SharedPreferencesUtils.getUsername(getApplicationContext()) ,Constants.BIG_SEA_SERVICE,"");
+            SharedPreferencesUtils.setUserToken(getApplicationContext(),"" ,Constants.BIG_SEA_SERVICE,"");
         }
     }
 
@@ -693,6 +717,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
                     Intent intent = new Intent(getApplicationContext(), MelhorLoginActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
+                    finish();
                 }
             }
         });
@@ -826,13 +851,16 @@ public class MelhorBusaoActivity extends AppCompatActivity
     }
 
 
-    protected void requestLocationUpdates() {
+    protected void startLocationUpdates() {
         LocationRequest locationRequest = LocationRequest.create()
                 .setInterval(Constants.LOCATION_REQUEST_INTERVAL)
                 .setFastestInterval(Constants.DETECTION_INTERVAL_IN_MILLISECONDS);
 
-
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, getLocationCallback(), null);
+        if (!mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.connect();
+        } else {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, getLocationCallback(), null);
+        }
     }
 
     private void stopRequestLocationUpdates() {

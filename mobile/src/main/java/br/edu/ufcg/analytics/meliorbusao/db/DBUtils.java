@@ -39,6 +39,8 @@ import br.edu.ufcg.analytics.meliorbusao.models.SumarioRota;
 import br.edu.ufcg.analytics.meliorbusao.utils.MathUtils;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
+import static br.edu.ufcg.analytics.meliorbusao.db.MeliorDBOpenHelper.getNonPublishedRatingsTable;
+
 public class DBUtils {
 
     protected DBUtils() {
@@ -1158,4 +1160,69 @@ public class DBUtils {
         return stopTimes;
     }
 
+    /**
+     * Add the non published rating
+     *
+     * @param context
+     * @param avaliacao
+     */
+    public static void addNonPublishedRating(Context context, Avaliacao avaliacao) {
+        SQLiteDatabase db = getWritableDatabase(context);
+
+        Table nonPublishedRatingTable = getNonPublishedRatingsTable();
+
+        ContentValues ratingValues = new ContentValues();
+        ratingValues.put("id_rating", String.valueOf(avaliacao.getTimestamp()));
+
+        db.insert(nonPublishedRatingTable.getName(), null, ratingValues);
+    }
+
+    /**
+     * @param context
+     * @return non published ratings
+     */
+    public static ArrayList<Avaliacao> getNonPublishedRatings(Context context) {
+        SQLiteDatabase db = getReadableDatabase(context);
+
+        ArrayList<Avaliacao> nonPublishedRatings = new ArrayList<>();
+
+        String query = "SELECT * FROM non_published_ratings npr, avaliacao av, resposta res " +
+                "WHERE av.timestamp = npr.id_rating AND av.timestamp = res.timestamp " +
+                "ORDER BY av.timestamp";
+
+        Cursor c = db.rawQuery(query, null);
+
+        c.moveToFirst();
+
+        int timestampIdx = c.getColumnIndex("timestamp");
+        int rotaIdx = c.getColumnIndex("rota");
+        int categoriaIdx = c.getColumnIndex("categoria");
+        int valorIdx = c.getColumnIndex("valor");
+
+        String prevTimestamp = c.getString(timestampIdx);
+        Avaliacao avaliacao = new Avaliacao(c.getLong(timestampIdx), c.getString(rotaIdx));
+        while (!c.isAfterLast()) {
+            if (!c.getString(timestampIdx).equals(prevTimestamp)){
+                nonPublishedRatings.add(avaliacao);
+                avaliacao = new Avaliacao(c.getLong(timestampIdx), c.getString(rotaIdx));
+            }
+
+            avaliacao.addResposta(new Resposta(c.getInt(categoriaIdx), c.getInt(valorIdx)));
+
+            prevTimestamp = c.getString(timestampIdx);
+            c.moveToNext();
+        }
+        nonPublishedRatings.add(avaliacao);
+
+        c.close();
+        db.close();
+
+        return nonPublishedRatings;
+    }
+
+    public static void deleteAllNonPublishedRatings(Context context){
+        SQLiteDatabase db = getWritableDatabase(context);
+
+        db.delete(getNonPublishedRatingsTable().getName(), null, null);
+    }
 }

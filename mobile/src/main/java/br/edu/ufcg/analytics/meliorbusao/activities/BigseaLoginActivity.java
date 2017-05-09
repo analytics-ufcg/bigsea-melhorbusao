@@ -36,6 +36,8 @@ import javax.net.ssl.HttpsURLConnection;
 
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
+import br.edu.ufcg.analytics.meliorbusao.models.Avaliacao;
+import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
 
@@ -177,6 +179,7 @@ public class BigseaLoginActivity extends AppCompatActivity {
             // and hide the relevant UI components.
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            getResources().getString(R.string.BIG_SEA_AUTH_CHECKIN_DATA_ENDPOINT);
         }
     }
 
@@ -187,7 +190,7 @@ public class BigseaLoginActivity extends AppCompatActivity {
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private static final String ENDPOINT_ADDRESS = "https://eubrabigsea.dei.uc.pt/engine/api/checkin_data";
+        private final String ENDPOINT_ADDRESS = getResources().getString(R.string.BIG_SEA_AUTH_CHECKIN_DATA_ENDPOINT);
         private final String username;
         private final String password;
         private String responseMessage = "";

@@ -1,6 +1,6 @@
 package br.edu.ufcg.analytics.meliorbusao.utils;
 
-import android.content.Context;
+    import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
@@ -12,7 +12,9 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
-import java.text.SimpleDateFormat;
+    import org.json.JSONException;
+
+    import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -21,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import br.edu.ufcg.analytics.meliorbusao.models.LocationHolder;
@@ -44,6 +47,7 @@ public class ParseUtils {
     public static final String RATINGS_TABLE = "Rating";
     private static List<ParseObject> allRatings = new ArrayList<>();
     private static final int QUERY_MAX_LIMIT = 1000;
+    private static boolean savedSuccessFully;
 
     private static void getAllRatingsFromServer() {
         final ParseQuery ratingQuery = new ParseQuery(RATINGS_TABLE);
@@ -97,10 +101,9 @@ public class ParseUtils {
      * Transforma a avaliação num objeto do parse e insere no bd
      *
      * @param avaliacao
-     * @param tripId
      */
-    public static void insereAvaliacao(Avaliacao avaliacao, String tripId) {
-        avaliacao.toParseObject(tripId).saveEventually();
+    public static void insereAvaliacao(Avaliacao avaliacao) {
+        avaliacao.toParseObject().saveEventually();
     }
 
     /**
@@ -575,4 +578,27 @@ public class ParseUtils {
     }
 
 
+    public static boolean saveRatings(Context context, Avaliacao avaliacao) {
+        savedSuccessFully = false;
+        try {
+            HashMap<String, Object> params = new HashMap<String, Object>();
+            params.put("token", SharedPreferencesUtils.getUserToken(context));
+            params.put("username", SharedPreferencesUtils.getUsername(context));
+            params.put("rating", avaliacao.toJSON());
+
+            ParseCloud.callFunctionInBackground("insertRating", params, new FunctionCallback<Object>() {
+                public void done(Object response, ParseException e) {
+                    if (e == null) {
+                        Log.d(TAG, response.toString());
+                        savedSuccessFully = true;
+                    } else {
+                        Log.d(TAG, e.toString());
+                    }
+                }
+            });
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+        }
+        return savedSuccessFully;
+    }
 }

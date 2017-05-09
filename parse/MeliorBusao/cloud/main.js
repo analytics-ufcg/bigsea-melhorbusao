@@ -97,3 +97,57 @@ Parse.Cloud.define("sumarios", function(request, response) {
         }
     });
 });
+
+Parse.Cloud.define("verifyBigSeaToken", function(request, response) {
+	var bigSeatoken = request.params.token;
+	var username = request.params.username;
+
+	Parse.Cloud.httpRequest({
+	  method: 'POST',
+	  url: 'xxxxxxxxxxxxxxxxxxxxxxxxx',
+	  params: {
+		token : bigSeatoken
+	  }
+	}).then(function(httpResponse) {
+		if (httpResponse.data.response == username) {
+			response.success(true);
+			console.log(httpResponse.data.response);
+		} else {
+			response.error('invalid token');
+			console.error('Token does not belong to user');
+		}
+		response.success(httpResponse.data.response == username);
+	}, function(httpResponse) {
+		console.error('Request failed with response code ' + httpResponse.status);
+		response.error(httpResponse.status);
+	});
+});
+
+Parse.Cloud.define("insertRating", function(request, response) {
+    var bigSeaToken = request.params.token;
+    var username = request.params.username;
+    var rating = JSON.parse(request.params.rating);
+
+    var Rating = Parse.Object.extend("Rating");
+
+    var ratingTable = new Rating();
+
+    Parse.Cloud.run("verifyBigSeaToken", {token: bigSeaToken, username: username})     
+    .then(function(tokenValidationResponse) {
+			ratingTable.save(rating, {
+				success: function(ratingTable) {
+					console.log("The object was saved successfully.");
+					response.success("done");
+				},
+				error: function(ratingTable, error) {
+					console.error("The save failed.");
+					response.error(error);
+		    	}
+    		});
+		}, function(tokenValidationResponse) {
+			console.error("The save failed: " + tokenValidationResponse.message);
+			response.error("The save failed: " + tokenValidationResponse.message);
+		}   
+	);
+});
+
