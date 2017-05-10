@@ -260,20 +260,23 @@ public class RatingBusaoActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void OnValidationCompleted(boolean isTokenValid) {
-        if (isTokenValid) {
+    public void OnValidationCompleted(boolean isComplete) {
+        if (isComplete) {
             //ParseUtils.insereAvaliacao(avaliacao);
-
-            if (ParseUtils.saveRatings(getApplicationContext(), avaliacao)) {
-                Log.d(TAG, "Saved successfully!");
-            } else {
-                Log.d(TAG, "Rating not saved successfully!");
-                DBUtils.addNonPublishedRating(getApplicationContext(), avaliacao);
-            }
+            ParseUtils.saveRatings(getApplicationContext(), avaliacao);
 
             Toast.makeText(RatingBusaoActivity.this, getString(R.string.msg_thanks_answer), Toast.LENGTH_SHORT).show();
         } else {
-            Log.d(TAG, "Invalid Token");
+            Log.d(TAG, "Invalid Token or without connection!");
+            DBUtils.addNonPublishedRating(getApplicationContext(), avaliacao);
+            for (Avaliacao avaliacao: DBUtils.getNonPublishedRatings(getApplicationContext())) {
+                try {
+                    Log.d(TAG, avaliacao.toJSON());
+                } catch (Exception e) {
+
+                }
+            }
+
         }
     }
 }
