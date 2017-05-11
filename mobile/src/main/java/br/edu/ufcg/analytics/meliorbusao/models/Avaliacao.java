@@ -156,6 +156,15 @@ public class Avaliacao {
 
         return json.toString();
     }
+
+    public String toString() {
+        try {
+            return toJSON();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
 
 

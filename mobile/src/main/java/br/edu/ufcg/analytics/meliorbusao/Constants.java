@@ -27,8 +27,11 @@ public final class Constants {
     public static final String USERNAME_KEY = "username_key";
     public static final String USER_TOKEN_KEY = "user_token_key";
     public static final String AUTH_SERVICE_KEY = "user_service";
+
+    // These two constants below must be exactly like that.
     public static final String BIG_SEA_SERVICE = "BigSea";
     public static final String GOOGLE_SERVICE = "Google";
+
     public static final String EVALUATION_UNFINISHED = "unfinished";
 
     public static final String SHAPES_ON_DB_PREFERENCE = "shapes_on_db";

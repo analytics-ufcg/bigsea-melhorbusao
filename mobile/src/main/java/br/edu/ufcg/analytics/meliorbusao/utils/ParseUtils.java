@@ -13,7 +13,9 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
     import org.json.JSONException;
+    import org.json.JSONObject;
 
+    import java.lang.reflect.Array;
     import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,7 +28,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import br.edu.ufcg.analytics.meliorbusao.models.LocationHolder;
+    import br.edu.ufcg.analytics.meliorbusao.R;
+    import br.edu.ufcg.analytics.meliorbusao.models.LocationHolder;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnStopTimesReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnSumarioRotasReadyListener;
@@ -42,7 +45,6 @@ import br.edu.ufcg.analytics.meliorbusao.models.SumarioRota;
 
 public class ParseUtils {
     public static final String TAG = "ParseUtils";
-    private static Context mContext;
 
     public static final String RATINGS_TABLE = "Rating";
     private static List<ParseObject> allRatings = new ArrayList<>();
@@ -578,25 +580,23 @@ public class ParseUtils {
 
 
     public static void saveRatings(final Context context, final Avaliacao avaliacao) {
-        try {
-            HashMap<String, Object> params = new HashMap<String, Object>();
-            params.put("token", SharedPreferencesUtils.getUserToken(context));
-            params.put("username", SharedPreferencesUtils.getUsername(context));
-            params.put("authenticationProvider", SharedPreferencesUtils.getAuthService(context));
-            params.put("rating", avaliacao.toJSON());
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("token", SharedPreferencesUtils.getUserToken(context));
+        params.put("username", SharedPreferencesUtils.getUsername(context));
+        params.put("authenticationProvider", SharedPreferencesUtils.getAuthService(context));
+        params.put("ratings", avaliacao.toString());
 
-            ParseCloud.callFunctionInBackground("insertRating", params, new FunctionCallback<Object>() {
-                public void done(Object response, ParseException e) {
-                    if (e == null) {
-                        Log.d(TAG, " save ratings: " + response.toString());
-                    } else {
-                        Log.d(TAG, " save ratings: " + e.toString());
-                        DBUtils.addNonPublishedRating(mContext, avaliacao);
-                    }
+        ParseCloud.callFunctionInBackground("insertRating", params, new FunctionCallback<Object>() {
+            public void done(Object response, ParseException e) {
+                if (e == null) {
+                    Log.d(TAG, " save ratings: " + response.toString());
+                } else {
+                    Log.d(TAG, " save ratings: " + e.toString());
+                    DBUtils.addNonPublishedRating(context, avaliacao);
                 }
-            });
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
-        }
+            }
+        });
     }
+
+
 }

@@ -269,13 +269,7 @@ public class RatingBusaoActivity extends AppCompatActivity implements
         } else {
             Log.d(TAG, "Invalid Token or without connection!");
             DBUtils.addNonPublishedRating(getApplicationContext(), avaliacao);
-            for (Avaliacao avaliacao: DBUtils.getNonPublishedRatings(getApplicationContext())) {
-                try {
-                    Log.d(TAG, avaliacao.toJSON());
-                } catch (Exception e) {
-
-                }
-            }
+            Log.d(TAG, "Ratings inserted: " + DBUtils.getNonPublishedRatings(this).toString());
 
         }
     }
