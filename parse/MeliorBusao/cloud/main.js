@@ -125,32 +125,33 @@ Parse.Cloud.define("verifyBigSeaToken", function(request, response) {
 Parse.Cloud.define("insertRating", function(request, response) {
     var token = request.params.token;
     var username = request.params.username;
-	var authenticationProvider = request.params.authenticationProvider;
-    var rating = JSON.parse(request.params.rating);
+    var authenticationProvider = request.params.authenticationProvider;
+    var ratings = JSON.parse(request.params.ratings);
 
     var Rating = Parse.Object.extend("Rating");
     var ratingTable = new Rating();
 
-	var functionToCall = "verify" + authenticationProvider + "Token";
+    var functionToCall = "verify" + authenticationProvider + "Token";
 
-    Parse.Cloud.run(functionToCall, {token: token, username: username})     
+    Parse.Cloud.run(functionToCall, {token: token, username: username})
     .then(function(tokenValidationResponse) {
-			ratingTable.save(rating, {
-				success: function(ratingTable) {
-					console.log("The object was saved successfully.");
-					response.success("done");
-				},
-				error: function(ratingTable, error) {
-					console.error("The save failed.");
-					response.error(error);
-		    	}
-    		});
-		}, function(tokenValidationResponse) {
-			console.error("The save failed: " + tokenValidationResponse.message);
-			response.error("The save failed: " + tokenValidationResponse.message);
-		}   
-	);
+                        ratingTable.save(ratings, {
+                                success: function(ratingTable) {
+                                        console.log("The object was saved successfully.");
+                                        response.success("done");
+                                },
+                                error: function(ratingTable, error) {
+                                        console.error("The save failed.");
+                                        response.error(error);
+                        }
+                });
+                }, function(tokenValidationResponse) {
+                        console.error("The save failed: " + tokenValidationResponse.message);
+                        response.error("The save failed: " + tokenValidationResponse.message);
+                }
+        );
 });
+
 
 Parse.Cloud.define("verifyGoogleToken", function(request, response) {
 	var token = request.params.token;
