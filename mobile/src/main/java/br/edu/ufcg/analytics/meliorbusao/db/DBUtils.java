@@ -1167,14 +1167,16 @@ public class DBUtils {
      * @param avaliacao
      */
     public static void addNonPublishedRating(Context context, Avaliacao avaliacao) {
-        SQLiteDatabase db = getWritableDatabase(context);
+        if (avaliacao != null) {
+            SQLiteDatabase db = getWritableDatabase(context);
 
-        Table nonPublishedRatingTable = getNonPublishedRatingsTable();
+            Table nonPublishedRatingTable = getNonPublishedRatingsTable();
 
-        ContentValues ratingValues = new ContentValues();
-        ratingValues.put("id_rating", String.valueOf(avaliacao.getTimestamp()));
+            ContentValues ratingValues = new ContentValues();
+            ratingValues.put("id_rating", String.valueOf(avaliacao.getTimestamp()));
 
-        db.insert(nonPublishedRatingTable.getName(), null, ratingValues);
+            db.insert(nonPublishedRatingTable.getName(), null, ratingValues);
+        }
     }
 
     /**

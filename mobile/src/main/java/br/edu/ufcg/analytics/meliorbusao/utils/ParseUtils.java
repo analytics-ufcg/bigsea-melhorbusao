@@ -579,12 +579,12 @@ public class ParseUtils {
     }
 
 
-    public static void saveRatings(final Context context, final Avaliacao avaliacao) {
+    public static void saveRatings(final Context context, final List<Avaliacao> avaliacoes) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("token", SharedPreferencesUtils.getUserToken(context));
         params.put("username", SharedPreferencesUtils.getUsername(context));
         params.put("authenticationProvider", SharedPreferencesUtils.getAuthService(context));
-        params.put("ratings", avaliacao.toString());
+        params.put("ratings", avaliacoes.toString());
 
         ParseCloud.callFunctionInBackground("insertRating", params, new FunctionCallback<Object>() {
             public void done(Object response, ParseException e) {
@@ -592,7 +592,7 @@ public class ParseUtils {
                     Log.d(TAG, " save ratings: " + response.toString());
                 } else {
                     Log.d(TAG, " save ratings: " + e.toString());
-                    DBUtils.addNonPublishedRating(context, avaliacao);
+                    DBUtils.addNonPublishedRating(context, avaliacoes.get(0));
                 }
             }
         });

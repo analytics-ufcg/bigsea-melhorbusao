@@ -11,7 +11,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.parse.ParseException;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
@@ -263,7 +266,9 @@ public class RatingBusaoActivity extends AppCompatActivity implements
     public void OnValidationCompleted(boolean isComplete) {
         if (isComplete) {
             //ParseUtils.insereAvaliacao(avaliacao);
-            ParseUtils.saveRatings(getApplicationContext(), avaliacao);
+            List<Avaliacao> avaliacoes = new ArrayList<>();
+            avaliacoes.add(avaliacao);
+            ParseUtils.saveRatings(getApplicationContext(), avaliacoes);
 
             Toast.makeText(RatingBusaoActivity.this, getString(R.string.msg_thanks_answer), Toast.LENGTH_SHORT).show();
         } else {
