@@ -1,16 +1,20 @@
 package br.edu.ufcg.analytics.meliorbusao.models;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.parse.ParseObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-public class Avaliacao {
+public class Avaliacao implements Parcelable {
     private ArrayList<Resposta> respostas;
     private long timestamp;
     private String rota;
@@ -21,6 +25,25 @@ public class Avaliacao {
         setRota(rota);
         setRespostas(new ArrayList<>());
     }
+
+    protected Avaliacao(Parcel in) {
+        respostas = new ArrayList<>();
+        in.readTypedList(respostas, Resposta.CREATOR);
+        timestamp = in.readLong();
+        rota = in.readString();
+    }
+
+    public static final Creator<Avaliacao> CREATOR = new Creator<Avaliacao>() {
+        @Override
+        public Avaliacao createFromParcel(Parcel in) {
+            return new Avaliacao(in);
+        }
+
+        @Override
+        public Avaliacao[] newArray(int size) {
+            return new Avaliacao[size];
+        }
+    };
 
     /**
      * Adiciona ao objeto uma resposta feita
@@ -164,6 +187,18 @@ public class Avaliacao {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(respostas);
+        dest.writeLong(timestamp);
+        dest.writeString(rota);
     }
 }
 

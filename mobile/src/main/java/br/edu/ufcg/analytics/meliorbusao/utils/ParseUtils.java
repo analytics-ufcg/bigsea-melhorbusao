@@ -12,10 +12,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
-    import org.json.JSONException;
-    import org.json.JSONObject;
-
-    import java.lang.reflect.Array;
     import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,10 +21,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+    import java.util.Set;
 
-    import br.edu.ufcg.analytics.meliorbusao.R;
     import br.edu.ufcg.analytics.meliorbusao.models.LocationHolder;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnStopTimesReadyListener;
@@ -42,6 +36,7 @@ import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.models.StopHeadsign;
 import br.edu.ufcg.analytics.meliorbusao.models.StopTime;
 import br.edu.ufcg.analytics.meliorbusao.models.SumarioRota;
+    import br.edu.ufcg.analytics.meliorbusao.services.RatingsService;
 
 public class ParseUtils {
     public static final String TAG = "ParseUtils";
@@ -577,26 +572,4 @@ public class ParseUtils {
         return stopTimes;
 
     }
-
-
-    public static void saveRatings(final Context context, final List<Avaliacao> avaliacoes) {
-        HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("token", SharedPreferencesUtils.getUserToken(context));
-        params.put("username", SharedPreferencesUtils.getUsername(context));
-        params.put("authenticationProvider", SharedPreferencesUtils.getAuthService(context));
-        params.put("ratings", avaliacoes.toString());
-
-        ParseCloud.callFunctionInBackground("insertRating", params, new FunctionCallback<Object>() {
-            public void done(Object response, ParseException e) {
-                if (e == null) {
-                    Log.d(TAG, " save ratings: " + response.toString());
-                } else {
-                    Log.d(TAG, " save ratings: " + e.toString());
-                    DBUtils.addNonPublishedRating(context, avaliacoes.get(0));
-                }
-            }
-        });
-    }
-
-
 }

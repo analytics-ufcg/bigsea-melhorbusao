@@ -82,8 +82,12 @@
         <activity
             android:name=".activities.BigseaLoginActivity"
             android:label="@string/title_activity_bigsea_login"
-            android:theme="@style/Theme.AppCompat.Dialog"></activity>
+            android:theme="@style/Theme.AppCompat.Dialog" />
         <activity android:name=".activities.SignUpActivity" />
+
+        <service
+            android:name=".services.RatingsService"
+            android:exported="false" />
     </application>
 
 </manifest>

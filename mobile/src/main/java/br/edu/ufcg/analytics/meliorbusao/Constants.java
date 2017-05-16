@@ -65,6 +65,10 @@ public final class Constants {
 
     public static final String ACTIVITY_EXTRA = PACKAGE_NAME + ".ACTIVITY_EXTRA";
 
+    // Regarding to Services
+    public static final String SERVICE_ACTION =  PACKAGE_NAME + ".service.action";
+    public static final String SERVICE_EXTRA = PACKAGE_NAME + ".service.extra";
+
     public static final String SHARED_PREFERENCES_NAME = PACKAGE_NAME + ".SHARED_PREFERENCES";
 
     public static final String ACTIVITY_UPDATES_REQUESTED_KEY = PACKAGE_NAME +
