@@ -1201,20 +1201,25 @@ public class DBUtils {
         int categoriaIdx = c.getColumnIndex("categoria");
         int valorIdx = c.getColumnIndex("valor");
 
-        String prevTimestamp = c.getString(timestampIdx);
-        Avaliacao avaliacao = new Avaliacao(c.getLong(timestampIdx), c.getString(rotaIdx));
-        while (!c.isAfterLast()) {
-            if (!c.getString(timestampIdx).equals(prevTimestamp)){
-                nonPublishedRatings.add(avaliacao);
-                avaliacao = new Avaliacao(c.getLong(timestampIdx), c.getString(rotaIdx));
+        if (c.getCount() > 0) {
+
+            String prevTimestamp = c.getString(timestampIdx);
+            Avaliacao avaliacao = new Avaliacao(c.getLong(timestampIdx), c.getString(rotaIdx));
+            while (!c.isAfterLast()) {
+                if (!c.getString(timestampIdx).equals(prevTimestamp)) {
+                    nonPublishedRatings.add(avaliacao);
+                    avaliacao = new Avaliacao(c.getLong(timestampIdx), c.getString(rotaIdx));
+                }
+
+                avaliacao.addResposta(new Resposta(c.getInt(categoriaIdx), c.getInt(valorIdx)));
+
+                prevTimestamp = c.getString(timestampIdx);
+                c.moveToNext();
             }
-
-            avaliacao.addResposta(new Resposta(c.getInt(categoriaIdx), c.getInt(valorIdx)));
-
-            prevTimestamp = c.getString(timestampIdx);
-            c.moveToNext();
+            nonPublishedRatings.add(avaliacao);
         }
-        nonPublishedRatings.add(avaliacao);
+
+        Log.d(TAG, String.valueOf(c.getCount()) + ": " + nonPublishedRatings.toString());
 
         c.close();
         db.close();
