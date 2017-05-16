@@ -139,7 +139,7 @@ public class RatingsService extends IntentService {
                         DBUtils.deleteAllNonPublishedRatings(context);
                         Log.i(TAG, "Ratings saved in server: " + response.toString());
                     } else {
-                        Log.d(TAG, "done: " + e.getMessage());
+                        Log.e(TAG, "Could not save evaluation in server: " + e.getMessage());
                     }
                 }
             });
