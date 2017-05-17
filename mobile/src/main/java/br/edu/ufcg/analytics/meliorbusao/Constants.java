@@ -32,8 +32,6 @@ public final class Constants {
     public static final String BIG_SEA_SERVICE = "BigSea";
     public static final String GOOGLE_SERVICE = "Google";
 
-    public static final String EVALUATION_UNFINISHED = "unfinished";
-
     public static final String SHAPES_ON_DB_PREFERENCE = "shapes_on_db";
     public static final String SCHEDULE_ON_DB_PREFERENCE = "schedule_on_db";
     public static final String CITY_ON_DB_PREFERENCE = "city_on_db";

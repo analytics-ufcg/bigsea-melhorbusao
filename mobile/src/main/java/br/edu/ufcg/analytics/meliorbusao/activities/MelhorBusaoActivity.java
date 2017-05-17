@@ -82,6 +82,7 @@ import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.models.StopHeadsign;
 import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
 import br.edu.ufcg.analytics.meliorbusao.services.LocationService;
+import br.edu.ufcg.analytics.meliorbusao.services.RatingsService;
 import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
 import br.edu.ufcg.analytics.meliorbusao.utils.ProfileImageLoader;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
@@ -193,37 +194,12 @@ public class MelhorBusaoActivity extends AppCompatActivity
         mBottomBar.setTextAppearance(R.style.bottom_bar_text);
         mBottomBar.setDefaultTabPosition(0);
 
-        /*if (isLocationEnabled()) {
-            try {
-                requestingLocationDialog = ProgressDialog.show(MelhorBusaoActivity.this, getString(R.string.requesting_location),
-                        getString(R.string.wait_message), true);
-            } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
-            }
-            startLocationUpdates();
-        } else {
-            buildAlertMessageNoGps();
-        }*/
-
-        /*
-        SharedPreferencesUtils.addUnfinishedEvaluation(getBaseContext(),"teste3");
-
-        SharedPreferencesUtils.addUnfinishedEvaluation(getBaseContext(),"teste1");
-
-        for (String str : SharedPreferencesUtils.getUnfinishedEvaluations(getBaseContext(), new HashSet<String>())) {
-            Log.d(TAG , "Unfinished Evaluation 1: " + str);
-        }
-
-        SharedPreferencesUtils.excludUnfinishedEvaluation(getBaseContext(), "teste2");
-
-
-        for (String str : SharedPreferencesUtils.getUnfinishedEvaluations(getBaseContext(), new HashSet<String>())) {
-            Log.d(TAG, "Unfinished Evaluation 2: " + str);
-        } */
+        // Start service to send local ratings to server
+        RatingsService service = new RatingsService();
+        service.sendLocalRatings(this);
     }
 
     private void loadCityData() {
-        //TODO alterar esse shared preferences. coloquei so como base pra testar o db
         if (!SharedPreferencesUtils.isShapesOnDatabase(this)) {
             AssetManager assetManager = getAssets();
             CityDataManager.downloadDB(this, this, assetManager);
@@ -864,9 +840,11 @@ public class MelhorBusaoActivity extends AppCompatActivity
     }
 
     private void stopRequestLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, getLocationCallback());
-        if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
-            requestingLocationDialog.dismiss();
+        if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, getLocationCallback());
+            if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
+                requestingLocationDialog.dismiss();
+            }
         }
     }
 

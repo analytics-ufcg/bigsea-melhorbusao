@@ -92,16 +92,6 @@ public class ParseUtils {
     }
 
 
-
-    /**
-     * Transforma a avaliação num objeto do parse e insere no bd
-     *
-     * @param avaliacao
-     */
-    public static void insereAvaliacao(Avaliacao avaliacao) {
-        avaliacao.toParseObject().saveEventually();
-    }
-
     /**
      * Transforma a localização do usuario num objeto do parse e insere no bd
      *
@@ -524,23 +514,6 @@ public class ParseUtils {
         query.whereEqualTo("routeId", routeId);
         query.whereEqualTo("stopId", stopId);
         query.whereEqualTo("serviceId", dayS);
-
-//        for (ParseObject stopTime: query) {
-//
-//            String serviceId = dayS;
-//            Date arrivalTime = (Date) stopTime.get("arrivalTime");
-//            //String stopHeadsign = String.valueOf(stopTime.get("stopHeadsign"));
-//
-//            Long timeStop = arrivalTime.getTime();
-//
-//            long secondsStop = timeStop / 1000;
-//            long minutesStop = secondsStop / 60;
-//            long hoursStop = minutesStop / 60;
-//
-//            if (minutes <= minutesStop || (minutes >= minutesStop && hour + 1 == hoursStop)) {
-//                stopTimes.add(new StopTime(serviceId, routeId, stopId, arrivalTime, ""));
-//            }
-//        }
 
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> stopTimeList, ParseException e) {

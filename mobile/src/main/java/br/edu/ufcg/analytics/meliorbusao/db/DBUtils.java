@@ -1192,37 +1192,41 @@ public class DBUtils {
                 "WHERE av.timestamp = npr.id_rating AND av.timestamp = res.timestamp " +
                 "ORDER BY av.timestamp";
 
-        Cursor c = db.rawQuery(query, null);
+        try {
+            Cursor c = db.rawQuery(query, null);
 
-        c.moveToFirst();
+            c.moveToFirst();
 
-        int timestampIdx = c.getColumnIndex("timestamp");
-        int rotaIdx = c.getColumnIndex("rota");
-        int categoriaIdx = c.getColumnIndex("categoria");
-        int valorIdx = c.getColumnIndex("valor");
+            int timestampIdx = c.getColumnIndex("timestamp");
+            int rotaIdx = c.getColumnIndex("rota");
+            int categoriaIdx = c.getColumnIndex("categoria");
+            int valorIdx = c.getColumnIndex("valor");
 
-        if (c.getCount() > 0) {
+            if (c.getCount() > 0) {
 
-            String prevTimestamp = c.getString(timestampIdx);
-            Avaliacao avaliacao = new Avaliacao(c.getLong(timestampIdx), c.getString(rotaIdx));
-            while (!c.isAfterLast()) {
-                if (!c.getString(timestampIdx).equals(prevTimestamp)) {
-                    nonPublishedRatings.add(avaliacao);
-                    avaliacao = new Avaliacao(c.getLong(timestampIdx), c.getString(rotaIdx));
+                String prevTimestamp = c.getString(timestampIdx);
+                Avaliacao avaliacao = new Avaliacao(c.getLong(timestampIdx), c.getString(rotaIdx));
+                while (!c.isAfterLast()) {
+                    if (!c.getString(timestampIdx).equals(prevTimestamp)) {
+                        nonPublishedRatings.add(avaliacao);
+                        avaliacao = new Avaliacao(c.getLong(timestampIdx), c.getString(rotaIdx));
+                    }
+
+                    avaliacao.addResposta(new Resposta(c.getInt(categoriaIdx), c.getInt(valorIdx)));
+
+                    prevTimestamp = c.getString(timestampIdx);
+                    c.moveToNext();
                 }
-
-                avaliacao.addResposta(new Resposta(c.getInt(categoriaIdx), c.getInt(valorIdx)));
-
-                prevTimestamp = c.getString(timestampIdx);
-                c.moveToNext();
+                nonPublishedRatings.add(avaliacao);
             }
-            nonPublishedRatings.add(avaliacao);
+
+            Log.d(TAG, String.valueOf(c.getCount()) + ": " + nonPublishedRatings.toString());
+
+            c.close();
+            db.close();
+        } catch (Exception e) {
+            Log.e(TAG, "getNonPublishedRatings: " + e.getMessage());
         }
-
-        Log.d(TAG, String.valueOf(c.getCount()) + ": " + nonPublishedRatings.toString());
-
-        c.close();
-        db.close();
 
         return nonPublishedRatings;
     }
