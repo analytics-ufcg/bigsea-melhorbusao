@@ -266,10 +266,8 @@ public class RatingBusaoActivity extends AppCompatActivity implements
     @Override
     public void OnValidationCompleted(boolean isComplete) {
         if (isComplete) {
-            //ParseUtils.insereAvaliacao(avaliacao);
             RatingsService service = new RatingsService();
             service.sendNewRating(this, avaliacao);
-
             Toast.makeText(RatingBusaoActivity.this, getString(R.string.msg_thanks_answer), Toast.LENGTH_SHORT).show();
         } else {
             Log.d(TAG, "Invalid Token or without connection!");

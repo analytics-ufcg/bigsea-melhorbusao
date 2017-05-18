@@ -149,12 +149,12 @@ Parse.Cloud.define("insertRating", function(request, response) {
 //      Create new Rating objects for each rating passed in the parameter
         var ratingsToSave = [];
         for (var i = 0; i < ratings.length; i++) {
-                var rating = new Rating();      
+                var rating = new Rating();
                 var atributes = ratings[i];
                 rating.set(atributes);
-                ratingsToSave.push(rating);        
+                ratingsToSave.push(rating);
         }
-        
+
         var functionToCall = "verify" + authenticationProvider + "Token";
 
         Parse.Cloud.run(functionToCall, {token: token, username: username})
@@ -165,8 +165,12 @@ Parse.Cloud.define("insertRating", function(request, response) {
                                         response.success("done");
                                 },
                                 error: function(error) {
-                                        console.error("The save failed.");
-                                        response.error(error);
+                                        if (error.message == "the rating already exists") {
+                                                 response.success("done");
+                                        } else {
+                                                console.error("The save failed.");
+                                                response.error(error);
+                                        }
                         }
                 });
                 }, function(tokenValidationResponse) {
@@ -175,6 +179,30 @@ Parse.Cloud.define("insertRating", function(request, response) {
                 }
         );
 });
+
+Parse.Cloud.beforeSave("Rating", function(request, response) {
+        var tripId = request.object.get("tripId");
+        var route = request.object.get("rota");
+
+        var Rating = Parse.Object.extend("Rating");
+        var query = new Parse.Query(Rating);
+        query.equalTo("tripId", tripId);
+        query.equalTo("rota", route);
+
+        query.first({
+                success: function(object) {
+                        if (object == null) {
+                                response.success();
+                        } else {
+                                response.error("the rating already exists");
+                        }
+                },
+                error: function(error) {
+                        response.error(error.message);
+                }
+        });
+});
+
 
 
 
