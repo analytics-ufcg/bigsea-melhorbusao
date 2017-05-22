@@ -68,6 +68,7 @@ import br.edu.ufcg.analytics.meliorbusao.db.CityDataManager;
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.NotificationTrigger;
+import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.db.MeliorDBOpenHelper;
 import br.edu.ufcg.analytics.meliorbusao.exceptions.NoDataForCityException;
 import br.edu.ufcg.analytics.meliorbusao.fragments.ItinerariesListFragment;

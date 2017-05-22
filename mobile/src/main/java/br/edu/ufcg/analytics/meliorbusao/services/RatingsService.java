@@ -100,7 +100,6 @@ public class RatingsService extends IntentService {
             params.put(USERNAME, SharedPreferencesUtils.getUsername(context));
             params.put(AUTHENTICATION_PROVIDER, SharedPreferencesUtils.getAuthService(context));
             params.put(RATINGS, rating.toString());
-            Log.d(TAG, "handleActionSendNewRating: " + rating.toString());
 
             ParseCloud.callFunctionInBackground("insertRating", params, new FunctionCallback<Object>() {
                 public void done(Object response, ParseException e) {
