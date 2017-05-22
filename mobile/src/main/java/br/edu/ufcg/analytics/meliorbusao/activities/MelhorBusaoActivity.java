@@ -914,6 +914,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
             public void onClick(DialogInterface arg0, int arg1) {
                 deleteDatabase(MeliorDBOpenHelper.DB_NAME);
                 SharedPreferencesUtils.setCityNameOnDatabase(getApplicationContext(), cityName);
+
                 loadCityData();
             }
         });

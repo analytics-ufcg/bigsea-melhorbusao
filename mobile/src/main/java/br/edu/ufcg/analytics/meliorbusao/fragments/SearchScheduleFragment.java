@@ -119,7 +119,9 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
             @Override
             public void onClick(View v) {
                 /*showProgress(true);*/
-                mAuthTask = new RoutingTask(mCurrLocation, mDestLocation, new Date());
+                String cityCode = SharedPreferencesUtils.getCityNameOnDatabase(getContext()).
+                        equals("Curitiba")? "ctba" : "cg";
+                mAuthTask = new RoutingTask(mCurrLocation, mDestLocation, new Date(), cityCode);
                 mAuthTask.execute();
             }
         });
@@ -244,15 +246,16 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
 
     public class RoutingTask extends AsyncTask<Void, Void, List<Itinerary>> {
 
-        private final String ENDPOINT_ADDRESS = getString(R.string.OPEN_TRIP_PLANNER_URL) + "/otp/routers/default/plan?";
+        private final String ENDPOINT_ADDRESS = getString(R.string.OPEN_TRIP_PLANNER_URL) + "/otp/routers/%s/plan?";
         private final String fromPlace;
         private final String toPlace;
         private final String date;
         private final String time;
+        private final String cityCode;
         private String responseMessage = "";
         private List<Itinerary> itineraries;
 
-        RoutingTask(LatLng origCoords, LatLng destCoords, Date date) {
+        RoutingTask(LatLng origCoords, LatLng destCoords, Date date, String cityCode) {
             this.fromPlace = String.valueOf(origCoords.latitude) + "," + String.valueOf(origCoords.longitude);
             this.toPlace = String.valueOf(destCoords.latitude) + "," + String.valueOf(destCoords.longitude);
             SimpleDateFormat sdf = new SimpleDateFormat();
@@ -260,6 +263,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
             this.date = sdf.format(date);
             sdf.applyPattern("HH:mm:ss");
             this.time = sdf.format(date);
+            this.cityCode = cityCode;
             itineraries = new ArrayList<Itinerary>();
         }
 
@@ -280,7 +284,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
 
                 Log.d("SearchScheduleFragment", parameters.toString());
 
-                url = new URL(ENDPOINT_ADDRESS + parameters.toString());
+                url = new URL(String.format(ENDPOINT_ADDRESS,cityCode) + parameters.toString());
 
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
