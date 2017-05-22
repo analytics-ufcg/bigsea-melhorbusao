@@ -1,7 +1,10 @@
 package br.edu.ufcg.analytics.meliorbusao.models;
 
 
-public class Resposta {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Resposta implements Parcelable {
     private int categoria;
     private int valor;
 
@@ -9,6 +12,23 @@ public class Resposta {
         setCategoria(categoria);
         setValor(valor);
     }
+
+    protected Resposta(Parcel in) {
+        categoria = in.readInt();
+        valor = in.readInt();
+    }
+
+    public static final Creator<Resposta> CREATOR = new Creator<Resposta>() {
+        @Override
+        public Resposta createFromParcel(Parcel in) {
+            return new Resposta(in);
+        }
+
+        @Override
+        public Resposta[] newArray(int size) {
+            return new Resposta[size];
+        }
+    };
 
     /**
      *
@@ -40,5 +60,16 @@ public class Resposta {
      */
     public void setValor(int valor) {
         this.valor = valor;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(categoria);
+        dest.writeInt(valor);
     }
 }

@@ -122,36 +122,6 @@ Parse.Cloud.define("verifyBigSeaToken", function(request, response) {
 	});
 });
 
-Parse.Cloud.define("insertRating", function(request, response) {
-    var token = request.params.token;
-    var username = request.params.username;
-	var authenticationProvider = request.params.authenticationProvider;
-    var rating = JSON.parse(request.params.rating);
-
-    var Rating = Parse.Object.extend("Rating");
-    var ratingTable = new Rating();
-
-	var functionToCall = "verify" + authenticationProvider + "Token";
-
-    Parse.Cloud.run(functionToCall, {token: token, username: username})     
-    .then(function(tokenValidationResponse) {
-			ratingTable.save(rating, {
-				success: function(ratingTable) {
-					console.log("The object was saved successfully.");
-					response.success("done");
-				},
-				error: function(ratingTable, error) {
-					console.error("The save failed.");
-					response.error(error);
-		    	}
-    		});
-		}, function(tokenValidationResponse) {
-			console.error("The save failed: " + tokenValidationResponse.message);
-			response.error("The save failed: " + tokenValidationResponse.message);
-		}   
-	);
-});
-
 Parse.Cloud.define("verifyGoogleToken", function(request, response) {
 	var token = request.params.token;
 	
@@ -167,6 +137,72 @@ Parse.Cloud.define("verifyGoogleToken", function(request, response) {
 	});
 
 });
+
+Parse.Cloud.define("insertRating", function(request, response) {
+        var token = request.params.token;
+        var username = request.params.username;
+        var authenticationProvider = request.params.authenticationProvider;
+        var ratings = JSON.parse(request.params.ratings);
+
+        var Rating = Parse.Object.extend("Rating");
+
+//      Create new Rating objects for each rating passed in the parameter
+        var ratingsToSave = [];
+        for (var i = 0; i < ratings.length; i++) {
+                var rating = new Rating();
+                var atributes = ratings[i];
+                rating.set(atributes);
+                ratingsToSave.push(rating);
+        }
+
+        var functionToCall = "verify" + authenticationProvider + "Token";
+
+        Parse.Cloud.run(functionToCall, {token: token, username: username})
+        .then(function(tokenValidationResponse) {
+                        Parse.Object.saveAll(ratingsToSave, {
+                                success: function(savingResponse) {
+                                        console.log(ratings.length + " objects have been saved successfully");
+                                        response.success("done");
+                                },
+                                error: function(error) {
+                                        if (error.message == "the rating already exists") {
+                                                 response.success("done");
+                                        } else {
+                                                console.error("The save failed.");
+                                                response.error(error);
+                                        }
+                        }
+                });
+                }, function(tokenValidationResponse) {
+                        console.error("The save failed: " + tokenValidationResponse.message);
+                        response.error("The save failed: " + tokenValidationResponse.message);
+                }
+        );
+});
+
+Parse.Cloud.beforeSave("Rating", function(request, response) {
+        var tripId = request.object.get("tripId");
+        var route = request.object.get("rota");
+
+        var Rating = Parse.Object.extend("Rating");
+        var query = new Parse.Query(Rating);
+        query.equalTo("tripId", tripId);
+        query.equalTo("rota", route);
+
+        query.first({
+                success: function(object) {
+                        if (object == null) {
+                                response.success();
+                        } else {
+                                response.error("the rating already exists");
+                        }
+                },
+                error: function(error) {
+                        response.error(error.message);
+                }
+        });
+});
+
 
 
 

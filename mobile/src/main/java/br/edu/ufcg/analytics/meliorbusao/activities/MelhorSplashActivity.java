@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -68,6 +69,9 @@ public class MelhorSplashActivity extends AppCompatActivity implements
         opr.setResultCallback(new ResolvingResultCallbacks<GoogleSignInResult>(this, GOOGLE_SIGN_IN_RC) {
             @Override
             public void onSuccess(@NonNull GoogleSignInResult googleSignInResult) {
+                GoogleSignInAccount googleAccount = googleSignInResult.getSignInAccount();
+                String googleToken = googleAccount.getIdToken();
+                SharedPreferencesUtils.setUserToken(getApplicationContext(), Constants.GOOGLE_SERVICE, googleToken);
                 launchActivity(MelhorBusaoActivity.class);
             }
 

@@ -12,8 +12,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
-    import org.json.JSONException;
-
     import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,10 +21,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+    import java.util.Set;
 
-import br.edu.ufcg.analytics.meliorbusao.models.LocationHolder;
+    import br.edu.ufcg.analytics.meliorbusao.models.LocationHolder;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnStopTimesReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnSumarioRotasReadyListener;
@@ -39,15 +36,14 @@ import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.models.StopHeadsign;
 import br.edu.ufcg.analytics.meliorbusao.models.StopTime;
 import br.edu.ufcg.analytics.meliorbusao.models.SumarioRota;
+    import br.edu.ufcg.analytics.meliorbusao.services.RatingsService;
 
 public class ParseUtils {
     public static final String TAG = "ParseUtils";
-    private static Context mContext;
 
     public static final String RATINGS_TABLE = "Rating";
     private static List<ParseObject> allRatings = new ArrayList<>();
     private static final int QUERY_MAX_LIMIT = 1000;
-    private static boolean savedSuccessFully;
 
     private static void getAllRatingsFromServer() {
         final ParseQuery ratingQuery = new ParseQuery(RATINGS_TABLE);
@@ -95,16 +91,6 @@ public class ParseUtils {
         return allRatings;
     }
 
-
-
-    /**
-     * Transforma a avaliação num objeto do parse e insere no bd
-     *
-     * @param avaliacao
-     */
-    public static void insereAvaliacao(Avaliacao avaliacao) {
-        avaliacao.toParseObject().saveEventually();
-    }
 
     /**
      * Transforma a localização do usuario num objeto do parse e insere no bd
@@ -529,23 +515,6 @@ public class ParseUtils {
         query.whereEqualTo("stopId", stopId);
         query.whereEqualTo("serviceId", dayS);
 
-//        for (ParseObject stopTime: query) {
-//
-//            String serviceId = dayS;
-//            Date arrivalTime = (Date) stopTime.get("arrivalTime");
-//            //String stopHeadsign = String.valueOf(stopTime.get("stopHeadsign"));
-//
-//            Long timeStop = arrivalTime.getTime();
-//
-//            long secondsStop = timeStop / 1000;
-//            long minutesStop = secondsStop / 60;
-//            long hoursStop = minutesStop / 60;
-//
-//            if (minutes <= minutesStop || (minutes >= minutesStop && hour + 1 == hoursStop)) {
-//                stopTimes.add(new StopTime(serviceId, routeId, stopId, arrivalTime, ""));
-//            }
-//        }
-
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> stopTimeList, ParseException e) {
                 if (e == null) {
@@ -575,31 +544,5 @@ public class ParseUtils {
 
         return stopTimes;
 
-    }
-
-
-    public static boolean saveRatings(Context context, Avaliacao avaliacao) {
-        savedSuccessFully = false;
-        try {
-            HashMap<String, Object> params = new HashMap<String, Object>();
-            params.put("token", SharedPreferencesUtils.getUserToken(context));
-            params.put("username", SharedPreferencesUtils.getUsername(context));
-            params.put("authenticationProvider", SharedPreferencesUtils.getAuthService(context));
-            params.put("rating", avaliacao.toJSON());
-
-            ParseCloud.callFunctionInBackground("insertRating", params, new FunctionCallback<Object>() {
-                public void done(Object response, ParseException e) {
-                    if (e == null) {
-                        Log.d(TAG, response.toString());
-                        savedSuccessFully = true;
-                    } else {
-                        Log.d(TAG, e.toString());
-                    }
-                }
-            });
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
-        }
-        return savedSuccessFully;
     }
 }

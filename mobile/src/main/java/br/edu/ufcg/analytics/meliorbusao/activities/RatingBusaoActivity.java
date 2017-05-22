@@ -11,7 +11,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.parse.ParseException;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
@@ -25,6 +28,7 @@ import br.edu.ufcg.analytics.meliorbusao.models.Avaliacao;
 import br.edu.ufcg.analytics.meliorbusao.models.CategoriaResposta;
 import br.edu.ufcg.analytics.meliorbusao.models.Resposta;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
+import br.edu.ufcg.analytics.meliorbusao.services.RatingsService;
 import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
 import br.edu.ufcg.analytics.meliorbusao.authentication.VerifyBigSeaTokenTask;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
@@ -260,20 +264,14 @@ public class RatingBusaoActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void OnValidationCompleted(boolean isTokenValid) {
-        if (isTokenValid) {
-            //ParseUtils.insereAvaliacao(avaliacao);
-
-            if (ParseUtils.saveRatings(getApplicationContext(), avaliacao)) {
-                Log.d(TAG, "Saved successfully!");
-            } else {
-                Log.d(TAG, "Rating not saved successfully!");
-                DBUtils.addNonPublishedRating(getApplicationContext(), avaliacao);
-            }
-
+    public void OnValidationCompleted(boolean isComplete) {
+        if (isComplete) {
+            RatingsService service = new RatingsService();
+            service.sendNewRating(this, avaliacao);
             Toast.makeText(RatingBusaoActivity.this, getString(R.string.msg_thanks_answer), Toast.LENGTH_SHORT).show();
         } else {
-            Log.d(TAG, "Invalid Token");
+            Log.d(TAG, "Invalid Token or without connection!");
+            DBUtils.addNonPublishedRating(getApplicationContext(), avaliacao);
         }
     }
 }

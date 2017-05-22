@@ -27,9 +27,10 @@ public final class Constants {
     public static final String USERNAME_KEY = "username_key";
     public static final String USER_TOKEN_KEY = "user_token_key";
     public static final String AUTH_SERVICE_KEY = "user_service";
+
+    // These two constants below must be exactly like that.
     public static final String BIG_SEA_SERVICE = "BigSea";
     public static final String GOOGLE_SERVICE = "Google";
-    public static final String EVALUATION_UNFINISHED = "unfinished";
 
     public static final String SHAPES_ON_DB_PREFERENCE = "shapes_on_db";
     public static final String SCHEDULE_ON_DB_PREFERENCE = "schedule_on_db";
@@ -61,6 +62,10 @@ public final class Constants {
     public static final String TRIP_ROUTES_EXTRA = PACKAGE_NAME + ".TRIP_ROUTES_EXTRA";
 
     public static final String ACTIVITY_EXTRA = PACKAGE_NAME + ".ACTIVITY_EXTRA";
+
+    // Regarding to Services
+    public static final String SERVICE_ACTION =  PACKAGE_NAME + ".service.action";
+    public static final String SERVICE_EXTRA = PACKAGE_NAME + ".service.extra";
 
     public static final String SHARED_PREFERENCES_NAME = PACKAGE_NAME + ".SHARED_PREFERENCES";
 
