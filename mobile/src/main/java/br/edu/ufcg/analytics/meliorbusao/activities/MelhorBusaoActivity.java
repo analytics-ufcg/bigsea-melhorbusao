@@ -122,7 +122,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
     private int pendingDBOperations;
     private static ProgressDialog mDialog;
     private String cityName;
-    private static ProgressDialog requestingLocationDialog;
+  //  private static ProgressDialog requestingLocationDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -337,7 +337,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
-
     }
 
     /**
@@ -349,11 +348,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
         mGoogleApiClient.disconnect();
         if (mDialog != null && mDialog.isShowing()){
             mDialog.dismiss();
-        }
-
-        if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
-            requestingLocationDialog.dismiss();
-            Log.d(TAG, "ProgressDialog (location) showing- onStop()");
         }
     }
 
@@ -520,12 +514,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
         }
 
         if (isLocationEnabled()) {
-            try {
-                requestingLocationDialog = ProgressDialog.show(MelhorBusaoActivity.this, getString(R.string.requesting_location),
-                        getString(R.string.wait_message), true);
-            } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
-            }
             startLocationUpdates();
         } else {
             buildAlertMessageNoGps();
@@ -833,19 +821,13 @@ public class MelhorBusaoActivity extends AppCompatActivity
                 .setInterval(Constants.LOCATION_REQUEST_INTERVAL)
                 .setFastestInterval(Constants.DETECTION_INTERVAL_IN_MILLISECONDS);
 
-        if (!mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.connect();
-        } else {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, getLocationCallback(), null);
-        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, getLocationCallback(), null);
+
     }
 
     private void stopRequestLocationUpdates() {
         if (mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, getLocationCallback());
-            if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
-                requestingLocationDialog.dismiss();
-            }
         }
     }
 
@@ -864,13 +846,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
                 public void onLocationAvailability(LocationAvailability locationAvailability) {
                     super.onLocationAvailability(locationAvailability);
                     if (!locationAvailability.isLocationAvailable()) {
-                        if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
-                            requestingLocationDialog.dismiss();
-                        }
-
-                        //colocar msg d erro, e pedir pra tentar novamente... abrir e tal sei la :(
 //                        requestLocationUpdates();
-
                         Toast.makeText(getApplicationContext(), getString(R.string.fail_retrieving_location), Toast.LENGTH_SHORT).show();
                         Log.d("OnLocationAvailability", "Não foi possível localizar");
                     }
@@ -885,11 +861,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
     }
 
     public void identifyUserCity(Location lastLocation) {
-        if (requestingLocationDialog != null && requestingLocationDialog.isShowing()){
-            requestingLocationDialog.dismiss();
-            Log.d(TAG, "ProgressDialog (location) showing - User city");
-        }
-
         AssetManager assetManager = getAssets();
         String savedCity = SharedPreferencesUtils.getCityNameOnDatabase(this);
 

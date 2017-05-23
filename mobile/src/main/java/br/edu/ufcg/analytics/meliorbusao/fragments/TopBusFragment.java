@@ -105,7 +105,7 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
         return stopName;
     }
 
-    public void updateListView(ArrayList<SumarioRota> rotas, int typeOfOrder) {
+    public void updateListView() {
         mBusEvalExpandableAdapter = new RouteEvaluationExpandableAdapter(getActivity(), generateRouteSummaries(), mRecyclerView, mCallback);
         mRecyclerView.setAdapter(mBusEvalExpandableAdapter);
     }
@@ -122,6 +122,7 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.route_list_recyclerview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        updateListView();
 
         //Enable Options Menu handling
         setHasOptionsMenu(true);
@@ -177,10 +178,10 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
             Toast.makeText(getContext(), getString(R.string.msg_connection_with_server_unavailable)
                     + e.getMessage(), Toast.LENGTH_LONG).show();
             this.listRouteSummary = DBUtils.getSumarioTodasAsRotas(getContext());
-            updateListView(DBUtils.getSumarioTodasAsRotas(getContext()), typeOfOrder);
+            updateListView();
         } else {
             this.listRouteSummary = rotas;
-            updateListView(rotas, typeOfOrder);
+            updateListView();
         }
     }
 
@@ -363,7 +364,9 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
     }
 
     private ArrayList<ParentObject> generateRouteSummaries() {
-        //List<SumarioRota> listRouteSummary = DBUtils.getSumarioTodasAsRotas(getContext());
+        if (listRouteSummary == null) {
+            listRouteSummary = DBUtils.getSumarioTodasAsRotas(getContext());
+        }
         ArrayList<ParentObject> parentObjects = new ArrayList<>();
         for (SumarioRota routeSummary : listRouteSummary) {
             ArrayList<Object> childList = new ArrayList<>();
