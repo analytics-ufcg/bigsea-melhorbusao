@@ -122,7 +122,6 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.route_list_recyclerview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        updateListView();
 
         //Enable Options Menu handling
         setHasOptionsMenu(true);
@@ -364,9 +363,6 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
     }
 
     private ArrayList<ParentObject> generateRouteSummaries() {
-        if (listRouteSummary == null) {
-            listRouteSummary = DBUtils.getSumarioTodasAsRotas(getContext());
-        }
         ArrayList<ParentObject> parentObjects = new ArrayList<>();
         for (SumarioRota routeSummary : listRouteSummary) {
             ArrayList<Object> childList = new ArrayList<>();
