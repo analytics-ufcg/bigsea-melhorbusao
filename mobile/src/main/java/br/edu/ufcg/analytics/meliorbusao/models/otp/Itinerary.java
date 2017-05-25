@@ -1,5 +1,7 @@
 package br.edu.ufcg.analytics.meliorbusao.models.otp;
 
+import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,17 +10,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.datatype.Duration;
+import br.edu.ufcg.analytics.meliorbusao.fragments.MapFragment;
 
-/**
- * Created by Tarciso on 02/05/2017.
- */
-public class Itinerary {
+public class Itinerary implements ParentObject {
     private List<String> busRoutes;
     private String departureBusStop;
     private Date departureTime;
     private Date arrivalTime;
     private int durationInSecs;
+    private MapFragment map;
 
     public Itinerary(List<String> busRoutes, String departureBusStop, Date departureTime, Date arrivalTime, int durationInSecs) {
         this.busRoutes = busRoutes;
@@ -26,6 +26,7 @@ public class Itinerary {
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
         this.durationInSecs = durationInSecs;
+        map = new MapFragment();
     }
 
     public List<String> getBusRoutes() {
@@ -90,7 +91,7 @@ public class Itinerary {
             Date endTime = new Date(itineraryJson.getLong("endTime"));
             int duration = itineraryJson.getInt("duration");
 
-            itinerary = new Itinerary(busRoutes,depBusStop,startTime,endTime,duration);
+            itinerary = new Itinerary(busRoutes, depBusStop, startTime, endTime, duration);
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -122,6 +123,32 @@ public class Itinerary {
         return sb.toString();
     }
 
+    /**
+     * Returns a list that contains solely the {@link #map}.
+     */
+    @Override
+    public List<Object> getChildObjectList() {
+        List<Object> list = new ArrayList<>();
+        list.add(map);
+        return list;
+    }
+
+    /**
+     * Set the first element from a list to be the {@link #map}.
+     *
+     * @param list A list that shoul contains only one {@link MapFragment}. If the list passed
+     *             contains more than one {@link MapFragment}, the first one will be set as the
+     *             {@link #map}.
+     */
+    @Override
+    public void setChildObjectList(List<Object> list) {
+        if (list != null && !list.isEmpty()) {
+            if (list.get(0) instanceof MapFragment) {
+                map = (MapFragment) list.get(0);
+            }
+        }
+    }
+
     public static void main() {
         JSONObject itJson = null;
         try {
@@ -131,8 +158,4 @@ public class Itinerary {
         }
         Itinerary it = Itinerary.fromJson(itJson);
     }
-
-
-
-
 }

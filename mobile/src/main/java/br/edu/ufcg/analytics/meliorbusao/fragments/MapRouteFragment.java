@@ -85,7 +85,7 @@ public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View viewMain = inflater.inflate(R.layout.fragment_map_route, container, false);
-        osmFragment = MapFragment.getInstance();
+        osmFragment = new MapFragment();
         osmFragment.setOnMapInformationReadyListener(this);
 
         getChildFragmentManager().beginTransaction().replace(R.id.melior_map_fragment, osmFragment).commit();
