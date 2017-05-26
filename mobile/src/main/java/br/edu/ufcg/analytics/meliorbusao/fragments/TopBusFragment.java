@@ -23,7 +23,6 @@ import android.widget.FilterQueryProvider;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 import com.parse.ParseException;
 
 import java.util.ArrayList;
@@ -43,9 +42,8 @@ import br.edu.ufcg.analytics.meliorbusao.listeners.OnRouteSuggestionListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnSumarioRotasReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.models.SumarioRota;
-import br.edu.ufcg.analytics.meliorbusao.models.SumarioRotaBasic;
+import br.edu.ufcg.analytics.meliorbusao.models.RouteSummaryCard;
 import br.edu.ufcg.analytics.meliorbusao.models.SumarioRotaBasicComparator;
-import br.edu.ufcg.analytics.meliorbusao.models.SumarioRotaDetail;
 import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
 
 
@@ -106,7 +104,7 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
     }
 
     public void updateListView() {
-        mBusEvalExpandableAdapter = new RouteEvaluationExpandableAdapter(getActivity(), generateRouteSummaries(), mRecyclerView, mCallback);
+        mBusEvalExpandableAdapter = new RouteEvaluationExpandableAdapter(getActivity(), generateRouteSummaries(), mCallback);
         mRecyclerView.setAdapter(mBusEvalExpandableAdapter);
     }
 
@@ -362,14 +360,14 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
 
     }
 
-    private ArrayList<ParentObject> generateRouteSummaries() {
-        ArrayList<ParentObject> parentObjects = new ArrayList<>();
+    private ArrayList<RouteSummaryCard> generateRouteSummaries() {
+        ArrayList<RouteSummaryCard> parentObjects = new ArrayList<>();
         for (SumarioRota routeSummary : listRouteSummary) {
-            ArrayList<Object> childList = new ArrayList<>();
-            childList.add(new SumarioRotaDetail(routeSummary));
-            SumarioRotaBasic sumarioRotaBasic = new SumarioRotaBasic(routeSummary);
-            sumarioRotaBasic.setChildObjectList(childList);
-            parentObjects.add(sumarioRotaBasic);
+            ArrayList<SumarioRota> childList = new ArrayList<>();
+            childList.add(routeSummary);
+            RouteSummaryCard routeSummaryCard = new RouteSummaryCard(routeSummary);
+            routeSummaryCard.setChildObjectList(childList);
+            parentObjects.add(routeSummaryCard);
         }
 
         Comparator comparator = new SumarioRotaBasicComparator();

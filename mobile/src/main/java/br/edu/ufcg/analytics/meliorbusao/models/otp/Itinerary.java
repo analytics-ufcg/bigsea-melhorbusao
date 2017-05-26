@@ -1,6 +1,6 @@
 package br.edu.ufcg.analytics.meliorbusao.models.otp;
 
-import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,7 +12,7 @@ import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.fragments.MapFragment;
 
-public class Itinerary implements ParentObject {
+public class Itinerary {
     private List<String> busRoutes;
     private String departureBusStop;
     private Date departureTime;
@@ -123,31 +123,31 @@ public class Itinerary implements ParentObject {
         return sb.toString();
     }
 
-    /**
-     * Returns a list that contains solely the {@link #map}.
-     */
-    @Override
-    public List<Object> getChildObjectList() {
-        List<Object> list = new ArrayList<>();
-        list.add(map);
-        return list;
-    }
-
-    /**
-     * Set the first element from a list to be the {@link #map}.
-     *
-     * @param list A list that shoul contains only one {@link MapFragment}. If the list passed
-     *             contains more than one {@link MapFragment}, the first one will be set as the
-     *             {@link #map}.
-     */
-    @Override
-    public void setChildObjectList(List<Object> list) {
-        if (list != null && !list.isEmpty()) {
-            if (list.get(0) instanceof MapFragment) {
-                map = (MapFragment) list.get(0);
-            }
-        }
-    }
+//    /**
+//     * Returns a list that contains solely the {@link #map}.
+//     */
+//    @Override
+//    public List<Object> getChildObjectList() {
+//        List<Object> list = new ArrayList<>();
+//        list.add(map);
+//        return list;
+//    }
+//
+//    /**
+//     * Set the first element from a list to be the {@link #map}.
+//     *
+//     * @param list A list that shoul contains only one {@link MapFragment}. If the list passed
+//     *             contains more than one {@link MapFragment}, the first one will be set as the
+//     *             {@link #map}.
+//     */
+//    @Override
+//    public void setChildObjectList(List<Object> list) {
+//        if (list != null && !list.isEmpty()) {
+//            if (list.get(0) instanceof MapFragment) {
+//                map = (MapFragment) list.get(0);
+//            }
+//        }
+//    }
 
     public static void main() {
         JSONObject itJson = null;
