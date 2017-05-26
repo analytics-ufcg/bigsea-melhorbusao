@@ -8,145 +8,164 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.datatype.Duration;
-
 /**
  * Created by Tarciso on 02/05/2017.
  */
-public class Itinerary {
-    private List<String> busRoutes;
-    private String departureBusStop;
-    private Date departureTime;
-    private Date arrivalTime;
-    private int durationInSecs;
-    private List<ItineraryLeg> legs;
-    private double numPassengers;
 
-    public Itinerary(List<String> busRoutes, String departureBusStop, Date departureTime, Date arrivalTime, int durationInSecs, List<ItineraryLeg> legs) {
-        this.busRoutes = busRoutes;
-        this.departureBusStop = departureBusStop;
-        this.departureTime = departureTime;
-        this.arrivalTime = arrivalTime;
-        this.durationInSecs = durationInSecs;
-        this.legs = legs;
+
+public class ItineraryLeg {
+
+    public static final String LEG_MODE_WALK = "WALK";
+    public static final String LEG_MODE_BUS = "BUS";
+
+    private Date startTime;
+    private Date endTime;
+    private double distance;
+    private String mode;
+    private String route;
+    private int fromStopId;
+    private int toStopId;
+    private String depStopName;
+
+    public ItineraryLeg(Date startTime, Date endTime, double distance, String mode) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.distance = distance;
+        this.mode = mode;
     }
 
-    public List<String> getBusRoutes() {
-        return busRoutes;
+    public ItineraryLeg(Date startTime, Date endTime, double distance, String mode, String route,
+                        int fromStopId, int toStopId, String depStopName) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.distance = distance;
+        this.mode = mode;
+        this.route = route;
+        this.fromStopId = fromStopId;
+        this.toStopId = toStopId;
+        this.depStopName = depStopName;
     }
 
-    public void setBusRoutes(List<String> busRoutes) {
-        this.busRoutes = busRoutes;
+    public Date getStartTime() {
+        return startTime;
     }
 
-    public String getDepartureBusStop() {
-        return departureBusStop;
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 
-    public void setDepartureBusStop(String departureBusStop) {
-        this.departureBusStop = departureBusStop;
+    public Date getEndTime() {
+        return endTime;
     }
 
-    public Date getDepartureTime() {
-        return departureTime;
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 
-    public void setDepartureTime(Date departureTime) {
-        this.departureTime = departureTime;
+    public double getDistance() {
+        return distance;
     }
 
-    public Date getArrivalTime() {
-        return arrivalTime;
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 
-    public void setArrivalTime(Date arrivalTime) {
-        this.arrivalTime = arrivalTime;
+    public String getMode() {
+        return mode;
     }
 
-    public int getDurationInSecs() {
-        return durationInSecs;
+    public void setMode(String mode) {
+        this.mode = mode;
     }
 
-    public void setDurationInSecs(int durationInSecs) {
-        this.durationInSecs = durationInSecs;
+    public String getRoute() {
+        return route;
     }
 
-    public List<ItineraryLeg> getLegs() {
-        return legs;
+    public void setRoute(String route) {
+        this.route = route;
     }
 
-    public void setLegs(List<ItineraryLeg> legs) {
-        this.legs = legs;
+    public int getFromStopId() {
+        return fromStopId;
     }
 
-    public double getNumPassengers() {
-        return numPassengers;
+    public void setFromStopId(int fromStopId) {
+        this.fromStopId = fromStopId;
     }
 
-    public void setNumPassengers(double numPassengers) {
-        this.numPassengers = numPassengers;
+    public int getToStopId() {
+        return toStopId;
     }
 
-    public static Itinerary fromJson(JSONObject itineraryJson) {
-        Itinerary itinerary = null;
+    public void setToStopId(int toStopId) {
+        this.toStopId = toStopId;
+    }
+
+    public String getDepStopName() {
+        return depStopName;
+    }
+
+    public void setDepStopName(String depStopName) {
+        this.depStopName = depStopName;
+    }
+
+    public static ItineraryLeg fromJson(JSONObject legJson) {
+        ItineraryLeg itLeg = null;
 
         try {
-            List<String> busRoutes = new ArrayList<String>();
-            List<ItineraryLeg> itLegs = new ArrayList<ItineraryLeg>();
-            JSONArray legsJson = itineraryJson.getJSONArray("legs");
-            ItineraryLeg firstBusLeg = null;
+            Date startTime = new Date(legJson.getLong("startTime"));
+            Date endTime = new Date(legJson.getLong("endTime"));
+            double distance = legJson.getDouble("distance");
+            String mode = legJson.getString("mode");
 
-            for (int i = 0; i < legsJson.length(); i++) {
-                JSONObject legJson = legsJson.getJSONObject(i);
-                ItineraryLeg currLeg = ItineraryLeg.fromJson(legJson);
-                itLegs.add(currLeg);
-                String mode = currLeg.getMode();
-                if (mode.equals(ItineraryLeg.LEG_MODE_BUS)) {
-                    if (firstBusLeg == null) firstBusLeg = currLeg;
-                    String route = currLeg.getRoute();
-                    busRoutes.add(route);
-                }
+            if (mode == LEG_MODE_BUS) {
+                String route = legJson.getString("route");
+                int fromStopId = legJson.getJSONObject("from").getJSONObject("stopId").getInt("id");
+                int toStopId = legJson.getJSONObject("to").getJSONObject("stopId").getInt("id");
+                String depStopName = legJson.getJSONObject("from").getJSONObject("stopId").
+                        getString("name");
+
+                itLeg = new ItineraryLeg(startTime,endTime,distance,mode,route,fromStopId,toStopId,
+                        depStopName);
+            } else {
+                itLeg = new ItineraryLeg(startTime,endTime,distance,mode);
             }
-            String depBusStop = firstBusLeg.getDepStopName();
-            Date startTime = new Date(itineraryJson.getLong("startTime"));
-            Date endTime = new Date(itineraryJson.getLong("endTime"));
-            int duration = itineraryJson.getInt("duration");
-
-            itinerary = new Itinerary(busRoutes,depBusStop,startTime,endTime,duration,itLegs);
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return itinerary;
+        return itLeg;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Routes: ");
-        for (int i = 0; i < getBusRoutes().size(); i++) {
-            if (i != 0) sb.append(",");
-            sb.append(getBusRoutes().get(i));
-        }
-        sb.append("\n");
-        sb.append("Departure Bus Stop: ");
-        sb.append(getDepartureBusStop());
-        sb.append("\n");
         sb.append("Start Time: ");
-        sb.append(getDepartureTime());
+        sb.append(getStartTime());
         sb.append("\n");
         sb.append("End Time: ");
-        sb.append(getArrivalTime());
+        sb.append(getEndTime());
         sb.append("\n");
-        sb.append("Duration (in secs): ");
-        sb.append(getDurationInSecs());
+        sb.append("Distance: ");
+        sb.append(getDistance());
         sb.append("\n");
-        sb.append("Legs: ");
-        for (int i = 0; i < getLegs().size(); i++) {
-            if (i != 0) sb.append(",");
-            sb.append(getLegs().get(i));
-        }
+        sb.append("Mode: ");
+        sb.append(getMode());
+        sb.append("\n");
+        sb.append("Route: ");
+        sb.append(getRoute());
+        sb.append("\n");
+        sb.append("Departure Bus Stop Id: ");
+        sb.append(getFromStopId());
+        sb.append("\n");
+        sb.append("Arrival Bus Stop Id: ");
+        sb.append(getToStopId());
+        sb.append("\n");
+        sb.append("Departure Bus Stop Name: ");
+        sb.append(getDepStopName());
+        sb.append("\n");
         return sb.toString();
     }
 
@@ -157,7 +176,7 @@ public class Itinerary {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Itinerary it = Itinerary.fromJson(itJson);
+        ItineraryLeg it = ItineraryLeg.fromJson(itJson);
     }
 
 

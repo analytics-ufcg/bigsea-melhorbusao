@@ -51,7 +51,9 @@ import br.edu.ufcg.analytics.meliorbusao.listeners.OnMapInformationReadyListener
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnStopTimesReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.models.StopHeadsign;
 import br.edu.ufcg.analytics.meliorbusao.models.StopTime;
+import br.edu.ufcg.analytics.meliorbusao.models.btr.BTRResponse;
 import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
+import br.edu.ufcg.analytics.meliorbusao.models.otp.ItineraryLeg;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
 public class SearchScheduleFragment extends Fragment implements OnStopTimesReadyListener,
