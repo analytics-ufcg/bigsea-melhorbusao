@@ -28,15 +28,13 @@ import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnStopTimesReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnSumarioRotasReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnUserLocationReadyListener;
-import br.edu.ufcg.analytics.meliorbusao.models.Avaliacao;
-import br.edu.ufcg.analytics.meliorbusao.models.CategoriaResposta;
+    import br.edu.ufcg.analytics.meliorbusao.models.CategoriaResposta;
 import br.edu.ufcg.analytics.meliorbusao.models.NearStop;
 import br.edu.ufcg.analytics.meliorbusao.models.Resposta;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.models.StopHeadsign;
 import br.edu.ufcg.analytics.meliorbusao.models.StopTime;
-import br.edu.ufcg.analytics.meliorbusao.models.SumarioRota;
-    import br.edu.ufcg.analytics.meliorbusao.services.RatingsService;
+import br.edu.ufcg.analytics.meliorbusao.models.RouteSummary;
 
 public class ParseUtils {
     public static final String TAG = "ParseUtils";
@@ -356,10 +354,10 @@ public class ParseUtils {
             @Override
             public void done(Map<String, Map<String, Integer>> object, ParseException e) {
                 if (e == null) {
-                    ArrayList<SumarioRota> sumarios = new ArrayList<>();
+                    ArrayList<RouteSummary> sumarios = new ArrayList<>();
 
                     for (Route route : rotas) {
-                        SumarioRota sumarioRota = new SumarioRota(route);
+                        RouteSummary routeSummary = new RouteSummary(route);
 
                         if (object.keySet().contains(String.valueOf(route))){
 
@@ -369,15 +367,15 @@ public class ParseUtils {
                             int count = resultado.get("count");
 
                             if (count > 0) {
-                                sumarioRota.setAvaliada(true);
-                                sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_VIAGEM, resultado.get("media")), Long.MAX_VALUE, count);
+                                routeSummary.setAvaliada(true);
+                                routeSummary.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_VIAGEM, resultado.get("media")), Long.MAX_VALUE, count);
                                 //Lotação é uma variavel cujo valor representa a quantidade de avaliações onde o onibus não estava lotado
-                                sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_LOTACAO, resultado.get("totalLotacao")), Long.MAX_VALUE, count);
-                                sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_MOTORISTA, resultado.get("totalMotorista")), Long.MAX_VALUE, count);
-                                sumarioRota.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORY_CONDITION, resultado.get("totalCondition")), Long.MAX_VALUE, count);
+                                routeSummary.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_LOTACAO, resultado.get("totalLotacao")), Long.MAX_VALUE, count);
+                                routeSummary.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORIA_MOTORISTA, resultado.get("totalMotorista")), Long.MAX_VALUE, count);
+                                routeSummary.computarResposta(new Resposta(CategoriaResposta.ID_CATEGORY_CONDITION, resultado.get("totalCondition")), Long.MAX_VALUE, count);
                             }
                         }
-                        sumarios.add(sumarioRota);
+                        sumarios.add(routeSummary);
                     }
 
                     listener.onSumarioRotasReady(sumarios, null);

@@ -1,6 +1,6 @@
 package br.edu.ufcg.analytics.meliorbusao.models;
 
-public class SumarioRota implements Comparable<SumarioRota> {
+public class RouteSummary implements Comparable<RouteSummary> {
 
     private Route rota;
 
@@ -12,7 +12,7 @@ public class SumarioRota implements Comparable<SumarioRota> {
 
     private boolean avaliada;
 
-    public SumarioRota(Route rota) {
+    public RouteSummary(Route rota) {
         setRota(rota);
 
         categorias = CategoriaResposta.values();
@@ -23,6 +23,7 @@ public class SumarioRota implements Comparable<SumarioRota> {
 
     /**
      * Retorna a rota avaliada
+     *
      * @return
      */
     public Route getRota() {
@@ -31,6 +32,7 @@ public class SumarioRota implements Comparable<SumarioRota> {
 
     /**
      * Atualiza o valor de 'rota'
+     *
      * @param rota
      */
     private void setRota(Route rota) {
@@ -39,6 +41,7 @@ public class SumarioRota implements Comparable<SumarioRota> {
 
     /**
      * Computa a resposta de cada item: conservação, motorista e lotação
+     *
      * @param resposta
      * @param timestamp
      */
@@ -56,6 +59,7 @@ public class SumarioRota implements Comparable<SumarioRota> {
 
     /**
      * Computa a resposta de cada item: conservação, motorista e lotação - de uma avaliação específica
+     *
      * @param resposta
      * @param timestamp
      */
@@ -73,6 +77,7 @@ public class SumarioRota implements Comparable<SumarioRota> {
 
     /**
      * Pega o momento de resposta da última pergunta
+     *
      * @return
      */
     public long getTimestampUltimaResposta() {
@@ -81,6 +86,7 @@ public class SumarioRota implements Comparable<SumarioRota> {
 
     /**
      * Sumário de uma categoria especificada (categoria = conservação, motorista e lotação)
+     *
      * @param categoria
      * @return
      */
@@ -96,6 +102,7 @@ public class SumarioRota implements Comparable<SumarioRota> {
 
     /**
      * faz o calculo do sumario da rota
+     *
      * @return o numero de estrelas das rotas
      */
     public double getSumarioGeral() {
@@ -117,14 +124,15 @@ public class SumarioRota implements Comparable<SumarioRota> {
             return total;
         }
 
-        double evalValue = total / (double) ((categorias.length -1)*quantidadeRespostas[indiceCategoria]);
-        double numStars = evalValue*5;
+        double evalValue = total / (double) ((categorias.length - 1) * quantidadeRespostas[indiceCategoria]);
+        double numStars = evalValue * 5;
 
         return numStars;
     }
 
     /**
      * Retorna o índice de uma categoria
+     *
      * @param idCategoria
      * @return
      */
@@ -141,7 +149,6 @@ public class SumarioRota implements Comparable<SumarioRota> {
     }
 
     /**
-     *
      * @return se a rota é avaliada ou não
      */
     public boolean isAvaliada() {
@@ -150,6 +157,7 @@ public class SumarioRota implements Comparable<SumarioRota> {
 
     /**
      * altera o valor da variavel 'avaliada'
+     *
      * @param avaliada
      */
     public void setAvaliada(boolean avaliada) {
@@ -158,11 +166,12 @@ public class SumarioRota implements Comparable<SumarioRota> {
 
     /**
      * compara duas dois sumarios de rota
+     *
      * @param another
      * @return
      */
     @Override
-    public int compareTo(SumarioRota another) {
+    public int compareTo(RouteSummary another) {
 
         return this.rota.compareTo(another.getRota());
     }

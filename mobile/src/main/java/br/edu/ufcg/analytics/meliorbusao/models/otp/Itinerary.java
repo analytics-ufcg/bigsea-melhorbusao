@@ -133,13 +133,13 @@ public class Itinerary {
 //        return list;
 //    }
 //
-//    /**
-//     * Set the first element from a list to be the {@link #map}.
-//     *
-//     * @param list A list that shoul contains only one {@link MapFragment}. If the list passed
-//     *             contains more than one {@link MapFragment}, the first one will be set as the
-//     *             {@link #map}.
-//     */
+    /**
+     * Set the first element from a list to be the {@link #map}.
+     *
+     * @param list A list that shoul contains only one {@link MapFragment}. If the list passed
+     *             contains more than one {@link MapFragment}, the first one will be set as the
+     *             {@link #map}.
+     */
 //    @Override
 //    public void setChildObjectList(List<Object> list) {
 //        if (list != null && !list.isEmpty()) {

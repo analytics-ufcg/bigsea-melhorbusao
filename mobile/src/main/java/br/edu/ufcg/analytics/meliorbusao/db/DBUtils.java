@@ -5,12 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.PointF;
 import android.os.Environment;
 import android.util.Log;
-
-import com.google.android.gms.maps.model.LatLng;
 
 import org.osmdroid.util.GeoPoint;
 
@@ -35,7 +32,7 @@ import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.models.RouteShape;
 import br.edu.ufcg.analytics.meliorbusao.models.Stop;
 import br.edu.ufcg.analytics.meliorbusao.models.StopTime;
-import br.edu.ufcg.analytics.meliorbusao.models.SumarioRota;
+import br.edu.ufcg.analytics.meliorbusao.models.RouteSummary;
 import br.edu.ufcg.analytics.meliorbusao.utils.MathUtils;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
@@ -450,10 +447,10 @@ public class DBUtils {
      * @param rota
      * @return
      */
-    public static SumarioRota getSumarioRota(Context context, Route rota) {
+    public static RouteSummary getSumarioRota(Context context, Route rota) {
         SQLiteDatabase db = getReadableDatabase(context);
 
-        SumarioRota sumarioRota = new SumarioRota(rota);
+        RouteSummary routeSummary = new RouteSummary(rota);
 
         String[] args = {rota.getId()};
         Cursor c = db.rawQuery("SELECT resposta.categoria AS categoria, resposta.valor AS valor," +
@@ -463,13 +460,13 @@ public class DBUtils {
 
         c.moveToFirst();
         while (!c.isAfterLast()) {
-            sumarioRota.setAvaliada(true);
+            routeSummary.setAvaliada(true);
             int categoria = c.getInt(c.getColumnIndex("categoria"));
             int valor = c.getInt(c.getColumnIndex("valor"));
             long timestamp = c.getLong(c.getColumnIndex("timestamp"));
 
             Resposta r = new Resposta(categoria, valor);
-            sumarioRota.computarResposta(r, timestamp);
+            routeSummary.computarResposta(r, timestamp);
 
             c.moveToNext();
         }
@@ -477,7 +474,7 @@ public class DBUtils {
         c.close();
         db.close();
 
-        return sumarioRota;
+        return routeSummary;
     }
 
     /**
@@ -486,15 +483,15 @@ public class DBUtils {
      * @param context
      * @return
      */
-    public static ArrayList<SumarioRota> getSumarioRotasAvaliadas(Context context) {
+    public static ArrayList<RouteSummary> getSumarioRotasAvaliadas(Context context) {
         HashSet<Route> rotasAvaliadas = getRotasAvaliadas(context);
-        ArrayList<SumarioRota> sumarioRotas = new ArrayList<>();
+        ArrayList<RouteSummary> routeSummaries = new ArrayList<>();
 
         for (Route rota : rotasAvaliadas) {
-            sumarioRotas.add(getSumarioRota(context, rota));
+            routeSummaries.add(getSumarioRota(context, rota));
         }
 
-        return sumarioRotas;
+        return routeSummaries;
     }
 
     /**
@@ -503,15 +500,15 @@ public class DBUtils {
      * @param context
      * @return
      */
-    public static ArrayList<SumarioRota> getSumarioTodasAsRotas(Context context) {
+    public static ArrayList<RouteSummary> getSumarioTodasAsRotas(Context context) {
         HashSet<Route> rotasAvaliadas = getTodasAsRotas(context);
-        ArrayList<SumarioRota> sumarioRotas = new ArrayList<>();
+        ArrayList<RouteSummary> routeSummaries = new ArrayList<>();
 
         for (Route rota : rotasAvaliadas) {
-            sumarioRotas.add(getSumarioRota(context, rota));
+            routeSummaries.add(getSumarioRota(context, rota));
         }
 
-        return sumarioRotas;
+        return routeSummaries;
     }
 
     /**

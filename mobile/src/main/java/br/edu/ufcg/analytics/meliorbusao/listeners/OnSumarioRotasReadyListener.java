@@ -4,8 +4,8 @@ import com.parse.ParseException;
 
 import java.util.ArrayList;
 
-import br.edu.ufcg.analytics.meliorbusao.models.SumarioRota;
+import br.edu.ufcg.analytics.meliorbusao.models.RouteSummary;
 
 public interface OnSumarioRotasReadyListener {
-    void onSumarioRotasReady(ArrayList<SumarioRota> rotas, ParseException e);
+    void onSumarioRotasReady(ArrayList<RouteSummary> rotas, ParseException e);
 }
