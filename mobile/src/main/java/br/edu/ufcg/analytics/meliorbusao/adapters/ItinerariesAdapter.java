@@ -71,8 +71,6 @@ public class ItinerariesAdapter extends ArrayAdapter<Itinerary> {
         View v = convertView;
         Itinerary currItinerary = items.get(position);
 
-        new BTRTask(currItinerary,position).execute();
-
         if (v == null) {
             LayoutInflater inflater = activity.getLayoutInflater();
             v = inflater.inflate(R.layout.get_directions_list_item, null);
@@ -82,18 +80,42 @@ public class ItinerariesAdapter extends ArrayAdapter<Itinerary> {
         TextView durationTextView = (TextView) v.findViewById(R.id.itinerary_duration);
         TextView stEndTimeTextView = (TextView) v.findViewById(R.id.itinerary_list_item_st_end_time);
         TextView stBusStopTextView = (TextView) v.findViewById(R.id.itinerary_list_item_start_bus_stop);
+        TextView crowdLevelTextView = (TextView) v.findViewById(R.id.itinerary_crowd_level);
 
         try {
             busCodesTextView.setText(StringUtils.getStringListConcat(currItinerary.getBusRoutes()));
 
-            int durationInMins = currItinerary.getDurationInSecs()/60;
-            durationTextView.setText(String.valueOf(durationInMins) + " min");
+            String durationStr = "";
+            if (currItinerary.getBtrDuration() != -1) {
+                double durationInMin = currItinerary.getBtrDuration();
+                if (durationInMin < 60) {
+                    durationStr = String.valueOf((int)durationInMin) + "m";
+                } else {
+                    durationStr = String.valueOf((int)(durationInMin/60)) + "h" +
+                            String.valueOf((int)(durationInMin%60)) + "m";
+                }
+            }
+            durationTextView.setText(durationStr);
 
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             stEndTimeTextView.setText(sdf.format(currItinerary.getDepartureTime()) + " - " +
                     sdf.format(currItinerary.getArrivalTime()));
 
             stBusStopTextView.setText(currItinerary.getDepartureBusStop());
+
+            String crowdLevel = "";
+            double numPassengers = currItinerary.getBtrNumPassengers();
+            if (numPassengers != -1) {
+                if (numPassengers <= 15) {
+                    crowdLevel = "B";
+                } else if (numPassengers <= 30) {
+                    crowdLevel = "M";
+                } else {
+                    crowdLevel = "A";
+                }
+            }
+            crowdLevelTextView.setText(crowdLevel);
+
         } catch (Exception e) {
             Log.e("ItinerariesListAdapter", e.getMessage());
         }
@@ -101,206 +123,4 @@ public class ItinerariesAdapter extends ArrayAdapter<Itinerary> {
         v.getBackground().setAlpha(0);
         return v;
     }
-
-    public class BTRTask extends AsyncTask<Void, Void, List<BTRResponse> > {
-
-        private final String ENDPOINT_ADDRESS = getContext().getString(R.string.BEST_TRIP_RECOMMENDER_URL) + "get_best_trips?";
-        private Itinerary it;
-        private int viewId;
-
-
-        BTRTask(Itinerary it, int viewId) {
-            this.it = it;
-            this.viewId = viewId;
-        }
-
-        BTRResponse getItineraryLegBTRPrediction(ItineraryLeg itLeg) {
-            BTRResponse btrResp = null;
-            URL url;
-            String responseMessage = "";
-
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat();
-                sdf.applyPattern("MM/dd/yyyy");
-                String date = sdf.format(itLeg.getStartTime());
-                sdf.applyPattern("HH:mm:ss");
-                String time = sdf.format(itLeg.getStartTime());
-
-                StringBuilder parameters = new StringBuilder();
-                parameters.append("route=");
-                parameters.append(itLeg.getRoute());
-                parameters.append("&time=");
-                parameters.append(time);
-                parameters.append("&date=");
-                parameters.append(date);
-                parameters.append("&bus_stop_id=");
-                parameters.append(itLeg.getFromStopId());
-                parameters.append("&closest_trip_type=single_trip");
-
-                Log.d("SearchScheduleFragment", parameters.toString());
-
-                url = new URL(ENDPOINT_ADDRESS + parameters.toString());
-
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("Accept", "application/json");
-                conn.setRequestProperty("Content-Type", "application/json");
-
-                conn.connect();
-                int responseCode = conn.getResponseCode();
-
-                Log.d("SearchScheduleFragment", "Response Code: " + String.valueOf(responseCode));
-
-                if (responseCode == HttpsURLConnection.HTTP_OK) {
-                    String line = "";
-                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                    while ((line = br.readLine()) != null) {
-                        responseMessage += line;
-                    }
-                    JSONArray response = new JSONArray(responseMessage);
-                    JSONObject tripJson = response.getJSONObject(0);
-                    btrResp = BTRResponse.fromJson(tripJson);
-
-                    Log.d("SearchScheduleFragment", "BTR Prediction - numPass:" +
-                            btrResp.getPassengersNum() + " tripDur: " + btrResp.getTripDuration());
-                } else {
-                    BufferedReader br1 = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-                    String line = "", error = "";
-                    while ((line = br1.readLine()) != null) {
-                        error += line;
-                    }
-                    Log.d("SearchScheduleFragment", error);
-                }
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return btrResp;
-        }
-
-        @Override
-        protected List<BTRResponse> doInBackground(Void... params) {
-            List<BTRResponse> btrResponses = new ArrayList<BTRResponse>();
-
-            for (ItineraryLeg itLeg : it.getLegs()) {
-                if (itLeg.getMode() == ItineraryLeg.LEG_MODE_BUS) {
-                    btrResponses.add(getItineraryLegBTRPrediction(itLeg));
-                }
-            }
-
-            return btrResponses;
-        }
-
-        @Override
-        protected void onPostExecute(List<BTRResponse> btrResponses) {
-            double itBusTripDuration = 0.0, itBusNumPassengers = Double.MIN_VALUE, itWalkTripDuration = 0.0;
-
-            for (BTRResponse btrResp : btrResponses) {
-                itBusTripDuration += btrResp.getTripDuration();
-                itBusNumPassengers = Math.max(itBusNumPassengers, btrResp.getPassengersNum());
-            }
-
-            Itinerary currIt = getItem(viewId);
-
-            for (ItineraryLeg itLeg : currIt.getLegs()) {
-                if (itLeg.getMode() == ItineraryLeg.LEG_MODE_WALK) {
-                    itWalkTripDuration += ((itLeg.getEndTime().getTime() - itLeg.getStartTime().getTime())/1000)/60;
-                }
-            }
-
-            currIt.setDurationInSecs((int)(itWalkTripDuration + itBusTripDuration));
-            currIt.setNumPassengers(itBusNumPassengers);
-            notifyDataSetChanged();
-        }
-    }
-
-//    public class BTRTask extends AsyncTask<Void, Void, BTRResponse> {
-//
-//        private final String ENDPOINT_ADDRESS = getString(R.string.BEST_TRIP_RECOMMENDER_URL) + "get_best_trips?";
-//        private final String route;
-//        private final String time;
-//        private final String date;
-//        private final int busStopId;
-//        private String responseMessage = "";
-//        private BTRResponse btrResp;
-//
-//        BTRTask(String route, Date date, int busStopId) {
-//            this.route = route;
-//            SimpleDateFormat sdf = new SimpleDateFormat();
-//            sdf.applyPattern("MM/dd/yyyy");
-//            this.date = sdf.format(date);
-//            sdf.applyPattern("HH:mm:ss");
-//            this.time = sdf.format(date);
-//            this.busStopId = busStopId;
-//        }
-//
-//        @Override
-//        protected BTRResponse doInBackground(Void... params) {
-//            URL url;
-//            try {
-//                StringBuilder parameters = new StringBuilder();
-//                parameters.append("route=");
-//                parameters.append(route);
-//                parameters.append("&time=");
-//                parameters.append(time);
-//                parameters.append("&date=");
-//                parameters.append(date);
-//                parameters.append("&bus_stop_id=");
-//                parameters.append(busStopId);
-//                parameters.append("&closest_trip_type=next_hour");
-//
-//                Log.d("SearchScheduleFragment", parameters.toString());
-//
-//                url = new URL(ENDPOINT_ADDRESS + parameters.toString());
-//
-//                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//                conn.setRequestMethod("GET");
-//                conn.setRequestProperty("Accept", "application/json");
-//                conn.setRequestProperty("Content-Type", "application/json");
-//
-//                conn.connect();
-//                int responseCode = conn.getResponseCode();
-//
-//                Log.d("SearchScheduleFragment", "Response Code: " + String.valueOf(responseCode));
-//
-//                if (responseCode == HttpsURLConnection.HTTP_OK) {
-//                    String line = "";
-//                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//                    while ((line = br.readLine()) != null) {
-//                        responseMessage += line;
-//                    }
-//                    JSONArray response = new JSONArray(responseMessage);
-//                    JSONObject tripJson = response.getJSONObject(0);
-//                    btrResp = BTRResponse.fromJson(tripJson);
-//
-//                    Log.d("SearchScheduleFragment", "BTR Prediction - numPass:" +
-//                            btrResp.getPassengersNum() + " tripDur: " + btrResp.getTripDuration());
-//                } else {
-//                    BufferedReader br1 = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-//                    String line = "", error = "";
-//                    while ((line = br1.readLine()) != null) {
-//                        error += line;
-//                    }
-//                    Log.d("SearchScheduleFragment", error);
-//                }
-//
-//            } catch (MalformedURLException e) {
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//            return btrResp;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(BTRResponse btrResp) {
-//            View item = mItineraryListView.getChildAt(0);
-//        }
-//    }
 }

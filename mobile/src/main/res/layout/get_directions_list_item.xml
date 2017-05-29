@@ -55,7 +55,7 @@
 
             <TextView
                 android:id="@+id/itinerary_duration"
-                android:layout_width="wrap_content"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:text="33 min"
@@ -92,16 +92,16 @@
 
             <LinearLayout
                 android:layout_alignParentBottom="true"
-                android:layout_width="270dp"
+                android:layout_width="230dp"
                 android:layout_height="30dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/itinerary_list_item_start_bus_stop"
-                    android:layout_width="250dp"
+                    android:layout_width="230dp"
                     android:layout_height="wrap_content"
                     android:textSize="20sp"
-                    android:text="Comendador Fontana, 204 - Centro"
+                    android:text="Comendador Font., 204"
                     android:textColor="@color/bb_inActiveBottomBarItemColor"
                     android:background="@android:color/transparent"
                     android:layout_gravity="center_vertical"/>
@@ -124,7 +124,7 @@
 
             <TextView
                 android:id="@+id/itinerary_crowd_level"
-                android:layout_width="60dp"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:text="M"

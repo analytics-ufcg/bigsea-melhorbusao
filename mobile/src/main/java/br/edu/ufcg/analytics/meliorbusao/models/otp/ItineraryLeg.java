@@ -119,12 +119,13 @@ public class ItineraryLeg {
             double distance = legJson.getDouble("distance");
             String mode = legJson.getString("mode");
 
-            if (mode == LEG_MODE_BUS) {
+            if (mode.equals(LEG_MODE_BUS)) {
                 String route = legJson.getString("route");
-                int fromStopId = legJson.getJSONObject("from").getJSONObject("stopId").getInt("id");
-                int toStopId = legJson.getJSONObject("to").getJSONObject("stopId").getInt("id");
-                String depStopName = legJson.getJSONObject("from").getJSONObject("stopId").
-                        getString("name");
+                int fromStopId = Integer.valueOf(legJson.getJSONObject("from").getString("stopId").
+                        replaceAll("^\\d+:", ""));
+                int toStopId = Integer.valueOf(legJson.getJSONObject("to").getString("stopId").
+                        replaceAll("^\\d+:", ""));
+                String depStopName = legJson.getJSONObject("from").getString("name");
 
                 itLeg = new ItineraryLeg(startTime,endTime,distance,mode,route,fromStopId,toStopId,
                         depStopName);

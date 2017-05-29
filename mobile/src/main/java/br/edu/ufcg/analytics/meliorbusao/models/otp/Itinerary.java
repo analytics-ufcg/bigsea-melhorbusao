@@ -20,7 +20,8 @@ public class Itinerary {
     private Date arrivalTime;
     private int durationInSecs;
     private List<ItineraryLeg> legs;
-    private double numPassengers;
+    private double btrDuration;
+    private double btrNumPassengers;
 
     public Itinerary(List<String> busRoutes, String departureBusStop, Date departureTime, Date arrivalTime, int durationInSecs, List<ItineraryLeg> legs) {
         this.busRoutes = busRoutes;
@@ -29,6 +30,8 @@ public class Itinerary {
         this.arrivalTime = arrivalTime;
         this.durationInSecs = durationInSecs;
         this.legs = legs;
+        this.btrDuration = -1;
+        this.btrNumPassengers = -1;
     }
 
     public List<String> getBusRoutes() {
@@ -79,12 +82,20 @@ public class Itinerary {
         this.legs = legs;
     }
 
-    public double getNumPassengers() {
-        return numPassengers;
+    public double getBtrDuration() {
+        return btrDuration;
     }
 
-    public void setNumPassengers(double numPassengers) {
-        this.numPassengers = numPassengers;
+    public void setBtrDuration(double btrDuration) {
+        this.btrDuration = btrDuration;
+    }
+
+    public double getBtrNumPassengers() {
+        return btrNumPassengers;
+    }
+
+    public void setBtrNumPassengers(double btrNumPassengers) {
+        this.btrNumPassengers = btrNumPassengers;
     }
 
     public static Itinerary fromJson(JSONObject itineraryJson) {
