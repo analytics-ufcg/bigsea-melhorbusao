@@ -3,44 +3,32 @@ package br.edu.ufcg.analytics.meliorbusao.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.Spinner;
-import android.widget.Toast;
 
-import com.parse.ParseException;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
-import br.edu.ufcg.analytics.meliorbusao.SchedulesProbableParser;
 import br.edu.ufcg.analytics.meliorbusao.adapters.ItinerariesAdapter;
-import br.edu.ufcg.analytics.meliorbusao.adapters.RoutesAdapter;
-import br.edu.ufcg.analytics.meliorbusao.adapters.ScheduleAdapter;
-import br.edu.ufcg.analytics.meliorbusao.adapters.StopsAdapter;
 import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
-import br.edu.ufcg.analytics.meliorbusao.models.NearStop;
-import br.edu.ufcg.analytics.meliorbusao.models.Route;
-import br.edu.ufcg.analytics.meliorbusao.models.StopHeadsign;
-import br.edu.ufcg.analytics.meliorbusao.models.StopTime;
 import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
 
 
 public class ItinerariesListFragment extends Fragment {
 
-    private static ItinerariesListFragment instance;
-
-    private View mView;
-    private ListView mItineraryListView;
-
-    private List<Itinerary> itineraries;
-
     public static final String TAG = "ITINERARIES_LIST_FRAGMENT";
+    private static ItinerariesListFragment instance;
+    private View mView;
+    private RecyclerView itineraryRecyclerView;
+    private List<Itinerary> itineraries;
     private FragmentTitleChangeListener mCallback;
     private ItinerariesAdapter mAdapter;
+
+    public ItinerariesListFragment() {
+    }
 
     public static ItinerariesListFragment getInstance() {
         if (instance == null) {
@@ -52,19 +40,18 @@ public class ItinerariesListFragment extends Fragment {
         return instance;
     }
 
-    public ItinerariesListFragment() {
-    }
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_itineraries_list, container, false);
 
         ////////ITINERARIES/////////
-        mAdapter = new ItinerariesAdapter(getActivity(),itineraries);
-        mItineraryListView = (ListView) mView.findViewById(R.id.itineraries_list);
-        mItineraryListView.setAdapter(mAdapter);
+        mAdapter = new ItinerariesAdapter(itineraries);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+
+        itineraryRecyclerView = (RecyclerView) mView.findViewById(R.id.itineraries_list);
+        itineraryRecyclerView.setLayoutManager(layoutManager);
+        itineraryRecyclerView.setAdapter(mAdapter);
 
         return mView;
     }
@@ -90,7 +77,7 @@ public class ItinerariesListFragment extends Fragment {
         //updateListView();
     }
 
-    public void setItinerariesList(List<Itinerary> itineraries){
+    public void setItinerariesList(List<Itinerary> itineraries) {
         this.itineraries = itineraries;
     }
 }
