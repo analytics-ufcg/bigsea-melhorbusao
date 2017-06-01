@@ -17,7 +17,7 @@ import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
 import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
 
 
-public class ItinerariesListFragment extends Fragment {
+public class ItinerariesListFragment extends Fragment implements ItinerariesAdapter.OnItineraryClickListener {
 
     public static final String TAG = "ITINERARIES_LIST_FRAGMENT";
     private static ItinerariesListFragment instance;
@@ -26,6 +26,7 @@ public class ItinerariesListFragment extends Fragment {
     private List<Itinerary> itineraries;
     private FragmentTitleChangeListener mCallback;
     private ItinerariesAdapter mAdapter;
+    private MapFragment itinerariesMap;
 
     public ItinerariesListFragment() {
     }
@@ -44,22 +45,22 @@ public class ItinerariesListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_itineraries_list, container, false);
-
+        itinerariesMap = new MapFragment();
+        getChildFragmentManager().beginTransaction().replace(R.id.itineraries_map_container, itinerariesMap)
+                .commit();
         ////////ITINERARIES/////////
         mAdapter = new ItinerariesAdapter(itineraries);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-
+        mAdapter.setOnItineraryClickListener(this);
         itineraryRecyclerView = (RecyclerView) mView.findViewById(R.id.itineraries_list);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         itineraryRecyclerView.setLayoutManager(layoutManager);
         itineraryRecyclerView.setAdapter(mAdapter);
-
         return mView;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
@@ -74,10 +75,14 @@ public class ItinerariesListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         mCallback.onTitleChange(getResources().getString(R.string.itineraries_list_title));
-        //updateListView();
     }
 
     public void setItinerariesList(List<Itinerary> itineraries) {
         this.itineraries = itineraries;
+    }
+
+    @Override
+    public void onClick(Itinerary itinerary) {
+        mView.findViewById(R.id.itineraries_map_container).setVisibility(View.VISIBLE);
     }
 }

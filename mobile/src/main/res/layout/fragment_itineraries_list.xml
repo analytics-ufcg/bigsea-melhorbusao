@@ -24,7 +24,8 @@
             <FrameLayout
                 android:id="@+id/itineraries_map_container"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"></FrameLayout>
+                android:layout_height="300dp"
+                android:visibility="gone"/>
 
         </LinearLayout>
 
