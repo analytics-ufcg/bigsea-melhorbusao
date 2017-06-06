@@ -5,9 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -68,13 +66,12 @@ import br.edu.ufcg.analytics.meliorbusao.db.CityDataManager;
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.NotificationTrigger;
-import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.db.MeliorDBOpenHelper;
 import br.edu.ufcg.analytics.meliorbusao.exceptions.NoDataForCityException;
 import br.edu.ufcg.analytics.meliorbusao.fragments.ItinerariesListFragment;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnFinishedParseListener;
 import br.edu.ufcg.analytics.meliorbusao.R;
-import br.edu.ufcg.analytics.meliorbusao.fragments.MapRouteFragment;
+import br.edu.ufcg.analytics.meliorbusao.fragments.RoutesMapFragment;
 import br.edu.ufcg.analytics.meliorbusao.fragments.NearStopsFragment;
 import br.edu.ufcg.analytics.meliorbusao.fragments.StopScheduleFragment;
 import br.edu.ufcg.analytics.meliorbusao.fragments.SearchScheduleFragment;
@@ -85,7 +82,6 @@ import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
 import br.edu.ufcg.analytics.meliorbusao.services.LocationService;
 import br.edu.ufcg.analytics.meliorbusao.services.RatingsService;
 import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
-import br.edu.ufcg.analytics.meliorbusao.utils.ProfileImageLoader;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
 public class MelhorBusaoActivity extends AppCompatActivity
@@ -99,7 +95,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
     private TopBusFragment topBusFragment;
     private NearStopsFragment nearStopsFragment;
-    private MapRouteFragment mapRouteFragment;
+    private RoutesMapFragment routesMapFragment;
     private SearchScheduleFragment searchScheduleFragment;
     private StopScheduleFragment stopScheduleFragment;
     private ItinerariesListFragment itinerariesListFragment;
@@ -131,7 +127,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
         topBusFragment = TopBusFragment.getInstance();
         nearStopsFragment = NearStopsFragment.getInstance();
-        mapRouteFragment = MapRouteFragment.getInstance();
+        routesMapFragment = RoutesMapFragment.getInstance();
         searchScheduleFragment = SearchScheduleFragment.getInstance();
         stopScheduleFragment = StopScheduleFragment.getInstance();
         itinerariesListFragment = ItinerariesListFragment.getInstance();
@@ -281,9 +277,9 @@ public class MelhorBusaoActivity extends AppCompatActivity
                         nextFragTag = NearStopsFragment.TAG;
                         break;
                     case R.id.bb_routes_map:
-                        mapRouteFragment.setRoute(null);
-                        nextFrag = mapRouteFragment;
-                        nextFragTag = MapRouteFragment.TAG;
+                        routesMapFragment.setRoute(null);
+                        nextFrag = routesMapFragment;
+                        nextFragTag = RoutesMapFragment.TAG;
 
                         break;
                     case R.id.bb_predicted_schedule:
@@ -324,7 +320,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
             case NearStopsFragment.TAG:
                 mBottomBar.selectTabAtPosition(1, true);
                 break;
-            case MapRouteFragment.TAG:
+            case RoutesMapFragment.TAG:
                 mBottomBar.selectTabAtPosition(2, true);
                 break;
             case SearchScheduleFragment.TAG:
@@ -475,9 +471,9 @@ public class MelhorBusaoActivity extends AppCompatActivity
                 break;
 
             case R.id.nav_routes_map:
-                mapRouteFragment.setRoute(null);
-                nextFrag = mapRouteFragment;
-                nextFragTag = MapRouteFragment.TAG;
+                routesMapFragment.setRoute(null);
+                nextFrag = routesMapFragment;
+                nextFragTag = RoutesMapFragment.TAG;
                 break;
 
             case R.id.nav_predicted_schedule:
@@ -706,11 +702,11 @@ public class MelhorBusaoActivity extends AppCompatActivity
     public void onBusCardClickListener(String routeShortName) {
 
         getSupportFragmentManager().beginTransaction().replace(R.id.container_layout,
-                mapRouteFragment, MapRouteFragment.TAG).addToBackStack(MapRouteFragment.TAG).commit();
+                routesMapFragment, RoutesMapFragment.TAG).addToBackStack(RoutesMapFragment.TAG).commit();
 
-        changeBottomBarItem(MapRouteFragment.TAG);
+        changeBottomBarItem(RoutesMapFragment.TAG);
 
-        mapRouteFragment.setRoute(routeShortName);
+        routesMapFragment.setRoute(routeShortName);
 
     }
 
@@ -771,7 +767,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
                 drawer.setCheckedItem(R.id.nav_top_bus);
             } else if (fragment instanceof NearStopsFragment) {
                 drawer.setCheckedItem(R.id.nav_near_stops);
-            } else if (fragment instanceof MapRouteFragment) {
+            } else if (fragment instanceof RoutesMapFragment) {
                 drawer.setCheckedItem(R.id.nav_routes_map);
             } else if (fragment instanceof SearchScheduleFragment) {
                 drawer.setCheckedItem(R.id.nav_predicted_schedule);

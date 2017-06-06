@@ -9,6 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.osmdroid.bonuspack.overlays.Polyline;
+import org.osmdroid.bonuspack.utils.PolylineEncoder;
+import org.osmdroid.util.GeoPoint;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
@@ -84,5 +89,17 @@ public class ItinerariesListFragment extends Fragment implements ItinerariesAdap
     @Override
     public void onClick(Itinerary itinerary) {
         mView.findViewById(R.id.itineraries_map_container).setVisibility(View.VISIBLE);
+        List<String> legs = itinerary.getEncodedPolylinePoints();
+        List<GeoPoint> allPoints = new ArrayList<>();
+        for (String polyline : legs) {
+            List<GeoPoint> points = PolylineEncoder.decode(polyline, 1, false);
+            allPoints.addAll(points);
+        }
+        Polyline itineraryShape = new Polyline(getContext());
+        itineraryShape.setSubDescription(Polyline.class.getCanonicalName());
+        itineraryShape.setWidth(20f);
+        itineraryShape.setPoints(allPoints);
+        itineraryShape.setGeodesic(true);
+        itinerariesMap.getMapView().getOverlayManager().add(itineraryShape);
     }
 }
