@@ -77,6 +77,7 @@ public final class Constants {
 
     public static final String DETECTED_ACTIVITIES = PACKAGE_NAME + ".DETECTED_ACTIVITIES";
 
+    public static final String MAP_PATH = "MeliorBusao/maps";
     public static final String LOG_PATH = "MeliorBusao/Log";
     public static final String BD_FOLDER_PATH = "/MeliorBusao/BD/";
     public static final String BD_PATH = "/MeliorBusao/BD/"; //atencao ao nome da pasta :P

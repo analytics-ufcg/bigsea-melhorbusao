@@ -1,14 +1,14 @@
 package br.edu.ufcg.analytics.meliorbusao.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ShapeDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.os.ResultReceiver;
@@ -16,23 +16,39 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.osmdroid.DefaultResourceProxyImpl;
+import org.osmdroid.ResourceProxy;
 import org.osmdroid.api.IGeoPoint;
-import org.osmdroid.api.Polyline;
+import org.osmdroid.bonuspack.cachemanager.CacheManager;
 import org.osmdroid.bonuspack.overlays.InfoWindow;
 import org.osmdroid.bonuspack.overlays.Marker;
+import org.osmdroid.tileprovider.IRegisterReceiver;
+import org.osmdroid.tileprovider.MapTileProviderArray;
+import org.osmdroid.tileprovider.modules.GEMFFileArchive;
+import org.osmdroid.tileprovider.modules.IArchiveFile;
+import org.osmdroid.tileprovider.modules.MapTileDownloader;
+import org.osmdroid.tileprovider.modules.MapTileFileArchiveProvider;
+import org.osmdroid.tileprovider.modules.MapTileFilesystemProvider;
+import org.osmdroid.tileprovider.modules.MapTileModuleProviderBase;
+import org.osmdroid.tileprovider.modules.NetworkAvailabliltyCheck;
+import org.osmdroid.tileprovider.modules.TileWriter;
+import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.tileprovider.tilesource.XYTileSource;
+import org.osmdroid.tileprovider.util.SimpleRegisterReceiver;
 import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
@@ -40,9 +56,13 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.Projection;
 import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.PathOverlay;
+import org.osmdroid.views.overlay.TilesOverlay;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.BreakIterator;
+import java.util.Iterator;
 
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.R;
@@ -72,6 +92,9 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     private ImageButton myLocationButton;
     private Context mContext;
 
+    private static String path = "";
+
+
     public MapFragment() {
         // Required empty public constructor
     }
@@ -93,7 +116,91 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
 
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 50, this);
+
     }
+
+
+    private MapTileProviderArray tileProvider(){
+
+         IRegisterReceiver registerReceiver = new SimpleRegisterReceiver(getContext());
+
+        // Create a custom tile source
+         ITileSource tileSource = new XYTileSource("Mapnik", ResourceProxy.string.mapnik, 0, 18, 256, ".png", new String[]{});
+
+        // Create a file cache modular provider
+         TileWriter tileWriter = new TileWriter();
+         MapTileFilesystemProvider fileSystemProvider = new MapTileFilesystemProvider(registerReceiver, tileSource);
+
+        File OSMDROID_PATH = new File(Environment.getExternalStorageDirectory(), "osmdroid");
+        path =  OSMDROID_PATH.getPath();
+
+        File mGemfArchiveFilename = new File("cg-map",path);
+        // Create an archive file modular tile provider
+        GEMFFileArchive gemfFileArchive = null; // Requires try/catch
+        MapTileProviderArray tileProviderArray = null;
+
+        try {
+            gemfFileArchive = GEMFFileArchive.getGEMFFileArchive(mGemfArchiveFilename);
+
+            MapTileFileArchiveProvider fileArchiveProvider = new MapTileFileArchiveProvider(
+                    registerReceiver, tileSource, new IArchiveFile[] { gemfFileArchive });
+
+            // Create a download modular tile provider
+            NetworkAvailabliltyCheck networkAvailabliltyCheck = new NetworkAvailabliltyCheck(getContext());
+            MapTileDownloader downloaderProvider = new MapTileDownloader(
+                    tileSource, tileWriter, networkAvailabliltyCheck);
+
+
+            // Create a custom tile provider array with the custom tile source and the custom tile providers
+            tileProviderArray = new MapTileProviderArray(
+                    tileSource, registerReceiver, new MapTileModuleProviderBase[] {
+                    fileSystemProvider, fileArchiveProvider, downloaderProvider });
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return tileProviderArray;
+
+    }
+
+    private void updateEstimate() {
+
+        CacheManager mgr = new CacheManager(mOpenStreetMap);
+
+        String outputName = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "osmdroid" + File.separator + "map";
+        //SqliteArchiveTileWriter writer = new SqliteArchiveTileWriter(outputName);
+
+        LatLng cache_east = new LatLng(-7.242472, -35.847806);
+        LatLng cache_west = new LatLng(-7.219583, -35.956583);
+        LatLng cache_north = new LatLng(-7.178291, -35.864658);
+        LatLng cache_south = new LatLng(-7.308444, -35.887861);
+
+        ProgressDialog zoom_max = null;
+        ProgressDialog zoom_min = null;
+
+        try {
+
+            //nesw
+            //BoundingBoxE6(north, east, south, west);
+            //MaxLat, MaxLng, MinLat, MinLng
+
+            BoundingBoxE6 bBox = new BoundingBoxE6(cache_north.latitude, cache_east.longitude, cache_south.latitude, cache_west.longitude);
+
+            int tilecount = mgr.possibleTilesInArea(bBox, MAP_ZOOM_LEVEL, MAP_ZOOM_LEVEL);
+            Log.d(TAG, "tileCount" + String.valueOf(tilecount));
+
+            //this triggers the download
+            mgr.downloadAreaAsync(getActivity(), bBox, MAP_ZOOM_LEVEL, MAP_ZOOM_LEVEL);
+
+            Log.d(TAG, "Cache Capacity: " + String.valueOf(mgr.cacheCapacity()) + " | " + "Cache Usage: " + mgr.currentCacheUsage() );
+
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -102,12 +209,21 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         View mainView = inflater.inflate(R.layout.fragment_map, container, false);
 
         mOpenStreetMap = (MapView) mainView.findViewById(R.id.map_view);
+
+        // Create the mapview with the custom tile provider array
+        //mOpenStreetMap = new MapView(getContext(), 256, new DefaultResourceProxyImpl(getContext()), tileProvider());
+
         mOpenStreetMap.setTileSource(TileSourceFactory.MAPNIK);
+
         mOpenStreetMap.setMultiTouchControls(true);
         mOpenStreetMap.getOverlays().add(new MapOverlay(getContext()));
 
         mMapController = (MapController) mOpenStreetMap.getController();
         mMapController.setZoom(MAP_ZOOM_LEVEL);
+
+
+        mOpenStreetMap.setUseDataConnection(false); //optional, but a good way to prevent loading from the network and test your zip loading.
+        //updateEstimate();
 
         myLocationButton = (ImageButton) mainView.findViewById(R.id.my_location_button);
         setUpMyLocationButton();
