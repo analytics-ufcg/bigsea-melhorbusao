@@ -1,5 +1,7 @@
 package br.edu.ufcg.analytics.meliorbusao.models.otp;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,7 +15,7 @@ import java.util.List;
  * An Itinerary is a representation for the output from Open Trip Planner API.
  * It contains all the information of a trip that goes from one point to another.
  */
-public class Itinerary {
+public class Itinerary implements Parcelable {
     private List<String> busRoutes;
     private List<String> encodedPolylinePoints;
     private String departureBusStop;
@@ -29,6 +31,29 @@ public class Itinerary {
         this.arrivalTime = arrivalTime;
         this.durationInSecs = durationInSecs;
     }
+
+    protected Itinerary(Parcel in) {
+        busRoutes = new ArrayList<>();
+        in.readStringList(busRoutes);
+        encodedPolylinePoints = new ArrayList<>();
+        in.readStringList(encodedPolylinePoints);
+        departureBusStop = in.readString();
+        departureTime = (Date) in.readSerializable();
+        arrivalTime = (Date) in.readSerializable();
+        durationInSecs = in.readInt();
+    }
+
+    public static final Creator<Itinerary> CREATOR = new Creator<Itinerary>() {
+        @Override
+        public Itinerary createFromParcel(Parcel in) {
+            return new Itinerary(in);
+        }
+
+        @Override
+        public Itinerary[] newArray(int size) {
+            return new Itinerary[size];
+        }
+    };
 
     public List<String> getBusRoutes() {
         return busRoutes;
@@ -132,5 +157,20 @@ public class Itinerary {
         sb.append("Duration (in secs): ");
         sb.append(durationInSecs);
         return sb.toString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeStringList(busRoutes);
+        parcel.writeStringList(encodedPolylinePoints);
+        parcel.writeString(departureBusStop);
+        parcel.writeSerializable(departureTime);
+        parcel.writeSerializable(arrivalTime);
+        parcel.writeInt(durationInSecs);
     }
 }

@@ -342,14 +342,14 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
         this.mMapListener = mapListener;
     }
 
-    /**
-     * Draw route
-     * @param pathOverlay
-     */
-
     public void drawRoute(PathOverlay pathOverlay){
         mOpenStreetMap.getOverlays().add(pathOverlay);
     }
+
+    public void drawRoute(org.osmdroid.bonuspack.overlays.Polyline poli){
+        mOpenStreetMap.getOverlays().add(poli);
+    }
+
 
     public void animateTo(GeoPoint geoPoint){
         mMapController.animateTo(geoPoint);
@@ -358,7 +358,7 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
     //lat - Norte(N) ou  Sul(S).
     //lng - Leste(E) ou Oeste(W).
 
-    public void animateTo(RouteShape shape){
+    public void animateTo(RouteShape shape) {
         LatLng[] edge = shape.edges();
 
         //BoundingBoxE6(north, east, south, west);
@@ -366,7 +366,6 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
 
         mMapController.zoomToSpan(bBox.getLatitudeSpanE6(), bBox.getLongitudeSpanE6());
         mMapController.setCenter(bBox.getCenter());
-
     }
 
     public Marker addMarker(GeoPoint geoPoint, int drawable) {
@@ -388,6 +387,13 @@ public class MapFragment extends Fragment implements LocationListener, GoogleApi
      */
     public MapView getMapView() {
         return mOpenStreetMap;
+    }
+
+    public void drawShape(org.osmdroid.bonuspack.overlays.Polyline line) {
+//        mOpenStreetMap.getOverlays().clear();
+        mOpenStreetMap.getOverlays().add(line);
+//        mOpenStreetMap.getOverlays().add(new MapOverlay(getContext()));
+//        mOpenStreetMap.invalidate();
     }
 
     /**

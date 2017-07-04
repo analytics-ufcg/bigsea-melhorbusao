@@ -9,29 +9,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.osmdroid.bonuspack.overlays.Polyline;
-import org.osmdroid.bonuspack.utils.PolylineEncoder;
-import org.osmdroid.util.GeoPoint;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
+import br.edu.ufcg.analytics.meliorbusao.activities.MelhorBusaoActivity;
 import br.edu.ufcg.analytics.meliorbusao.adapters.ItinerariesAdapter;
-import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
 import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
 
 
 public class ItinerariesListFragment extends Fragment implements ItinerariesAdapter.OnItineraryClickListener {
 
-    public static final String TAG = "ITINERARIES_LIST_FRAGMENT";
+    public static final String TAG = "ItinerariesListFragment";
     private static ItinerariesListFragment instance;
     private View mView;
     private RecyclerView itineraryRecyclerView;
     private List<Itinerary> itineraries;
-    private FragmentTitleChangeListener mCallback;
+    private OnItinerarySelectedListener mCallback;
     private ItinerariesAdapter mAdapter;
-    private MapFragment itinerariesMap;
 
     public ItinerariesListFragment() {
     }
@@ -50,9 +44,7 @@ public class ItinerariesListFragment extends Fragment implements ItinerariesAdap
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_itineraries_list, container, false);
-        itinerariesMap = new MapFragment();
-        getChildFragmentManager().beginTransaction().replace(R.id.itineraries_map_container, itinerariesMap)
-                .commit();
+
         ////////ITINERARIES/////////
         mAdapter = new ItinerariesAdapter(itineraries);
         mAdapter.setOnItineraryClickListener(this);
@@ -66,20 +58,18 @@ public class ItinerariesListFragment extends Fragment implements ItinerariesAdap
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
         try {
-            mCallback = (FragmentTitleChangeListener) context;
+            mCallback = (OnItinerarySelectedListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement OnHeadlineSelectedListener");
+                    + " must implement OnItinerarySelectedListener");
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mCallback.onTitleChange(getResources().getString(R.string.itineraries_list_title));
+        ((MelhorBusaoActivity) getActivity()).setActionBarTitle(getResources().getString(R.string.itineraries_list_title));
     }
 
     public void setItinerariesList(List<Itinerary> itineraries) {
@@ -88,18 +78,12 @@ public class ItinerariesListFragment extends Fragment implements ItinerariesAdap
 
     @Override
     public void onClick(Itinerary itinerary) {
-        mView.findViewById(R.id.itineraries_map_container).setVisibility(View.VISIBLE);
-        List<String> legs = itinerary.getEncodedPolylinePoints();
-        List<GeoPoint> allPoints = new ArrayList<>();
-        for (String polyline : legs) {
-            List<GeoPoint> points = PolylineEncoder.decode(polyline, 1, false);
-            allPoints.addAll(points);
+        if (mCallback != null) {
+            mCallback.onSelected(itinerary);
         }
-        Polyline itineraryShape = new Polyline(getContext());
-        itineraryShape.setSubDescription(Polyline.class.getCanonicalName());
-        itineraryShape.setWidth(20f);
-        itineraryShape.setPoints(allPoints);
-        itineraryShape.setGeodesic(true);
-        itinerariesMap.getMapView().getOverlayManager().add(itineraryShape);
+    }
+
+    public interface OnItinerarySelectedListener {
+        void onSelected(Itinerary itinerary);
     }
 }

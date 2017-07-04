@@ -6,29 +6,11 @@
     android:background="@color/primary_background"
     android:orientation="vertical">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/itineraries_list"
-                style="@style/SpinnerStopTime"
-                android:divider="@drawable/dash"
-                android:dividerHeight="4dp" />
-
-            <FrameLayout
-                android:id="@+id/itineraries_map_container"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:visibility="gone"/>
-
-        </LinearLayout>
-
-    </ScrollView>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/itineraries_list"
+        style="@style/SpinnerStopTime"
+        android:divider="@drawable/dash"
+        android:dividerHeight="4dp"
+        android:padding="16dp"/>
 
 </LinearLayout>

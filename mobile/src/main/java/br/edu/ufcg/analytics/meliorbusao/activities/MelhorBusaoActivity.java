@@ -69,6 +69,7 @@ import br.edu.ufcg.analytics.meliorbusao.NotificationTrigger;
 import br.edu.ufcg.analytics.meliorbusao.db.MeliorDBOpenHelper;
 import br.edu.ufcg.analytics.meliorbusao.exceptions.NoDataForCityException;
 import br.edu.ufcg.analytics.meliorbusao.fragments.ItinerariesListFragment;
+import br.edu.ufcg.analytics.meliorbusao.fragments.ItineraryMapFragment;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnFinishedParseListener;
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.fragments.RoutesMapFragment;
@@ -88,7 +89,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFinishedParseListener,
         TopBusFragment.OnTopBusSelectedListener, NearStopsFragment.NearStopListener, SearchScheduleFragment.SearchScheduleListener,
         FragmentManager.OnBackStackChangedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        SearchScheduleFragment.GetDirectionsListener {
+        SearchScheduleFragment.GetDirectionsListener, ItinerariesListFragment.OnItinerarySelectedListener {
 
     public static final String TAG = "MelhorBusaoActivity";
     private static final int RC_SIGN_IN = 0;
@@ -99,6 +100,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
     private SearchScheduleFragment searchScheduleFragment;
     private StopScheduleFragment stopScheduleFragment;
     private ItinerariesListFragment itinerariesListFragment;
+    private ItineraryMapFragment itineraryMapFragment;
 
     /* Client used to interact with Google APIs. */
     private GoogleApiClient mGoogleApiClient;
@@ -131,6 +133,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
         searchScheduleFragment = SearchScheduleFragment.getInstance();
         stopScheduleFragment = StopScheduleFragment.getInstance();
         itinerariesListFragment = ItinerariesListFragment.getInstance();
+        itineraryMapFragment = ItineraryMapFragment.newInstance();
 
         mGoogleApiClient = ((MeliorBusaoApplication) getApplication()).getGoogleApiClientInstance(this);
         mGoogleApiClient.registerConnectionCallbacks(this);
@@ -732,6 +735,12 @@ public class MelhorBusaoActivity extends AppCompatActivity
         }
     }
 
+    public void setActionBarTitle(String newTitle) {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(newTitle);
+        }
+    }
+
     /**
      * Em paradas próximas, exibe as informações das rotas e das paradas
      */
@@ -995,5 +1004,13 @@ public class MelhorBusaoActivity extends AppCompatActivity
                 itinerariesListFragment, itinerariesListFragment.TAG).addToBackStack(itinerariesListFragment.TAG).commit();
         changeBottomBarItem(itinerariesListFragment.TAG);
         itinerariesListFragment.setItinerariesList(itineraries);
+    }
+
+    @Override
+    public void onSelected(Itinerary itinerary) {
+        itineraryMapFragment.getArguments().putParcelable(itineraryMapFragment.ITINERARY, itinerary);
+        getSupportFragmentManager().beginTransaction().replace(R.id.container_layout,
+                itineraryMapFragment, itineraryMapFragment.TAG).addToBackStack(itineraryMapFragment.TAG).commit();
+
     }
 }

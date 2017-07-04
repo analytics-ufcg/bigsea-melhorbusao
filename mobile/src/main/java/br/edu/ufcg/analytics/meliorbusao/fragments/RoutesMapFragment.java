@@ -153,10 +153,10 @@ public class RoutesMapFragment extends Fragment implements OnMeliorBusaoQueryLis
         for (RouteShape shape : shapes) {
             PathOverlay pathOverlay = new PathOverlay(Color.parseColor("#"+ shape.getColor()), getContext());
             pathOverlay.addPoints((ArrayList) shape);
-            osmFragment.drawRoute(pathOverlay);
             Paint pPaint = pathOverlay.getPaint();
             pPaint.setStrokeWidth(5);
             pathOverlay.setPaint(pPaint);
+            osmFragment.drawRoute(pathOverlay);
             osmFragment.animateTo(shape);
         }
         inicializarParadas(route);

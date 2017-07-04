@@ -18,13 +18,11 @@ import br.edu.ufcg.analytics.meliorbusao.utils.StringUtils;
 
 public class ItinerariesAdapter extends RecyclerView.Adapter<ItinerariesAdapter.ViewHolder> {
 
-    private List<Itinerary> allItems;
-    private List<Itinerary> shownItems;
+    private List<Itinerary> items;
     private OnItineraryClickListener mOnItineraryClickListener;
 
     public ItinerariesAdapter(List<Itinerary> items) {
-        this.allItems = items;
-        this.shownItems = items;
+        this.items = items;
     }
 
     @Override
@@ -34,28 +32,24 @@ public class ItinerariesAdapter extends RecyclerView.Adapter<ItinerariesAdapter.
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
-        Itinerary currItinerary = shownItems.get(position);
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        Itinerary currItinerary = items.get(position);
+        final int pos = position;
+        holder.bind(currItinerary);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (shownItems.size() != 1) {
-                    shownItems = new ArrayList<>();
-                    Itinerary itinerary = allItems.get(position);
-                    shownItems.add(itinerary);
-                    notifyDataSetChanged();
-                    if (mOnItineraryClickListener != null) {
-                        mOnItineraryClickListener.onClick(itinerary);
-                    }
+                Itinerary itinerary = items.get(pos);
+                if (mOnItineraryClickListener != null) {
+                    mOnItineraryClickListener.onClick(itinerary);
                 }
             }
         });
-        holder.bind(currItinerary);
     }
 
     @Override
     public int getItemCount() {
-        return shownItems.size();
+        return items.size();
     }
 
     public void setOnItineraryClickListener(OnItineraryClickListener mOnClickListener) {
