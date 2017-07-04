@@ -35,27 +35,27 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/signed_out_header"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="visible">
+    <!--<LinearLayout-->
+        <!--android:id="@+id/signed_out_header"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:gravity="center"-->
+        <!--android:orientation="vertical"-->
+        <!--android:visibility="visible">-->
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_height="70dp"
-            android:layout_width="70dp"
-            android:src="@drawable/avatar" />
+        <!--<de.hdodenhof.circleimageview.CircleImageView-->
+            <!--android:layout_height="70dp"-->
+            <!--android:layout_width="70dp"-->
+            <!--android:src="@drawable/avatar" />-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/nav_header_vertical_spacing"
-            android:paddingTop="@dimen/nav_header_vertical_spacing"
-            android:text="@string/sign_in_message"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:paddingLeft="@dimen/nav_header_vertical_spacing"-->
+            <!--android:paddingTop="@dimen/nav_header_vertical_spacing"-->
+            <!--android:text="@string/sign_in_message"-->
+            <!--android:textAppearance="@style/TextAppearance.AppCompat.Title" />-->
 
-    </LinearLayout>
+    <!--</LinearLayout>-->
 
 </FrameLayout>

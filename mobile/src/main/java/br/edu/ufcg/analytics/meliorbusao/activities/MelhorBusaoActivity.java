@@ -381,7 +381,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
         }
         menu.findItem(R.id.action_search).setVisible(false);
         switchMonitoring(getBaseContext());
-        showSignedInUI();
+//        showSignedInUI();
         return true;
     }
 
@@ -449,10 +449,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
         switch (id) {
             case R.id.nav_sign_out:
                 onSignOutClicked();
-                break;
-
-            case R.id.nav_sign_in:
-                onSignInClicked();
                 break;
 
             case R.id.nav_about:
@@ -545,9 +541,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
             } else {
                 // Could not resolve the connection result, show the user an error dialog.
             }
-        } else {
-            // Show the signed-out UI
-            showSignedOutUI();
         }
     }
 
@@ -571,23 +564,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
         return (NavigationView) findViewById(R.id.nav_view);
     }
 
-    private void showSignedOutUI() {
-        mSignedIn = false;
-
-        getNavigationView().findViewById(R.id.signed_in_header).setVisibility(View.GONE);
-        getNavigationView().findViewById(R.id.signed_out_header).setVisibility(View.VISIBLE);
-
-        updateSignInOutMenus();
-
-        getNavigationView().findViewById(R.id.signed_out_header).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onSignInClicked();
-            }
-        });
-    }
-
-
     /**
      * View quando está logado na conta do Google
      */
@@ -595,14 +571,12 @@ public class MelhorBusaoActivity extends AppCompatActivity
         mSignedIn = true;
 
         getNavigationView().findViewById(R.id.signed_in_header).setVisibility(View.VISIBLE);
-        getNavigationView().findViewById(R.id.signed_out_header).setVisibility(View.GONE);
 
         updateSignInOutMenus();
 
         if (SharedPreferencesUtils.getUsername(getBaseContext())!= ""){
             TextView nameTextView = (TextView) getNavigationView().findViewById(R.id.nameTextView);
             nameTextView.setText(getResources().getString(R.string.saudation_message) + SharedPreferencesUtils.getUsername(getBaseContext()) + " :-)");
-
         }
 
 
@@ -628,21 +602,9 @@ public class MelhorBusaoActivity extends AppCompatActivity
      * Serviços de login / logout do Google
      */
     private void updateSignInOutMenus() {
-        getNavigationView().getMenu().findItem(R.id.nav_sign_in).setVisible(!mSignedIn);
         getNavigationView().getMenu().findItem(R.id.nav_sign_out).setVisible(mSignedIn);
         // hack to update menu (appcompat v23 has bugs)
         getNavigationView().inflateMenu(R.menu.empty_menu);
-    }
-
-    /**
-     * Serviço de login do Google
-     */
-    private void onSignInClicked() {
-        // User clicked the sign-in button, so begin the sign-in process and automatically
-        // attempt to resolve any errors that occur.
-        Log.d(TAG, "onSignInClicked");
-        mShouldResolve = true;
-        mGoogleApiClient.connect();
     }
 
     /**
