@@ -5,9 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -64,12 +62,14 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 
+import br.edu.ufcg.analytics.meliorbusao.EndpointCheckoutDataBigsea;
 import br.edu.ufcg.analytics.meliorbusao.db.CityDataManager;
 import br.edu.ufcg.analytics.meliorbusao.Constants;
 import br.edu.ufcg.analytics.meliorbusao.MeliorBusaoApplication;
 import br.edu.ufcg.analytics.meliorbusao.NotificationTrigger;
 import br.edu.ufcg.analytics.meliorbusao.db.MeliorDBOpenHelper;
 import br.edu.ufcg.analytics.meliorbusao.exceptions.NoDataForCityException;
+import br.edu.ufcg.analytics.meliorbusao.listeners.BigseaLoginListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnFinishedParseListener;
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.fragments.MapRouteFragment;
@@ -81,13 +81,12 @@ import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.models.StopHeadsign;
 import br.edu.ufcg.analytics.meliorbusao.services.LocationService;
 import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
-import br.edu.ufcg.analytics.meliorbusao.utils.ProfileImageLoader;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
 public class MelhorBusaoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFinishedParseListener,
         TopBusFragment.OnTopBusSelectedListener, NearStopsFragment.NearStopListener, SearchScheduleFragment.SearchScheduleListener,
-        FragmentManager.OnBackStackChangedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        FragmentManager.OnBackStackChangedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, BigseaLoginListener {
 
     public static final String TAG = "MelhorBusaoActivity";
     private static final int RC_SIGN_IN = 0;
@@ -664,26 +663,41 @@ public class MelhorBusaoActivity extends AppCompatActivity
      * Logouts the user from de application
      */
     private void onSignOutClicked() {
-        if (mGoogleApiClient.isConnected()) {
-            signOutWithGoogle();
-        } else {
-            mGoogleApiClient.connect();
-            mGoogleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                @Override
-                public void onConnected(@Nullable Bundle bundle) {
-                    signOutWithGoogle();
-                }
 
-                @Override
-                public void onConnectionSuspended(int i) {
-                    Log.d(TAG, "onConnectionSuspended: It was not possible to sign out");
-                    Toast.makeText(MelhorBusaoActivity.this, getString(R.string.error_could_not_signout), Toast.LENGTH_SHORT).show();
-                }
-            });
+
+        String authService = SharedPreferencesUtils.getAuthService(this);
+
+        if (authService.equals(Constants.GOOGLE_SERVICE)) {
+
+            if (mGoogleApiClient.isConnected()) {
+                signOutWithGoogle();
+            } else {
+                mGoogleApiClient.connect();
+                mGoogleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(@Nullable Bundle bundle) {
+                        signOutWithGoogle();
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i) {
+                        Log.d(TAG, "onConnectionSuspended: It was not possible to sign out");
+                        Toast.makeText(MelhorBusaoActivity.this, getString(R.string.error_could_not_signout), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+        } else if (authService.equals(Constants.BIG_SEA_SERVICE)) {
+            if(SharedPreferencesUtils.getUserToken(MelhorBusaoActivity.this.getBaseContext())!=""){
+                EndpointCheckoutDataBigsea checkoutDataBigsea = new EndpointCheckoutDataBigsea(this,SharedPreferencesUtils.getUserToken(MelhorBusaoActivity.this.getBaseContext()));
+                checkoutDataBigsea.execute();
+            }
+
         }
-        if(SharedPreferencesUtils.getUserToken(MelhorBusaoActivity.this.getBaseContext())!=""){
-            SharedPreferencesUtils.setUserToken(getApplicationContext(),"" ,Constants.BIG_SEA_SERVICE,"");
-        }
+
+
+
+
     }
 
     /**
@@ -1013,6 +1027,24 @@ public class MelhorBusaoActivity extends AppCompatActivity
         } catch (IOException e) {
             Toast.makeText(this, "Não foi possível gravar o arquivo '" + file.getName() + "'", Toast.LENGTH_LONG).show();
         }
+
+    }
+
+    @Override
+    public void OnCheckoutData(boolean finished) {
+        if(SharedPreferencesUtils.getUserToken(MelhorBusaoActivity.this.getBaseContext())!=""){
+            SharedPreferencesUtils.setUserToken(getApplicationContext(),"" ,Constants.BIG_SEA_SERVICE,"");
+            Intent intent = new Intent(getApplicationContext(), MelhorLoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+
+
+    }
+
+    @Override
+    public void OnLogged(boolean logged) {
 
     }
 }
