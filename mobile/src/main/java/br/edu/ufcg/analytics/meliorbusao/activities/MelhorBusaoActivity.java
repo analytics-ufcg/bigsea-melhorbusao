@@ -71,6 +71,7 @@ import br.edu.ufcg.analytics.meliorbusao.NotificationTrigger;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.db.MeliorDBOpenHelper;
 import br.edu.ufcg.analytics.meliorbusao.exceptions.NoDataForCityException;
+import br.edu.ufcg.analytics.meliorbusao.fragments.ChangePasswordFragment;
 import br.edu.ufcg.analytics.meliorbusao.fragments.ItinerariesListFragment;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnFinishedParseListener;
 import br.edu.ufcg.analytics.meliorbusao.R;
@@ -103,6 +104,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
     private SearchScheduleFragment searchScheduleFragment;
     private StopScheduleFragment stopScheduleFragment;
     private ItinerariesListFragment itinerariesListFragment;
+    private ChangePasswordFragment changePasswordFragment;
 
     /* Client used to interact with Google APIs. */
     private GoogleApiClient mGoogleApiClient;
@@ -135,6 +137,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
         searchScheduleFragment = SearchScheduleFragment.getInstance();
         stopScheduleFragment = StopScheduleFragment.getInstance();
         itinerariesListFragment = ItinerariesListFragment.getInstance();
+        changePasswordFragment = ChangePasswordFragment.newInstance();
 
         mGoogleApiClient = ((MeliorBusaoApplication) getApplication()).getGoogleApiClientInstance(this);
         mGoogleApiClient.registerConnectionCallbacks(this);
@@ -480,6 +483,13 @@ public class MelhorBusaoActivity extends AppCompatActivity
                 nextFrag = searchScheduleFragment;
                 nextFragTag = SearchScheduleFragment.TAG;
                 break;
+
+            case R.id.nav_change_password:
+                nextFrag = changePasswordFragment;
+                nextFragTag = ChangePasswordFragment.TAG;
+                
+                break;
+
         }
 
         if (nextFrag != null) {
