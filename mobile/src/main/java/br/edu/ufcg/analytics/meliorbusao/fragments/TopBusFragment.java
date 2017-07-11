@@ -23,7 +23,6 @@ import android.widget.FilterQueryProvider;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 import com.parse.ParseException;
 
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
-import br.edu.ufcg.analytics.meliorbusao.adapters.RouteEvaluationExpandableAdapter;
+import br.edu.ufcg.analytics.meliorbusao.adapters.RouteSummaryExpandableAdapter;
 import br.edu.ufcg.analytics.meliorbusao.adapters.SearchRouteResultsAdapter;
 import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
 import br.edu.ufcg.analytics.meliorbusao.listeners.FragmentTitleChangeListener;
@@ -42,10 +41,9 @@ import br.edu.ufcg.analytics.meliorbusao.listeners.OnMeliorBusaoQueryListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnRouteSuggestionListener;
 import br.edu.ufcg.analytics.meliorbusao.listeners.OnSumarioRotasReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.models.Route;
-import br.edu.ufcg.analytics.meliorbusao.models.SumarioRota;
-import br.edu.ufcg.analytics.meliorbusao.models.SumarioRotaBasic;
+import br.edu.ufcg.analytics.meliorbusao.models.RouteSummary;
+import br.edu.ufcg.analytics.meliorbusao.models.RouteCard;
 import br.edu.ufcg.analytics.meliorbusao.models.SumarioRotaBasicComparator;
-import br.edu.ufcg.analytics.meliorbusao.models.SumarioRotaDetail;
 import br.edu.ufcg.analytics.meliorbusao.utils.ParseUtils;
 
 
@@ -62,7 +60,7 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
     private Menu mMenu;
     private SearchView mSearchView;
     private RecyclerView mRecyclerView;
-    private RouteEvaluationExpandableAdapter mBusEvalExpandableAdapter;
+    private RouteSummaryExpandableAdapter mBusEvalExpandableAdapter;
 
     public static final String TAG = "TOP_BUS_FRAGMENT";
 
@@ -71,7 +69,7 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
     private String stopName;
     private int typeOfOrder = 0;
 
-    List<SumarioRota> listRouteSummary;
+    List<RouteSummary> listRouteSummary;
 
 
     public static TopBusFragment getInstance() {
@@ -106,7 +104,7 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
     }
 
     public void updateListView() {
-        mBusEvalExpandableAdapter = new RouteEvaluationExpandableAdapter(getActivity(), generateRouteSummaries(), mRecyclerView, mCallback);
+        mBusEvalExpandableAdapter = new RouteSummaryExpandableAdapter(getActivity(), generateRouteSummaries(), mCallback);
         mRecyclerView.setAdapter(mBusEvalExpandableAdapter);
     }
 
@@ -164,13 +162,13 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         final int normal = 0;
         if (mCallback != null) {
-            SumarioRota routeSummary = (SumarioRota) parent.getItemAtPosition(position);
+            RouteSummary routeSummary = (RouteSummary) parent.getItemAtPosition(position);
             mCallback.onBusCardClickListener(routeSummary.getRota().getShortName());
         }
     }
 
     @Override
-    public void onSumarioRotasReady(ArrayList<SumarioRota> rotas, ParseException e) {
+    public void onSumarioRotasReady(ArrayList<RouteSummary> rotas, ParseException e) {
         if (getContext() == null) {
             return;
         } else if (e != null) {
@@ -362,14 +360,14 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
 
     }
 
-    private ArrayList<ParentObject> generateRouteSummaries() {
-        ArrayList<ParentObject> parentObjects = new ArrayList<>();
-        for (SumarioRota routeSummary : listRouteSummary) {
-            ArrayList<Object> childList = new ArrayList<>();
-            childList.add(new SumarioRotaDetail(routeSummary));
-            SumarioRotaBasic sumarioRotaBasic = new SumarioRotaBasic(routeSummary);
-            sumarioRotaBasic.setChildObjectList(childList);
-            parentObjects.add(sumarioRotaBasic);
+    private ArrayList<RouteCard> generateRouteSummaries() {
+        ArrayList<RouteCard> parentObjects = new ArrayList<>();
+        for (RouteSummary routeSummary : listRouteSummary) {
+            ArrayList<RouteSummary> childList = new ArrayList<>();
+            childList.add(routeSummary);
+            RouteCard routeCard = new RouteCard(routeSummary);
+            routeCard.setChildObjectList(childList);
+            parentObjects.add(routeCard);
         }
 
         Comparator comparator = new SumarioRotaBasicComparator();
@@ -381,7 +379,7 @@ public class TopBusFragment extends Fragment implements AbsListView.OnItemClickL
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        //((RouteEvaluationExpandableAdapter) mRecyclerView.getAdapter()).onSaveInstanceState(outState);
+        //((RouteSummaryExpandableAdapter) mRecyclerView.getAdapter()).onSaveInstanceState(outState);
     }
 
 

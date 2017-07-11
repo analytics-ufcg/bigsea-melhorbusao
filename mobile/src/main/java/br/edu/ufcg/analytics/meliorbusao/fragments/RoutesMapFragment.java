@@ -20,7 +20,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FilterQueryProvider;
-import android.widget.ListAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 import android.support.v4.app.Fragment;
@@ -48,13 +47,13 @@ import br.edu.ufcg.analytics.meliorbusao.models.RouteShape;
 import br.edu.ufcg.analytics.meliorbusao.models.Stop;
 
 
-public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryListener, OnRouteSuggestionListener,
+public class RoutesMapFragment extends Fragment implements OnMeliorBusaoQueryListener, OnRouteSuggestionListener,
         SearchView.OnQueryTextListener, FilterQueryProvider, SearchView.OnSuggestionListener,
         AdapterView.OnItemSelectedListener, OnMapInformationReadyListener {
 
     public static final String TAG = "MAP_ROUTE_FRAGMENT";
     private static final double DEFAULT_ZOOM_THRESHOLD = 15.0;
-    private static MapRouteFragment instance;
+    private static RoutesMapFragment instance;
     private FragmentTitleChangeListener mCallback;
     private String routeShortName;
     private Menu mMenu;
@@ -64,13 +63,13 @@ public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryLis
     private List<org.osmdroid.bonuspack.overlays.Marker> stopsMarkers;
     private MapFragment osmFragment;
 
-    public MapRouteFragment() {
+    public RoutesMapFragment() {
 
     }
 
-    public static MapRouteFragment getInstance() {
+    public static RoutesMapFragment getInstance() {
         if (instance == null) {
-            MapRouteFragment fragment = new MapRouteFragment();
+            RoutesMapFragment fragment = new RoutesMapFragment();
             Bundle args = new Bundle();
             fragment.setArguments(args);
             instance = fragment;
@@ -85,7 +84,7 @@ public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View viewMain = inflater.inflate(R.layout.fragment_map_route, container, false);
-        osmFragment = MapFragment.getInstance();
+        osmFragment = new MapFragment();
         osmFragment.setOnMapInformationReadyListener(this);
 
         getChildFragmentManager().beginTransaction().replace(R.id.melior_map_fragment, osmFragment).commit();
@@ -154,12 +153,11 @@ public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryLis
         for (RouteShape shape : shapes) {
             PathOverlay pathOverlay = new PathOverlay(Color.parseColor("#"+ shape.getColor()), getContext());
             pathOverlay.addPoints((ArrayList) shape);
-            osmFragment.drawRoute(pathOverlay);
             Paint pPaint = pathOverlay.getPaint();
             pPaint.setStrokeWidth(5);
             pathOverlay.setPaint(pPaint);
+            osmFragment.drawRoute(pathOverlay);
             osmFragment.animateTo(shape);
-
         }
         inicializarParadas(route);
 
@@ -349,7 +347,6 @@ public class MapRouteFragment  extends Fragment implements OnMeliorBusaoQueryLis
         if (routeShortName != null) {
             mCallback.onTitleChange(buildScreenTitle(routeShortName));
             drawRoute(DBUtils.getRoute(getContext(),routeShortName));
-
         } else {
             mCallback.onTitleChange(getResources().getString(R.string.map_routes_title));
             osmFragment.clearMap();

@@ -1,85 +1,96 @@
 package br.edu.ufcg.analytics.meliorbusao.adapters;
 
 
-import android.app.Activity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
-import br.edu.ufcg.analytics.meliorbusao.models.Route;
-import br.edu.ufcg.analytics.meliorbusao.models.StopHeadsign;
 import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
 import br.edu.ufcg.analytics.meliorbusao.utils.StringUtils;
 
-public class ItinerariesAdapter extends ArrayAdapter<Itinerary> {
+public class ItinerariesAdapter extends RecyclerView.Adapter<ItinerariesAdapter.ViewHolder> {
+
     private List<Itinerary> items;
-    private Activity activity;
+    private OnItineraryClickListener mOnItineraryClickListener;
 
-    public ItinerariesAdapter(Activity activity, List<Itinerary> items) {
-        super(activity, R.layout.get_directions_list_item, items);
+    public ItinerariesAdapter(List<Itinerary> items) {
         this.items = items;
-        this.activity = activity;
     }
 
-    /**
-     * Define o adapter como um componente dropdown (para que o dropdown seja possivel)
-     */
     @Override
-    public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        View v = getView(position, convertView, parent);
-        v.getBackground().setAlpha(255);
-        return v;
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.get_directions_list_item, parent, false);
+        return new ViewHolder(view);
     }
 
-    /**
-     * Retorna o item (parada a ser escolhida) do dropdown
-     */
     @Override
-    public Itinerary getItem(int position) {
-        return items.get(position);
-    }
-
-    /**
-     * Monta a view com informações da parada a ser escolhida
-     */
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View v = convertView;
+    public void onBindViewHolder(ViewHolder holder, int position) {
         Itinerary currItinerary = items.get(position);
+        final int pos = position;
+        holder.bind(currItinerary);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Itinerary itinerary = items.get(pos);
+                if (mOnItineraryClickListener != null) {
+                    mOnItineraryClickListener.onClick(itinerary);
+                }
+            }
+        });
+    }
 
-        if (v == null) {
-            LayoutInflater inflater = activity.getLayoutInflater();
-            v = inflater.inflate(R.layout.get_directions_list_item, null);
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
+
+    public void setOnItineraryClickListener(OnItineraryClickListener mOnClickListener) {
+        this.mOnItineraryClickListener = mOnClickListener;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView busCodesTextView;
+        private TextView durationTextView;
+        private TextView stEndTimeTextView;
+        private TextView stBusStopTextView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+
+            busCodesTextView = (TextView) itemView.findViewById(R.id.itinerary_bus_codes);
+            durationTextView = (TextView) itemView.findViewById(R.id.itinerary_duration);
+            stEndTimeTextView = (TextView) itemView.findViewById(R.id.itinerary_list_item_st_end_time);
+            stBusStopTextView = (TextView) itemView.findViewById(R.id.itinerary_list_item_start_bus_stop);
         }
 
-        TextView busCodesTextView = (TextView) v.findViewById(R.id.itinerary_bus_codes);
-        TextView durationTextView = (TextView) v.findViewById(R.id.itinerary_duration);
-        TextView stEndTimeTextView = (TextView) v.findViewById(R.id.itinerary_list_item_st_end_time);
-        TextView stBusStopTextView = (TextView) v.findViewById(R.id.itinerary_list_item_start_bus_stop);
+        public void bind(Itinerary itinerary) {
+            try {
+                busCodesTextView.setText(StringUtils.getStringListConcat(itinerary.getBusRoutes()));
 
-        try {
-            busCodesTextView.setText(StringUtils.getStringListConcat(currItinerary.getBusRoutes()));
+                int durationInMins = itinerary.getDurationInSecs()/60;
+                durationTextView.setText(String.valueOf(durationInMins) + " min");
 
-            int durationInMins = currItinerary.getDurationInSecs()/60;
-            durationTextView.setText(String.valueOf(durationInMins) + " min");
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                stEndTimeTextView.setText(sdf.format(itinerary.getDepartureTime()) + " - " +
+                        sdf.format(itinerary.getArrivalTime()));
 
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            stEndTimeTextView.setText(sdf.format(currItinerary.getDepartureTime()) + " - " +
-                    sdf.format(currItinerary.getArrivalTime()));
-
-            stBusStopTextView.setText(currItinerary.getDepartureBusStop());
-        } catch (Exception e) {
-            Log.e("ItinerariesListAdapter", e.getMessage());
+                stBusStopTextView.setText(itinerary.getDepartureBusStop());
+            } catch (Exception e) {
+                Log.e("ItinerariesListAdapter", e.getMessage());
+            }
         }
+    }
 
-        v.getBackground().setAlpha(0);
-        return v;
+    public interface OnItineraryClickListener {
+        void onClick(Itinerary itinerary);
     }
 }

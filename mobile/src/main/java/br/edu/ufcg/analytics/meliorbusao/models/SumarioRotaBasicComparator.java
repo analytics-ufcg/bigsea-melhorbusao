@@ -2,7 +2,7 @@ package br.edu.ufcg.analytics.meliorbusao.models;
 
 import java.util.Comparator;
 
-public class SumarioRotaBasicComparator implements Comparator<SumarioRotaBasic> {
+public class SumarioRotaBasicComparator implements Comparator<RouteCard> {
 
     /**
      * Compara as rotas pela avaliação geral
@@ -11,7 +11,7 @@ public class SumarioRotaBasicComparator implements Comparator<SumarioRotaBasic> 
      * @return
      */
     @Override
-    public int compare(SumarioRotaBasic sumarioRota1, SumarioRotaBasic sumarioRota2) {
+    public int compare(RouteCard sumarioRota1, RouteCard sumarioRota2) {
         if (sumarioRota1.getRouteSummary().getSumarioGeral() > sumarioRota2.getRouteSummary().getSumarioGeral()) {
             return -1;
         }

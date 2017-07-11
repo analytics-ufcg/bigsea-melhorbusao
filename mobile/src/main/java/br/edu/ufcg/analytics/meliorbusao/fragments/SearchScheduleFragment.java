@@ -119,10 +119,17 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
             @Override
             public void onClick(View v) {
                 /*showProgress(true);*/
-                String cityCode = SharedPreferencesUtils.getCityNameOnDatabase(getContext()).
-                        equals("Curitiba")? "ctba" : "cg";
-                mAuthTask = new RoutingTask(mCurrLocation, mDestLocation, new Date(), cityCode);
-                mAuthTask.execute();
+                if (mCurrLocation== null ||mDestLocation==null ){
+                    Toast.makeText(getContext(), R.string.search_schedule_btn, Toast.LENGTH_LONG).show();
+
+                } else{
+                    String cityCode = SharedPreferencesUtils.getCityNameOnDatabase(getContext()).
+                            equals("Curitiba")? "ctba" : "cg";
+                    mAuthTask = new RoutingTask(mCurrLocation, mDestLocation, new Date(), cityCode);
+                    mAuthTask.execute();
+                }
+
+
             }
         });
 
