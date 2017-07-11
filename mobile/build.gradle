@@ -5,6 +5,7 @@ android {
     buildToolsVersion '25.0.0'
     useLibrary 'org.apache.http.legacy'
 
+
     //sempre que gerar uma nova apk, atualizar o versionName e incrementar o targetSdkVersion
     defaultConfig {
         applicationId "br.edu.ufcg.analytics.meliorbusao"
@@ -30,6 +31,8 @@ android {
     }
     buildTypes.each {
         it.resValue 'string', 'TEST_FAIRY_API_KEY', TestFairyAPIKey
+        it.resValue 'string', 'PARSE_CLIENT_KEY', ParseServerClientKey
+        it.resValue 'string', 'PARSE_APPLICATION_ID', ParseServerApplicationID
         it.resValue 'string', 'GOOGLE_SERVICES_API_KEY', GoogleServicesAPIKey
         it.resValue 'string', 'PARSE_SERVER_APPLICATION_ID', ParseServerApplicationID
         it.resValue 'string', 'PARSE_SERVER_CLIENT_KEY', ParseServerClientKey
