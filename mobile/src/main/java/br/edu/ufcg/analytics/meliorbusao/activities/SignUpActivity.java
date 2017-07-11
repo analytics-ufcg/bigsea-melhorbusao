@@ -262,7 +262,6 @@ public class SignUpActivity extends AppCompatActivity {
                             isSuccessfulRegister = jsonObject.getString("success").contains("success") ;
                         }
                     }
-
                     conn.disconnect();
                 }
 

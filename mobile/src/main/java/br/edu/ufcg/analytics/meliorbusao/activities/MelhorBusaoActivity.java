@@ -53,6 +53,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.BottomBarTab;
 import com.roughike.bottombar.OnMenuTabClickListener;
 
 
@@ -93,7 +94,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFinishedParseListener,
         TopBusFragment.OnTopBusSelectedListener, NearStopsFragment.NearStopListener, SearchScheduleFragment.SearchScheduleListener,
         FragmentManager.OnBackStackChangedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        SearchScheduleFragment.GetDirectionsListener {
+        SearchScheduleFragment.GetDirectionsListener, ChangePasswordFragment.OnPasswordChangedListener {
 
     public static final String TAG = "MelhorBusaoActivity";
     private static final int RC_SIGN_IN = 0;
@@ -487,7 +488,6 @@ public class MelhorBusaoActivity extends AppCompatActivity
             case R.id.nav_change_password:
                 nextFrag = changePasswordFragment;
                 nextFragTag = ChangePasswordFragment.TAG;
-                
                 break;
 
         }
@@ -971,5 +971,10 @@ public class MelhorBusaoActivity extends AppCompatActivity
                 itinerariesListFragment, itinerariesListFragment.TAG).addToBackStack(itinerariesListFragment.TAG).commit();
         changeBottomBarItem(itinerariesListFragment.TAG);
         itinerariesListFragment.setItinerariesList(itineraries);
+    }
+
+    @Override
+    public void onPasswordChanged() {
+        onBackPressed();
     }
 }
