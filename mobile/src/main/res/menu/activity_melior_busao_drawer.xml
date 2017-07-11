@@ -34,10 +34,9 @@
         android:id="@+id/settings_menu_items"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_sign_in"
-            android:icon="@drawable/google_plus"
-            android:title="@string/login_title"
-            android:visible="false" />
+            android:title="@string/change_password_title"
+            android:id="@+id/nav_change_password"
+            android:icon="@drawable/ic_lock_black_24dp"/>
         <item
             android:title="Detecção automática"
             android:id="@+id/nav_bus_monitoring"
