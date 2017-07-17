@@ -33,8 +33,8 @@ public class EndpointCheckoutDataBigsea extends AsyncTask<Void, Void, Boolean> {
     private Object mAuthTask;
     private boolean logout;
 
-    public EndpointCheckoutDataBigsea(BigseaLoginListener mListener, String token) {
-        ENDPOINT_ADDRESS = "https://eubrabigsea.dei.uc.pt/engine/api/checkout_data";
+    public EndpointCheckoutDataBigsea(BigseaLoginListener mListener, String token, String endpoint) {
+        ENDPOINT_ADDRESS = endpoint;
         this.token= token;
         this.mListener = mListener;
     }

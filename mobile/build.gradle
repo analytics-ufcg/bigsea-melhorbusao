@@ -43,6 +43,10 @@ android {
         it.resValue 'string', 'BIG_SEA_AUTH_CHECKIN_DATA_ENDPOINT', BigSeaAuthCheckinDataEndpoint
         it.resValue 'string', 'BIG_SEA_AUTH_SIGNUP_DATA_ENDPOINT', BigSeaAuthSignupDataEndpoint
         it.resValue 'string', 'GOOGLE_OAUTH_SERVER_CLIENT_ID', GoogleOAuthServerClientId
+        it.resValue 'string', 'BIG_SEA_AUTH_CHECKOUT_DATA_ENDPOINT', BigSeaAuthCheckoutDataEndpoint
+        it.resValue 'string', 'BIG_SEA_AUTH_DELETE_USER_ENDPOINT', BigSeaAuthDeleteUserEndpoint
+
+
     }
 }
 

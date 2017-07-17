@@ -650,7 +650,8 @@ public class MelhorBusaoActivity extends AppCompatActivity
 
         } else if (authService.equals(Constants.BIG_SEA_SERVICE)) {
             if(SharedPreferencesUtils.getUserToken(MelhorBusaoActivity.this.getBaseContext())!=""){
-                EndpointCheckoutDataBigsea checkoutDataBigsea = new EndpointCheckoutDataBigsea(this,SharedPreferencesUtils.getUserToken(MelhorBusaoActivity.this.getBaseContext()));
+                EndpointCheckoutDataBigsea checkoutDataBigsea = new EndpointCheckoutDataBigsea(this,SharedPreferencesUtils.getUserToken(MelhorBusaoActivity.this.getBaseContext()),
+                getResources().getString(R.string.BIG_SEA_AUTH_SIGNUP_DATA_ENDPOINT));
                 checkoutDataBigsea.execute();
             }
 
