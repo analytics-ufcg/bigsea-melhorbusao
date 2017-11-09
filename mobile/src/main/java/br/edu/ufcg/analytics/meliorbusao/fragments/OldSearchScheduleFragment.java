@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.view.menu.ExpandedMenuView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.gson.Gson;
 import com.parse.ParseException;
 
 import org.json.JSONArray;
@@ -31,21 +29,16 @@ import org.json.JSONObject;
 import org.osmdroid.util.GeoPoint;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -60,15 +53,8 @@ import br.edu.ufcg.analytics.meliorbusao.models.StopHeadsign;
 import br.edu.ufcg.analytics.meliorbusao.models.StopTime;
 import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
-import okhttp3.HttpUrl;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
-
-public class SearchScheduleFragment extends Fragment implements OnStopTimesReadyListener,
+public class OldSearchScheduleFragment extends Fragment implements OnStopTimesReadyListener,
         SearchView.OnQueryTextListener, OnMapInformationReadyListener {
 
     public static final String TAG = "SearchScheduleFragment";
@@ -91,7 +77,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
     private RoutingTask mAuthTask = null;
     /*private View mProgressView;*/
 
-    public SearchScheduleFragment() {
+    public OldSearchScheduleFragment() {
     }
 
     /**
@@ -267,7 +253,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
 
     public class RoutingTask extends AsyncTask<Void, Void, List<Itinerary>> {
 
-        private final String ENDPOINT_ADDRESS = getString(R.string.OPEN_TRIP_PLANNER_URL) + "/btr_routes_plans";
+        private final String ENDPOINT_ADDRESS = getString(R.string.OPEN_TRIP_PLANNER_URL) + "/otp/routers/%s/plan?";
         private final String fromPlace;
         private final String toPlace;
         private final String date;
@@ -291,41 +277,40 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
         @Override
         protected List<Itinerary> doInBackground(Void... params) {
             URL url;
-            boolean success = false;
             try {
-                url = new URL(ENDPOINT_ADDRESS);
+                StringBuilder parameters = new StringBuilder();
+                parameters.append("fromPlace=");
+                parameters.append(fromPlace);
+                parameters.append("&toPlace=");
+                parameters.append(toPlace);
+                parameters.append("&mode=TRANSIT,WALK");
+                parameters.append("&date=");
+                parameters.append(date);
+                parameters.append("&time=");
+                parameters.append(time);
 
-                Map<String, String> param = new HashMap<>();
+                Log.d("SearchScheduleFragment", parameters.toString());
 
-                //TODO Error fromPlace + toPlace
-                param.put("fromPlace", fromPlace);
-                param.put("toPlace", toPlace);
-                param.put("mode", "TRANSIT,WALK");
-                param.put("date", date);
-                param.put("time", time);
-
-                Gson gson = new Gson(); // com.google.gson.Gson
-                String json = gson.toJson(param);
-
-                Log.d(TAG, json.toString());
+                url = new URL(String.format(ENDPOINT_ADDRESS,cityCode) + parameters.toString());
 
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setRequestProperty("Content-Type", "application/json");
 
-                OutputStream os = conn.getOutputStream();
+                /*OutputStream os = conn.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                writer.write(json.toString());
+                writer.write(parameters.toString());
                 writer.flush();
                 writer.close();
-                os.close();
+                os.close();*/
 
                 conn.connect();
                 int responseCode = conn.getResponseCode();
 
-                Log.d(TAG, "Response Code: " + String.valueOf(responseCode));
+                Log.d("SearchScheduleFragment", "Response Code: " + String.valueOf(responseCode));
 
                 if (responseCode == HttpsURLConnection.HTTP_OK) {
-                    /*
                     String line = "";
                     BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                     while ((line = br.readLine()) != null) {
@@ -339,114 +324,24 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
                         itineraries.add(Itinerary.fromJson(itinerariesJson.getJSONObject(i)));
                     }
 
-                    Log.d(TAG, "Number of itineraries: " + String.valueOf(itinerariesJson.length()));
-//                    Log.d("SearchScheduleFragment", "First Itinerary: " + Itinerary.fromJson(itinerariesJson.getJSONObject(1)));*/
+                    Log.d("SearchScheduleFragment", "Number of itineraries: " + String.valueOf(itinerariesJson.length()));
+//                    Log.d("SearchScheduleFragment", "First Itinerary: " + Itinerary.fromJson(itinerariesJson.getJSONObject(1)));
                 } else {
                     BufferedReader br1 = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
                     String line = "", error = "";
                     while ((line = br1.readLine()) != null) {
                         error += line;
                     }
-                    Log.d(TAG, "Error: " + error);
+                    Log.d("SearchScheduleFragment", error);
                 }
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-            }/* catch (JSONException e) {
-                e.printStackTrace();
-            }*/
-            return itineraries;
-        }
-
-
-        protected List<Itinerary> doInBackgroundd(Void... params) {
-            //URL url;
-            try {
-                String parameters =  "{\"fromPlace\": \""+ fromPlace+"\",\"toPlace\": \""+  toPlace+",\"mode\": \"TRANSIT,WALK\", \"date\": \""+ date +"\",\"time\": \""+time+"\"}";
-
-                Map<String, String> param = new HashMap<>();
-
-                param.put("fromPlace", fromPlace);
-                param.put("toPlace", toPlace);
-                param.put("mode", "TRANSIT,WALK");
-                param.put("date", date);
-                param.put("time", time);
-
-
-                Gson gson = new Gson(); // com.google.gson.Gson
-                String json = gson.toJson(param);
-                Log.d(TAG, json);
-
-
-                URL url = new URL(ENDPOINT_ADDRESS);
-
-
-                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-                OkHttpClient client = new OkHttpClient();
-                RequestBody body = RequestBody.create(JSON, json);
-
-
-/*
-                HttpUrl.Builder urlBuilder = HttpUrl.parse(ENDPOINT_ADDRESS).newBuilder();
-                urlBuilder.addQueryParameter("fromPlace", fromPlace);
-                urlBuilder.addQueryParameter("toPlace", toPlace);
-                urlBuilder.addQueryParameter("mode", "TRANSIT,WALK");
-                urlBuilder.addQueryParameter("date", date);
-                urlBuilder.addQueryParameter("time", time);
-*/
-                //String url = urlBuilder.build().toString();
-
-                Request request = new Request.Builder()
-                        .url(ENDPOINT_ADDRESS)
-                        .post(body)
-                        .build();
-
-                Response response = client.newCall(request).execute();
-
-                String networkResp = response.body().string();
-
-                if (!networkResp.isEmpty()) {
-                    Log.d(TAG, networkResp.toString());
-                }
-
-
-
-
-
-
-/*
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setUseCaches (false);
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Accept", "application/json");
-                conn.setRequestProperty("Content-Type", "application/json");
-
-                conn.setDoOutput(true);
-
-
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                writer.write(parameters.toString());
-                writer.flush();
-                writer.close();
-                os.close();
-
-                conn.connect();
-                int responseCode = conn.getResponseCode();
-
-                Log.d(TAG, "Response Code: " + String.valueOf(responseCode));
-*/
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
-            /*catch (JSONException e) {
-                e.printStackTrace();
-            }*/
             return itineraries;
         }
 
