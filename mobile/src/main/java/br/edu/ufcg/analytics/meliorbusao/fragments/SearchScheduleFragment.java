@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.view.menu.ExpandedMenuView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -60,13 +59,6 @@ import br.edu.ufcg.analytics.meliorbusao.models.StopHeadsign;
 import br.edu.ufcg.analytics.meliorbusao.models.StopTime;
 import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
-import okhttp3.HttpUrl;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
 
 public class SearchScheduleFragment extends Fragment implements OnStopTimesReadyListener,
         SearchView.OnQueryTextListener, OnMapInformationReadyListener {
@@ -297,7 +289,6 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
 
                 Map<String, String> param = new HashMap<>();
 
-                //TODO Error fromPlace + toPlace
                 param.put("fromPlace", fromPlace);
                 param.put("toPlace", toPlace);
                 param.put("mode", "TRANSIT,WALK");
@@ -307,7 +298,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
                 Gson gson = new Gson(); // com.google.gson.Gson
                 String json = gson.toJson(param);
 
-                Log.d(TAG, json.toString());
+                //Log.d(TAG, json.toString());
 
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
@@ -322,10 +313,9 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
                 conn.connect();
                 int responseCode = conn.getResponseCode();
 
-                Log.d(TAG, "Response Code: " + String.valueOf(responseCode));
 
                 if (responseCode == HttpsURLConnection.HTTP_OK) {
-                    /*
+
                     String line = "";
                     BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                     while ((line = br.readLine()) != null) {
@@ -340,7 +330,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
                     }
 
                     Log.d(TAG, "Number of itineraries: " + String.valueOf(itinerariesJson.length()));
-//                    Log.d("SearchScheduleFragment", "First Itinerary: " + Itinerary.fromJson(itinerariesJson.getJSONObject(1)));*/
+//                    Log.d("SearchScheduleFragment", "First Itinerary: " + Itinerary.fromJson(itinerariesJson.getJSONObject(1)));
                 } else {
                     BufferedReader br1 = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
                     String line = "", error = "";
@@ -354,99 +344,9 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-            }/* catch (JSONException e) {
-                e.printStackTrace();
-            }*/
-            return itineraries;
-        }
-
-
-        protected List<Itinerary> doInBackgroundd(Void... params) {
-            //URL url;
-            try {
-                String parameters =  "{\"fromPlace\": \""+ fromPlace+"\",\"toPlace\": \""+  toPlace+",\"mode\": \"TRANSIT,WALK\", \"date\": \""+ date +"\",\"time\": \""+time+"\"}";
-
-                Map<String, String> param = new HashMap<>();
-
-                param.put("fromPlace", fromPlace);
-                param.put("toPlace", toPlace);
-                param.put("mode", "TRANSIT,WALK");
-                param.put("date", date);
-                param.put("time", time);
-
-
-                Gson gson = new Gson(); // com.google.gson.Gson
-                String json = gson.toJson(param);
-                Log.d(TAG, json);
-
-
-                URL url = new URL(ENDPOINT_ADDRESS);
-
-
-                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-                OkHttpClient client = new OkHttpClient();
-                RequestBody body = RequestBody.create(JSON, json);
-
-
-/*
-                HttpUrl.Builder urlBuilder = HttpUrl.parse(ENDPOINT_ADDRESS).newBuilder();
-                urlBuilder.addQueryParameter("fromPlace", fromPlace);
-                urlBuilder.addQueryParameter("toPlace", toPlace);
-                urlBuilder.addQueryParameter("mode", "TRANSIT,WALK");
-                urlBuilder.addQueryParameter("date", date);
-                urlBuilder.addQueryParameter("time", time);
-*/
-                //String url = urlBuilder.build().toString();
-
-                Request request = new Request.Builder()
-                        .url(ENDPOINT_ADDRESS)
-                        .post(body)
-                        .build();
-
-                Response response = client.newCall(request).execute();
-
-                String networkResp = response.body().string();
-
-                if (!networkResp.isEmpty()) {
-                    Log.d(TAG, networkResp.toString());
-                }
-
-
-
-
-
-
-/*
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setUseCaches (false);
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Accept", "application/json");
-                conn.setRequestProperty("Content-Type", "application/json");
-
-                conn.setDoOutput(true);
-
-
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                writer.write(parameters.toString());
-                writer.flush();
-                writer.close();
-                os.close();
-
-                conn.connect();
-                int responseCode = conn.getResponseCode();
-
-                Log.d(TAG, "Response Code: " + String.valueOf(responseCode));
-*/
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
-            /*catch (JSONException e) {
-                e.printStackTrace();
-            }*/
             return itineraries;
         }
 
