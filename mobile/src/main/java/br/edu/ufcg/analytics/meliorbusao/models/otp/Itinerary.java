@@ -2,6 +2,7 @@ package br.edu.ufcg.analytics.meliorbusao.models.otp;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,6 +17,8 @@ import java.util.List;
  * It contains all the information of a trip that goes from one point to another.
  */
 public class Itinerary implements Parcelable {
+    public static final String TAG = "Itinerary";
+
     private List<String> busRoutes;
     private List<String> encodedPolylinePoints;
     private String departureBusStop;
@@ -125,8 +128,8 @@ public class Itinerary implements Parcelable {
             String depBusStop = firstBusLeg.getJSONObject("from").getString("name");
             Date startTime = new Date(itineraryJson.getLong("startTime"));
             Date endTime = new Date(itineraryJson.getLong("endTime"));
-            int duration = itineraryJson.getInt("duration");
-
+            int duration = itineraryJson.getInt("btr-duration");
+            Log.d(TAG, String.valueOf(duration));
             itinerary = new Itinerary(busRoutes, legsPoints, depBusStop, startTime, endTime, duration);
         } catch (JSONException e) {
             e.printStackTrace();

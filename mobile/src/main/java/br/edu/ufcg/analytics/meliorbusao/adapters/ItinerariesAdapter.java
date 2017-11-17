@@ -80,8 +80,11 @@ public class ItinerariesAdapter extends RecyclerView.Adapter<ItinerariesAdapter.
                 durationTextView.setText(String.valueOf(durationInMins) + " min");
 
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                stEndTimeTextView.setText(sdf.format(itinerary.getDepartureTime()) + " - " +
+               /* stEndTimeTextView.setText(sdf.format(itinerary.getDepartureTime()) + " - " +
                         sdf.format(itinerary.getArrivalTime()));
+*/
+
+                stEndTimeTextView.setText(sdf.format(itinerary.getDurationInSecs()));
 
                 stBusStopTextView.setText(itinerary.getDepartureBusStop());
             } catch (Exception e) {
