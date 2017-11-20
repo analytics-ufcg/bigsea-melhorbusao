@@ -18,7 +18,7 @@ public class StringUtils {
     public static String getStringListConcat(List<String> list) {
         StringBuilder listSB = new StringBuilder();
         for (int i = 0; i < list.size(); i++) {
-            if (i != 0) listSB.append(",");
+            if (i != 0) listSB.append(", ");
             listSB.append(list.get(i));
         }
 
