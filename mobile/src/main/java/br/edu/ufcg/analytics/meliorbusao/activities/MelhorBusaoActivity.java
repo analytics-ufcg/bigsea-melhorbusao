@@ -997,7 +997,7 @@ public class MelhorBusaoActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSelected(Itinerary itinerary) {
+    public void onItinerarySelected(Itinerary itinerary) {
         itineraryMapFragment.getArguments().putParcelable(itineraryMapFragment.ITINERARY, itinerary);
         getSupportFragmentManager().beginTransaction().replace(R.id.container_layout,
                 itineraryMapFragment, itineraryMapFragment.TAG).addToBackStack(itineraryMapFragment.TAG).commit();

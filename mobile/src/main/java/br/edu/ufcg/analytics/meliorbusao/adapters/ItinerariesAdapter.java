@@ -17,6 +17,7 @@ import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
 import br.edu.ufcg.analytics.meliorbusao.utils.StringUtils;
 
 public class ItinerariesAdapter extends RecyclerView.Adapter<ItinerariesAdapter.ViewHolder> {
+    public static final String TAG = "ItinerariesAdapter";
 
     private List<Itinerary> items;
     private OnItineraryClickListener mOnItineraryClickListener;
@@ -75,6 +76,7 @@ public class ItinerariesAdapter extends RecyclerView.Adapter<ItinerariesAdapter.
         public void bind(Itinerary itinerary) {
             try {
                 busCodesTextView.setText(StringUtils.getStringListConcat(itinerary.getBusRoutes()));
+                Log.d(TAG,StringUtils.getStringListConcat(itinerary.getBusRoutes()));
 
                 int durationInMins = itinerary.getDurationInSecs()/60;
                 durationTextView.setText(String.valueOf(durationInMins) + " min");

@@ -106,38 +106,6 @@ public class Itinerary implements Parcelable {
         this.encodedPolylinePoints = encodedPolylinePoints;
     }
 
-    public static Itinerary fromJson(JSONObject itineraryJson) {
-        Itinerary itinerary = null;
-        try {
-            List<String> busRoutes = new ArrayList<>();
-            JSONArray legsJson = itineraryJson.getJSONArray("legs");
-            JSONObject firstBusLeg = null;
-            List<String> legsPoints = new ArrayList<>();
-
-            for (int i = 0; i < legsJson.length(); i++) {
-                JSONObject legJson = legsJson.getJSONObject(i);
-                String mode = legJson.getString("mode");
-                if (mode.equals("BUS")) {
-                    if (firstBusLeg == null) firstBusLeg = legJson;
-                    String route = legJson.getString("route");
-                    busRoutes.add(route);
-                }
-                String encodedPoints = legJson.getJSONObject("legGeometry").getString("points");
-                legsPoints.add(encodedPoints);
-            }
-            String depBusStop = firstBusLeg.getJSONObject("from").getString("name");
-            Date startTime = new Date(itineraryJson.getLong("startTime"));
-            Date endTime = new Date(itineraryJson.getLong("endTime"));
-            int duration = itineraryJson.getInt("btr-duration");
-            Log.d(TAG, String.valueOf(duration));
-            itinerary = new Itinerary(busRoutes, legsPoints, depBusStop, startTime, endTime, duration);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return itinerary;
-    }
 
     @Override
     public String toString() {

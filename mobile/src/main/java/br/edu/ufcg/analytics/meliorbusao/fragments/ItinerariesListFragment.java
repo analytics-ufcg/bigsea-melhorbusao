@@ -79,11 +79,11 @@ public class ItinerariesListFragment extends Fragment implements ItinerariesAdap
     @Override
     public void onClick(Itinerary itinerary) {
         if (mCallback != null) {
-            mCallback.onSelected(itinerary);
+            mCallback.onItinerarySelected(itinerary);
         }
     }
 
     public interface OnItinerarySelectedListener {
-        void onSelected(Itinerary itinerary);
+        void onItinerarySelected(Itinerary itinerary);
     }
 }
