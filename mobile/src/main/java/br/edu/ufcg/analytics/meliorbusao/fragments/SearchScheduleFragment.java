@@ -58,6 +58,7 @@ import br.edu.ufcg.analytics.meliorbusao.listeners.OnStopTimesReadyListener;
 import br.edu.ufcg.analytics.meliorbusao.models.StopHeadsign;
 import br.edu.ufcg.analytics.meliorbusao.models.StopTime;
 import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
+import br.edu.ufcg.analytics.meliorbusao.utils.JsonBTRUtils;
 import br.edu.ufcg.analytics.meliorbusao.utils.SharedPreferencesUtils;
 
 public class SearchScheduleFragment extends Fragment implements OnStopTimesReadyListener,
@@ -322,15 +323,8 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
                         responseMessage += line;
                     }
                     JSONObject response = new JSONObject(responseMessage);
-                    JSONObject plan = response.getJSONObject("plan");
-                    JSONArray itinerariesJson = plan.getJSONArray("itineraries");
+                    itineraries = JsonBTRUtils.itinerariesFromJson(response);
 
-                    for (int i = 0; i < itinerariesJson.length(); i++) {
-                        itineraries.add(Itinerary.fromJson(itinerariesJson.getJSONObject(i)));
-                    }
-
-                    Log.d(TAG, "Number of itineraries: " + String.valueOf(itinerariesJson.length()));
-//                    Log.d("SearchScheduleFragment", "First Itinerary: " + Itinerary.fromJson(itinerariesJson.getJSONObject(1)));
                 } else {
                     BufferedReader br1 = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
                     String line = "", error = "";

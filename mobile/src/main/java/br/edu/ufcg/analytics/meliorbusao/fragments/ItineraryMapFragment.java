@@ -20,6 +20,7 @@ import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
+import br.edu.ufcg.analytics.meliorbusao.models.otp.Leg;
 import br.edu.ufcg.analytics.meliorbusao.utils.StringUtils;
 
 public class ItineraryMapFragment extends Fragment {
@@ -95,7 +96,14 @@ public class ItineraryMapFragment extends Fragment {
         Polyline polyline;
         List<List<GeoPoint>> polyLines = new ArrayList<>();
 
-        for (String encodedPoints : mItinerary.getEncodedPolylinePoints()) {
+        List<String> encodedPolylinePoints = new ArrayList<>();
+
+        for (Leg l: mItinerary.getLegs()){
+            encodedPolylinePoints.addAll(l.getEncodedPolylinePoints());
+        }
+
+
+        for (String encodedPoints : encodedPolylinePoints) {
             polyLines.add(PolylineEncoder.decode(encodedPoints, DECODER_PRECISION, false));
         }
 
@@ -110,7 +118,12 @@ public class ItineraryMapFragment extends Fragment {
 
     private void putInformationOnItineraryCard() {
         try {
-            busCodesTextView.setText(StringUtils.getStringListConcat(mItinerary.getBusRoutes()));
+            List<String> busRoutes = new ArrayList<>();
+            for(Leg l: mItinerary.getLegs()){
+                busRoutes.add(l.getBusRoute());
+            }
+
+            busCodesTextView.setText(StringUtils.getStringListConcat(busRoutes));
 
             int durationInMins = mItinerary.getDurationInSecs()/60;
             durationTextView.setText(String.valueOf(durationInMins) + " min");
