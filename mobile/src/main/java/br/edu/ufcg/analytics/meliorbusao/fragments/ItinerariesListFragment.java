@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,12 +47,23 @@ public class ItinerariesListFragment extends Fragment implements ItinerariesAdap
         mView = inflater.inflate(R.layout.fragment_itineraries_list, container, false);
 
         ////////ITINERARIES/////////
-        mAdapter = new ItinerariesAdapter(itineraries);
-        mAdapter.setOnItineraryClickListener(this);
-        itineraryRecyclerView = (RecyclerView) mView.findViewById(R.id.itineraries_list);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        itineraryRecyclerView.setLayoutManager(layoutManager);
-        itineraryRecyclerView.setAdapter(mAdapter);
+        if(itineraries.isEmpty()){
+            mView.findViewById(R.id.error).setVisibility(View.VISIBLE);
+            mView.findViewById(R.id.itineraries_list).setVisibility(View.GONE);
+
+        } else {
+            mAdapter = new ItinerariesAdapter(itineraries);
+            mAdapter.setOnItineraryClickListener(this);
+            itineraryRecyclerView = (RecyclerView) mView.findViewById(R.id.itineraries_list);
+
+            itineraryRecyclerView.setVisibility(View.VISIBLE);
+            mView.findViewById(R.id.error).setVisibility(View.GONE);
+
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+            itineraryRecyclerView.setLayoutManager(layoutManager);
+            itineraryRecyclerView.setAdapter(mAdapter);
+        }
+
         return mView;
     }
 

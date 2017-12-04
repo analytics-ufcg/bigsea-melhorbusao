@@ -93,12 +93,12 @@ public class ItineraryMapFragment extends Fragment {
     }
 
     private void drawItinerary() {
-        Polyline polyline;
+        Polyline polyline = null;
         List<List<GeoPoint>> polyLines = new ArrayList<>();
 
         List<String> encodedPolylinePoints = new ArrayList<>();
 
-        for (Leg l: mItinerary.getLegs()){
+        for (Leg l : mItinerary.getLegs()) {
             encodedPolylinePoints.addAll(l.getEncodedPolylinePoints());
         }
 
@@ -114,18 +114,20 @@ public class ItineraryMapFragment extends Fragment {
             polyline.setWidth(5);
             mMapFragment.drawRoute(polyline);
         }
+
+        //Log.d(TAG, String.copyValueOf(polyline));
     }
 
     private void putInformationOnItineraryCard() {
         try {
             List<String> busRoutes = new ArrayList<>();
-            for(Leg l: mItinerary.getLegs()){
+            for (Leg l : mItinerary.getLegs()) {
                 busRoutes.add(l.getBusRoute());
             }
 
             busCodesTextView.setText(StringUtils.getStringListConcat(busRoutes));
 
-            int durationInMins = mItinerary.getDurationInSecs()/60;
+            int durationInMins = mItinerary.getDurationInSecs() / 60;
             durationTextView.setText(String.valueOf(durationInMins) + " min");
 
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
@@ -133,9 +135,11 @@ public class ItineraryMapFragment extends Fragment {
                     sdf.format(mItinerary.getArrivalTime()));
 
             stBusStopTextView.setText(mItinerary.getDepartureBusStop());
+
+
         } catch (Exception e) {
             Log.e("ItinerariesListAdapter", e.getMessage());
         }
     }
-    
+
 }

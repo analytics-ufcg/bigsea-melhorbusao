@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Leg implements Parcelable {
 
-    public static final String TAG = "Itinerary";
+    public static final String TAG = "Leg";
 
     private String mode;
     private String busRoute;
