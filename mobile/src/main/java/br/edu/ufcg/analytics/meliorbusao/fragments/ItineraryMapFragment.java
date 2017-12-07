@@ -16,6 +16,7 @@ import org.osmdroid.util.GeoPoint;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
@@ -35,6 +36,7 @@ public class ItineraryMapFragment extends Fragment {
     private TextView durationTextView;
     private TextView stEndTimeTextView;
     private TextView stBusStopTextView;
+    private int color;
 
     public ItineraryMapFragment() {
         // Required empty public constructor
@@ -97,23 +99,37 @@ public class ItineraryMapFragment extends Fragment {
         List<List<GeoPoint>> polyLines = new ArrayList<>();
 
         List<String> encodedPolylinePoints = new ArrayList<>();
+        List<Integer> colors = new ArrayList();
+        colors.add(0,Color.RED);
+        colors.add(1,Color.BLUE);
+        colors.add(2,Color.GREEN);
+        colors.add(3,Color.YELLOW);
+        color = 0;
+
 
         for (Leg l : mItinerary.getLegs()) {
-            encodedPolylinePoints.addAll(l.getEncodedPolylinePoints());
+            polyLines.clear();
+            Log.d(TAG, "Index:" + color + ", Color:"+ colors.get(color));
+            //encodedPolylinePoints.addAll(l.getEncodedPolylinePoints());
+
+            for (String encodedPoints : l.getEncodedPolylinePoints()) {
+                polyLines.add(PolylineEncoder.decode(encodedPoints, DECODER_PRECISION, false));
+            }
+
+            for (int i = 0; i < polyLines.size(); i++) {
+                polyline = new Polyline(getContext());
+                polyline.setPoints(polyLines.get(i));
+                polyline.setColor(colors.get(color));
+                polyline.setWidth(5);
+                mMapFragment.drawRoute(polyline);
+            }
+
+
+            color++;
+
         }
 
 
-        for (String encodedPoints : encodedPolylinePoints) {
-            polyLines.add(PolylineEncoder.decode(encodedPoints, DECODER_PRECISION, false));
-        }
-
-        for (int i = 0; i < polyLines.size(); i++) {
-            polyline = new Polyline(getContext());
-            polyline.setPoints(polyLines.get(i));
-            polyline.setColor(Color.RED);
-            polyline.setWidth(5);
-            mMapFragment.drawRoute(polyline);
-        }
 
         //Log.d(TAG, String.copyValueOf(polyline));
     }
