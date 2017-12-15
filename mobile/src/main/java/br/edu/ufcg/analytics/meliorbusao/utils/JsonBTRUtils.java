@@ -13,7 +13,6 @@ import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
 import br.edu.ufcg.analytics.meliorbusao.models.otp.Leg;
 
 public class JsonBTRUtils {
-    //TODO modify
 
     public static final String TAG = "Json_BTR_Utils";
 
@@ -43,9 +42,6 @@ public class JsonBTRUtils {
 
         return leg;
     }
-
-
-
 
     private static Itinerary itineraryFromJson(JSONObject itineraryJson) {
         Itinerary itinerary = null;
@@ -96,8 +92,6 @@ public class JsonBTRUtils {
             }
 
             Log.d(TAG, "Number of itineraries: " + String.valueOf(itinerariesJson.length()));
-//          Log.d("SearchScheduleFragment", "First Itinerary: " + Itinerary.fromJson(itinerariesJson.getJSONObject(1)));
-
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -106,7 +100,5 @@ public class JsonBTRUtils {
         return  itineraries;
 
     }
-
-
 
 }

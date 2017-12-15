@@ -18,9 +18,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.zip.CheckedOutputStream;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
 import br.edu.ufcg.analytics.meliorbusao.adapters.ItinerariesAdapter;
+import br.edu.ufcg.analytics.meliorbusao.db.DBUtils;
+import br.edu.ufcg.analytics.meliorbusao.models.Route;
 import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
 import br.edu.ufcg.analytics.meliorbusao.models.otp.Leg;
 import br.edu.ufcg.analytics.meliorbusao.utils.StringUtils;
@@ -37,7 +40,6 @@ public class ItineraryMapFragment extends Fragment {
     private TextView durationTextView;
     private TextView stEndTimeTextView;
     private TextView stBusStopTextView;
-    private int color;
     private ItinerariesAdapter mAdapter;
 
     public ItineraryMapFragment() {
@@ -120,19 +122,28 @@ public class ItineraryMapFragment extends Fragment {
             for (int i = 0; i < polyLines.size(); i++) {
                 polyline = new Polyline(getContext());
                 polyline.setPoints(polyLines.get(i));
-                //polyline.setColor(colors.get(color));
+                if (l.getMode().equals("BUS")){
+                    Route r =DBUtils.getRoute(getContext(), l.getBusRoute());
+                    Log.d(TAG, r.getLongName());
+                    if (r==null){
+                        String c= r.getColor();
+                        Log.d(TAG,c);
+                        polyline.setColor(Color.parseColor("#"+c));
+                    } else{
+                        polyline.setColor(Color.RED);
+                    }
 
-                polyline.setColor(Color.RED);
+
+                } else {
+                    polyline.setColor(Color.rgb(99, 51, 3));
+                }
+
                 polyline.setWidth(5);
                 mMapFragment.drawRoute(polyline);
             }
 
-
-            color++;
-
         }
 
-        //Log.d(TAG, String.copyValueOf(polyline));
     }
 
     private void putInformationOnItineraryCard() {
