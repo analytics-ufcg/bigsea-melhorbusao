@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import br.edu.ufcg.analytics.meliorbusao.R;
+import br.edu.ufcg.analytics.meliorbusao.adapters.ItinerariesAdapter;
 import br.edu.ufcg.analytics.meliorbusao.models.otp.Itinerary;
 import br.edu.ufcg.analytics.meliorbusao.models.otp.Leg;
 import br.edu.ufcg.analytics.meliorbusao.utils.StringUtils;
@@ -37,6 +38,7 @@ public class ItineraryMapFragment extends Fragment {
     private TextView stEndTimeTextView;
     private TextView stBusStopTextView;
     private int color;
+    private ItinerariesAdapter mAdapter;
 
     public ItineraryMapFragment() {
         // Required empty public constructor
@@ -99,17 +101,16 @@ public class ItineraryMapFragment extends Fragment {
         List<List<GeoPoint>> polyLines = new ArrayList<>();
 
         List<String> encodedPolylinePoints = new ArrayList<>();
-        List<Integer> colors = new ArrayList();
+        /*List<Integer> colors = new ArrayList();
         colors.add(0,Color.RED);
         colors.add(1,Color.BLUE);
         colors.add(2,Color.GREEN);
         colors.add(3,Color.YELLOW);
         color = 0;
-
-
+*/
         for (Leg l : mItinerary.getLegs()) {
             polyLines.clear();
-            Log.d(TAG, "Index:" + color + ", Color:"+ colors.get(color));
+            //Log.d(TAG, "Index:" + color + ", Color:"+ colors.get(color));
             //encodedPolylinePoints.addAll(l.getEncodedPolylinePoints());
 
             for (String encodedPoints : l.getEncodedPolylinePoints()) {
@@ -119,7 +120,9 @@ public class ItineraryMapFragment extends Fragment {
             for (int i = 0; i < polyLines.size(); i++) {
                 polyline = new Polyline(getContext());
                 polyline.setPoints(polyLines.get(i));
-                polyline.setColor(colors.get(color));
+                //polyline.setColor(colors.get(color));
+
+                polyline.setColor(Color.RED);
                 polyline.setWidth(5);
                 mMapFragment.drawRoute(polyline);
             }
@@ -129,8 +132,6 @@ public class ItineraryMapFragment extends Fragment {
 
         }
 
-
-
         //Log.d(TAG, String.copyValueOf(polyline));
     }
 
@@ -138,7 +139,9 @@ public class ItineraryMapFragment extends Fragment {
         try {
             List<String> busRoutes = new ArrayList<>();
             for (Leg l : mItinerary.getLegs()) {
-                busRoutes.add(l.getBusRoute());
+                if (l.getMode().equals("BUS")) {
+                    busRoutes.add(l.getBusRoute());
+                }
             }
 
             busCodesTextView.setText(StringUtils.getStringListConcat(busRoutes));

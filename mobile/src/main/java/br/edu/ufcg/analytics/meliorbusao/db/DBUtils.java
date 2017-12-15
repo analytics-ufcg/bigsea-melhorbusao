@@ -382,6 +382,7 @@ public class DBUtils {
      * @param routeShortName
      * @return
      */
+    //TODO pegar a cor da rota apartir daqui
     public static Route getRoute(Context context, String routeShortName) {
         SQLiteDatabase db = getReadableDatabase(context);
         Route route = null;

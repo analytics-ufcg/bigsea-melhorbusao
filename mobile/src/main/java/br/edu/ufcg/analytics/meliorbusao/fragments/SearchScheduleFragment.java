@@ -121,10 +121,12 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
 
         getDirectionsButton = (Button) mView.findViewById(R.id.show_schedule_button);
 //        getDirectionsButton.setEnabled(false);
+        getDirectionsButton.setClickable(true);
         getDirectionsButton.setBackgroundColor(getResources().getColor(R.color.inactiveIconColorDark));
         getDirectionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "click");
                 /*showProgress(true);*/
                 if (mCurrLocation== null ||mDestLocation==null ){
                     Toast.makeText(getContext(), R.string.search_schedule_btn, Toast.LENGTH_LONG).show();
@@ -133,6 +135,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
                     String cityCode = SharedPreferencesUtils.getCityNameOnDatabase(getContext()).
                             equals("Curitiba")? "ctba" : "cg";
                     mAuthTask = new RoutingTask(mCurrLocation, mDestLocation, new Date(), cityCode);
+                    getDirectionsButton.setClickable(false);
                     mAuthTask.execute();
                 }
 

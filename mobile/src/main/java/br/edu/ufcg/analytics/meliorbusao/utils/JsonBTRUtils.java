@@ -56,14 +56,18 @@ public class JsonBTRUtils {
 
             JSONArray legsJson = itineraryJson.getJSONArray("legs");
 
+            String depBusStop = null;
+
+
             for (int i = 0; i < legsJson.length(); i++) {
                 JSONObject legJson = legsJson.getJSONObject(i);
-                if (legFromJson(legJson).getMode().equals("BUS")){
-                    legs.add(legFromJson(legJson));
-
+                Leg leg = legFromJson(legJson);
+                legs.add(leg);
+                if (leg.getMode().equals("BUS") && depBusStop==null ){
+                    depBusStop = leg.getDepartureBusStop();
                 }
             }
-            String depBusStop = legs.get(0).getDepartureBusStop();
+
             Date startTime = new Date(itineraryJson.getLong("startTime"));
             Date endTime = new Date(itineraryJson.getLong("endTime"));
             int duration = itineraryJson.getInt("btr-duration");

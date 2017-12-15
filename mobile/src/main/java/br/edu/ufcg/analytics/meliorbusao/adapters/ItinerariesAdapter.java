@@ -78,11 +78,11 @@ public class ItinerariesAdapter extends RecyclerView.Adapter<ItinerariesAdapter.
             try {
                 List<String> busRotues = new ArrayList<>();
                 for (Leg l: itinerary.getLegs()){
-                    busRotues.add(l.getBusRoute());
+                    if (l.getMode().equals("BUS")){
+                        busRotues.add(l.getBusRoute());
+                    }
                 }
                 busCodesTextView.setText(StringUtils.getStringListConcat(busRotues));
-                Log.d(TAG,StringUtils.getStringListConcat(busRotues));
-
                 int durationInMins = itinerary.getDurationInSecs()/60;
                 durationTextView.setText(String.valueOf(durationInMins) + " min");
 
@@ -90,9 +90,7 @@ public class ItinerariesAdapter extends RecyclerView.Adapter<ItinerariesAdapter.
                /* stEndTimeTextView.setText(sdf.format(itinerary.getDepartureTime()) + " - " +
                         sdf.format(itinerary.getArrivalTime()));
 */
-
                 stEndTimeTextView.setText(sdf.format(itinerary.getDurationInSecs()));
-
                 stBusStopTextView.setText(itinerary.getDepartureBusStop());
             } catch (Exception e) {
                 Log.e("ItinerariesListAdapter", e.getMessage());
