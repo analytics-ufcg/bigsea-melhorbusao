@@ -122,22 +122,7 @@ public class ItineraryMapFragment extends Fragment {
             for (int i = 0; i < polyLines.size(); i++) {
                 polyline = new Polyline(getContext());
                 polyline.setPoints(polyLines.get(i));
-                if (l.getMode().equals("BUS")){
-                    Route r =DBUtils.getRoute(getContext(), l.getBusRoute());
-                    Log.d(TAG, r.getLongName());
-                    if (r==null){
-                        String c= r.getColor();
-                        Log.d(TAG,c);
-                        polyline.setColor(Color.parseColor("#"+c));
-                    } else{
-                        polyline.setColor(Color.RED);
-                    }
-
-
-                } else {
-                    polyline.setColor(Color.rgb(99, 51, 3));
-                }
-
+                polyline.setColor(Color.parseColor("#"+l.getLegColor()));
                 polyline.setWidth(5);
                 mMapFragment.drawRoute(polyline);
             }

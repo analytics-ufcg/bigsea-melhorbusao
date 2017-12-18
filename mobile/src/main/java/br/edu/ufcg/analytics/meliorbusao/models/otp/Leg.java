@@ -17,17 +17,17 @@ public class Leg implements Parcelable {
     private String departureBusStop;
     private Date departureTime;
     private Date arrivalTime;
-    //leg = new Leg(busRoute, legsPoints, depBusStop, startTime, endTime, );
+    private String legColor;
 
 
-
-    public Leg(String busRoute, List<String> encodedPolylinePoints, String departureBusStop, Date departureTime, Date arrivalTime, String mode) {
+    public Leg(String busRoute, List<String> encodedPolylinePoints, String departureBusStop, Date departureTime, Date arrivalTime, String mode, String legColor) {
         this.busRoute = busRoute;
         this.encodedPolylinePoints = encodedPolylinePoints;
         this.departureBusStop = departureBusStop;
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
         this.mode = mode;
+        this.legColor = legColor;
     }
 
     protected Leg(Parcel in) {
@@ -38,6 +38,7 @@ public class Leg implements Parcelable {
         departureTime = (Date) in.readSerializable();
         arrivalTime = (Date) in.readSerializable();
         mode = in.readString();
+        legColor = in.readString();
     }
 
     public static final Parcelable.Creator<Leg> CREATOR = new Parcelable.Creator<Leg>() {
@@ -103,6 +104,14 @@ public class Leg implements Parcelable {
         this.mode = mode;
     }
 
+    public String getLegColor() {
+        return legColor;
+    }
+
+    public void setLegColor(String legColor) {
+        this.legColor = legColor;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -120,6 +129,9 @@ public class Leg implements Parcelable {
         sb.append("\n");
         sb.append("Mode: ");
         sb.append(mode);
+        sb.append("\n");
+        sb.append("Leg color: ");
+        sb.append(legColor);
         return sb.toString();
     }
 
@@ -136,5 +148,6 @@ public class Leg implements Parcelable {
         parcel.writeSerializable(departureTime);
         parcel.writeSerializable(arrivalTime);
         parcel.writeString(mode);
+        parcel.writeString(legColor);
     }
 }

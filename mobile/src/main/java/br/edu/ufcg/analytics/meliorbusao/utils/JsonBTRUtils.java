@@ -21,11 +21,13 @@ public class JsonBTRUtils {
         String busRoute = "";
         List<String> legsPoints = new ArrayList<>();
         String mode = null;
+        String color = null;
         try {
             mode = legJson.getString("mode");
 
             if (mode.equals("BUS")) {
                 busRoute = legJson.getString("route");
+                color = legJson.getString("routeColor");
             }
             String encodedPoints = legJson.getJSONObject("legGeometry").getString("points");
             legsPoints.add(encodedPoints);
@@ -34,7 +36,7 @@ public class JsonBTRUtils {
             Date startTime = new Date(legJson.getLong("startTime"));
             Date endTime = new Date(legJson.getLong("endTime"));
 
-            leg = new Leg(busRoute, legsPoints, depBusStop, startTime, endTime, mode);
+            leg = new Leg(busRoute, legsPoints, depBusStop, startTime, endTime, mode, color==null?"633307":color);
 
         } catch (JSONException e1) {
             e1.printStackTrace();
@@ -53,7 +55,6 @@ public class JsonBTRUtils {
             JSONArray legsJson = itineraryJson.getJSONArray("legs");
 
             String depBusStop = null;
-
 
             for (int i = 0; i < legsJson.length(); i++) {
                 JSONObject legJson = legsJson.getJSONObject(i);
