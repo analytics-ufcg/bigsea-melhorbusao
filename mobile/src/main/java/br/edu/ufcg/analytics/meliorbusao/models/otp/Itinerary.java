@@ -36,8 +36,6 @@ public class Itinerary implements Parcelable {
 
     protected Itinerary(Parcel in) {
 
-        //TODO testar se dá certo
-
         legs = new ArrayList<Leg>();
         in.readList(legs,Leg.class.getClassLoader());
         departureBusStop = in.readString();

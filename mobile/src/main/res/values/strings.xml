@@ -168,7 +168,12 @@
     <string name="prompt_confirm_new_password">Confirme a senha</string>
     <string name="action_save_new_password">Salvar</string>
     <string name="change_password_fragment_title">Alterar senha</string>
+
+
+
     <string name="itinerary_error">\n  Ops! Algo errado aconteceu, os horários não puderam ser encontrados :( \n
         Por favor, tente novamente mais tarde.</string>
+
+    <string name="msg_dialog_schedule">Buscando horários :)</string>
 
 </resources>

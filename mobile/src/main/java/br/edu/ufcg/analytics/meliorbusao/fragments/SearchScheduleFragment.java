@@ -1,5 +1,6 @@
 package br.edu.ufcg.analytics.meliorbusao.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -82,7 +83,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
     private TextView addressField;
 
     private RoutingTask mAuthTask = null;
-    /*private View mProgressView;*/
+    private static ProgressDialog mDialog;
 
     public SearchScheduleFragment() {
     }
@@ -136,6 +137,7 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
                             equals("Curitiba")? "ctba" : "cg";
                     mAuthTask = new RoutingTask(mCurrLocation, mDestLocation, new Date(), cityCode);
                     getDirectionsButton.setClickable(false);
+                    mDialog = ProgressDialog.show(getContext(), getString(R.string.msg_wait), getString(R.string.msg_dialog_schedule), true, false);
                     mAuthTask.execute();
                 }
 
@@ -261,6 +263,14 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
         void onGetDirectionsButtonClick(List<Itinerary> itineraries);
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mDialog != null && mDialog.isShowing()){
+            mDialog.dismiss();
+        }
+    }
+
     public class RoutingTask extends AsyncTask<Void, Void, List<Itinerary>> {
 
         private final String ENDPOINT_ADDRESS = getString(R.string.OPEN_TRIP_PLANNER_URL) + "/btr_routes_plans";
@@ -349,6 +359,9 @@ public class SearchScheduleFragment extends Fragment implements OnStopTimesReady
 
         @Override
         protected void onPostExecute(List<Itinerary> itineraries) {
+            if (mDialog != null && mDialog.isShowing()){
+                mDialog.dismiss();
+            }
             mCallback.onGetDirectionsButtonClick(itineraries);
         }
     }
