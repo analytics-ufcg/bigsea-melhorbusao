@@ -2,7 +2,7 @@
 
 Melhor Busão is an app designed to simplify public transportation users daily life by providing them with information on buses routes, schedules, stops location/time and bus/trip evaluations. 
 
-Melhor Busão app can be downloaded [here](https://drive.google.com/a/ccc.ufcg.edu.br/file/d/1K0hnzke9EaZMxktgzMyqYmahMkJBpLtA/view?usp=sharing)
+Melhor Busão app can be downloaded [here](https://drive.google.com/a/ccc.ufcg.edu.br/file/d/1K0hnzke9EaZMxktgzMyqYmahMkJBpLtA/view?usp=sharing).
 
 ## Features
 
