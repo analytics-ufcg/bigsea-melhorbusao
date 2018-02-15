@@ -50,7 +50,7 @@ Steps on how to build Melhor Busão:
 - Build -> Rebuild Project and Sync Gradle  
 - Good to go!
 
-##Melhor Busao - Overall Architecture
+## Melhor Busao - Overall Architecture
 The architecture of Melhor Busão is composed of five components: Data Crawler, Static Data Processor, Dynamic Data Processor, Recommendation Service Mananger and Melhor Busao App.
 
 
@@ -58,7 +58,7 @@ The architecture of Melhor Busão is composed of five components: Data Crawler, 
   <img src="./screenshots/01-Overall Architeture.png" alt="Drawing" width: "300px" height="600px"/>
 </div>
 
-###Data Crawler
+### Data Crawler
 
 The Data Crawler is composed of a web crawler that captures the data and sends them to the processor components. The data follows two streams: the first processes the static data and forwards it to the application; the second stream processes the dynamic data and the forwards it to the Recommendation Service Manager.
   - Data captured:
@@ -66,7 +66,7 @@ The Data Crawler is composed of a web crawler that captures the data and sends t
     - Dynamic Data: GPS, Ticketing Data;
 
 
-###Static Data Processor
+### Static Data Processor
 
 <div style="display:table-cell; vertical-align:middle; text-align:center">
   <img src="./screenshots/02-Acquisition of Data on mobile.png" alt="Drawing" width: "300px" height="600px"/>
@@ -74,13 +74,13 @@ The Data Crawler is composed of a web crawler that captures the data and sends t
 
 After static data is acquired, it is cleaned, assembled and formatted. Then Melhor Busão database is created and its dump is uploaded to the cloud. When the application is launched for the first time, Melhor Busão database dump is downloaded to the device, according to user location.
 
-###[Dynamic Data Processor](https://github.com/analytics-ufcg/bigsea-transporte)
+### [Dynamic Data Processor](https://github.com/analytics-ufcg/btr-spark)
 
-###[Recommendation Service Mananger](https://github.com/analytics-ufcg/melhorbusao/tree/master/R/best_trip_recommender)
+### [Recommendation Service Mananger](https://github.com/analytics-ufcg/btr-api)
 
 --- 
 
-###App Componentes
+### App Componentes
 
 **Login**
 
