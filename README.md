@@ -55,7 +55,7 @@ The architecture of Melhor Busão is composed of five components: Data Crawler, 
 
 
 <div style="display:table-cell; vertical-align:middle; text-align:center">
-  <img src="./screenshots/01-Overall Architeture.png" alt="Drawing" width: "300px" height="600px"/>
+  <img src="./screenshots/melhor-busao-data-architecture.png" alt="Drawing" width: "300px" height="600px"/>
 </div>
 
 ### Data Crawler
