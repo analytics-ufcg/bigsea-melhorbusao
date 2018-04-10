@@ -84,7 +84,8 @@ public class ItinerariesAdapter extends RecyclerView.Adapter<ItinerariesAdapter.
                         sdf.format(itinerary.getArrivalTime()));
 */
 
-                stEndTimeTextView.setText(sdf.format(itinerary.getDurationInSecs()));
+                stEndTimeTextView.setText(sdf.format(itinerary.getDepartureTime()) + " - " +
+                        sdf.format(itinerary.getArrivalTime()));
 
                 stBusStopTextView.setText(itinerary.getDepartureBusStop());
             } catch (Exception e) {
